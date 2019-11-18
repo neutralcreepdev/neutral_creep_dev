@@ -8,7 +8,7 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:802368381127:android:1c098c85dbc49f401bdee2",
+        "mobilesdk_app_id": "1:802368381127:android:f37a95a8e9fd8e981bdee2",
         "android_client_info": {
           "package_name": "com.example.neutral_creep_dev"
         }
@@ -38,6 +38,13 @@
             {
               "client_id": "802368381127-tmba445nr3bahd1na66067gi9jo1662h.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "802368381127-6kpite3gpi0lpnqcuicghvc6al3uim7v.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.neutralCreepDev"
+              }
             }
           ]
         }

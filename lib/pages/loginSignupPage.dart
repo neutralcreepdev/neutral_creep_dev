@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:neutral_creep_dev/services/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:neutral_creep_dev/models/customer.dart';
 
 import '../helpers/color_helper.dart';
-import '../services/auth.dart';
+
+import '../services/authService.dart';
+import '../services/dbService.dart';
+
 import './homePage.dart';
 
 class LoginSignUpPage extends StatefulWidget {
@@ -14,10 +18,11 @@ class LoginSignUpPage extends StatefulWidget {
 class _LoginSignUpPageState extends State<LoginSignUpPage> {
   final _formKey = GlobalKey<FormState>();
   final _passKey = GlobalKey<FormFieldState>();
+  final _auth = AuthService();
+  final _db = DBService();
   var isSignUp = true;
   var isRememberMe = false;
   String _email, _password;
-  AuthService authService = AuthService();
 
   Container buildLoginSignUpButtonContainer() {
     return Container(
@@ -196,6 +201,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
@@ -309,7 +315,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(35)),
                                 child: Text(
-                                  "SIGN UP",
+                                  isSignUp ? "SIGN UP" : "LOGIN",
                                   style: TextStyle(
                                       fontSize: 40,
                                       fontWeight: FontWeight.bold,
@@ -319,19 +325,49 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                                   if (_formKey.currentState.validate()) {
                                     _formKey.currentState.save();
                                     if (isSignUp) {
-                                      authService.handleUserSignUp(
-                                          _email, _password);
+                                      Future<FirebaseUser> user =
+                                          _auth.handleSignUp(_email, _password);
+                                      user.then((userValue) {
+                                        Firestore.instance
+                                            .collection("users")
+                                            .document("${userValue.uid}")
+                                            .setData({
+                                          "id": userValue.uid,
+                                          "lastLoggedIn": DateTime.now()
+                                        });
+
+                                        Customer customer = new Customer();
+
+                                        Navigator.of(context).pushReplacement(
+                                            MaterialPageRoute(
+                                                settings:
+                                                    RouteSettings(name: "home"),
+                                                builder: (context) => HomePage(
+                                                      customer: customer,
+                                                      auth: _auth,
+                                                      db: _db,
+                                                    )));
+                                      });
                                     } else {
-                                      Future<FirebaseUser> user = authService
+                                      Future<FirebaseUser> user = _auth
                                           .handleEmailSignIn(_email, _password);
                                       user.then((userValue) {
-                                        print("${userValue.uid}");
+                                        _db
+                                            .getCustomerData(userValue.uid)
+                                            .then((customer) {
+                                          Navigator.of(context).pushReplacement(
+                                              MaterialPageRoute(
+                                                  settings: RouteSettings(
+                                                      name: "home"),
+                                                  builder: (context) =>
+                                                      HomePage(
+                                                        customer: customer,
+                                                        auth: _auth,
+                                                        db: _db,
+                                                      )));
+                                        });
                                       });
                                     }
-
-                                    Navigator.of(context).pushReplacement(
-                                        MaterialPageRoute(
-                                            builder: (context) => HomePage()));
                                   }
                                 },
                               ),
