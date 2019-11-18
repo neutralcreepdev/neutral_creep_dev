@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:neutral_creep_dev/models/cart.dart';
 import 'package:neutral_creep_dev/models/eWallet.dart';
 
 import '../models/customer.dart';
@@ -68,24 +69,52 @@ class _PaymentPageState extends State<PaymentPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text("Order #${transaction.id}"),
                   Text(
-                      "Total Cost: #${transaction.getCart().getTotalCost().toStringAsFixed(2)}"),
+                    "Order #${transaction.id}",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
+                  Container(
+                    height: 1,
+                    width: 180,
+                    color: Colors.black,
+                  ),
+                  SizedBox(height: 30),
                   Text(
-                      "7% GST: #${(transaction.getCart().getTotalCost() * 0.07).toStringAsFixed(2)}"),
+                    "Total Cost: #${transaction.getCart().getTotalCost().toStringAsFixed(2)}",
+                    style:
+                        TextStyle(fontWeight: FontWeight.normal, fontSize: 15),
+                  ),
                   Text(
-                      "Grand Total: #${(transaction.getCart().getTotalCost() * 1.07).toStringAsFixed(2)}"),
+                    "7% GST: #${(transaction.getCart().getTotalCost() * 0.07).toStringAsFixed(2)}",
+                    style:
+                        TextStyle(fontWeight: FontWeight.normal, fontSize: 15),
+                  ),
                   Text(
-                      "Delievery Method: ${collectionMethod == "1" ? "Self-Collect" : "Deliever to address"}"),
+                    "Grand Total: #${(transaction.getCart().getTotalCost() * 1.07).toStringAsFixed(2)}",
+                    style:
+                        TextStyle(fontWeight: FontWeight.normal, fontSize: 15),
+                  ),
+                  SizedBox(height: 30),
+                  Text(
+                    "Delievery Method: ${collectionMethod == "1" ? "Self-Collect" : "Deliever to address"}",
+                    style:
+                        TextStyle(fontWeight: FontWeight.normal, fontSize: 15),
+                  ),
                   collectionMethod == "1"
                       ? Container()
                       : Text(
-                          "Address: blk 33 Some Stree Road\nUnit: 02-1234\nPostal Code: 112233")
+                          "Address: blk 33 Some Stree Road\nUnit: 02-1234\nPostal Code: 112233",
+                          style: TextStyle(
+                              fontWeight: FontWeight.normal, fontSize: 15),
+                          textAlign: TextAlign.center,
+                        )
                 ],
               ),
             ),
             Text(
-                "E-Credits Available: \$${eWallet.eCreadits.toStringAsFixed(2)}"),
+              "Creep-Dollars Available: \$${eWallet.eCreadits.toStringAsFixed(2)}",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+            ),
             ButtonTheme(
               height: 60,
               minWidth: 250,
@@ -94,7 +123,7 @@ class _PaymentPageState extends State<PaymentPage> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(35)),
                   child: Text(
-                    "PAY BY E-CREDIT",
+                    "PAY BY CREEP-DOLLARS",
                     style: TextStyle(
                         fontSize: 25,
                         fontWeight: FontWeight.bold,
@@ -108,6 +137,26 @@ class _PaymentPageState extends State<PaymentPage> {
                         .document(customer.id)
                         .updateData({"eCredit": eWallet.eCreadits});
                     customer.clearCart();
+
+                    List<Map<String, Object>> items =
+                        new List<Map<String, Object>>();
+                    for (Grocery item in transaction.getCart().groceries) {
+                      items.add({"id": item.id, "quanity": item.quantity});
+                    }
+
+                    Firestore.instance
+                      ..collection("users")
+                          .document(customer.id)
+                          .collection("transactions")
+                          .document(transaction.id)
+                          .setData({
+                        "dateOfTransaction": DateTime.now(),
+                        "id": transaction.id,
+                        "totalAmount": transaction.getCart().getTotalCost(),
+                        "type": "purchase",
+                        "items": items
+                      });
+
                     Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(
                           builder: (context) => PaymentMadePage(
@@ -125,16 +174,33 @@ class _PaymentPageState extends State<PaymentPage> {
                         height: MediaQuery.of(context).size.height / 6,
                         width: MediaQuery.of(context).size.width -
                             (eWallet.creditCards.length > 1 ? 100 : 50),
-                        color: gainsboro,
+                        decoration: BoxDecoration(
+                            color: gainsboro,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(16))),
+                        padding: EdgeInsets.only(left: 20),
                         child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text("${eWallet.creditCards[0].cardNum}"),
+                            Text(
+                              "${eWallet.creditCards[0].cardNum}",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 20),
+                            ),
+                            SizedBox(height: 20),
                             Row(
                               children: <Widget>[
-                                Text("${eWallet.creditCards[0].fullName}"),
-                                SizedBox(width: 5),
+                                Text("${eWallet.creditCards[0].fullName}",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15)),
+                                SizedBox(width: 30),
                                 Text(
-                                    "Exp: ${eWallet.creditCards[0].expiryDate["month"]}/${eWallet.creditCards[0].expiryDate["year"]}"),
+                                    "Exp: ${eWallet.creditCards[0].expiryDate["month"]}/${eWallet.creditCards[0].expiryDate["year"]}",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15)),
                               ],
                             )
                           ],

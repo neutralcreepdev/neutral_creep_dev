@@ -113,7 +113,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                 isRememberMe
                     ? Icon(Icons.check_box)
                     : Icon(Icons.check_box_outline_blank),
-                Text("Remember me",
+                Text("Remember Me",
                     style: TextStyle(fontWeight: FontWeight.bold)),
               ],
             )),
@@ -137,7 +137,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         child: Column(
           children: <Widget>[
             Text(
-              "use social media:",
+              "connect with:",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             Row(

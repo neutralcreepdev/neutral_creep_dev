@@ -160,10 +160,13 @@ class _SummaryPageState extends State<SummaryPage> {
                             child: Text("Self-Collect"),
                             value: "1",
                           ),
-                          DropdownMenuItem(
-                            child: Text("addres"),
-                            value: "2",
-                          )
+                          customer.address != null
+                              ? DropdownMenuItem(
+                                  child: Text(
+                                      "${customer.address["street"]}, ${customer.address["unit"]}, S${customer.address["postalCode"]}"),
+                                  value: "2",
+                                )
+                              : null
                         ],
                         onChanged: (value) {
                           setState(() {

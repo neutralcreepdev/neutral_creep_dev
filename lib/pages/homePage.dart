@@ -45,12 +45,11 @@ class _HomePageState extends State<HomePage> {
 
       setState(() {
         result = qrResult;
+        print("\n\n\n\n$result\n\n\n\n\n");
         Grocery temp = new Grocery();
         if (temp.setGroceryWithStringInput(result)) {
           temp.quantity = 1;
           customer.currentCart.addGrocery(temp);
-        } else {
-          print("\n\n\n\n unknown \n\n\n\n\n");
         }
       });
     } on PlatformException catch (ex) {
@@ -226,17 +225,31 @@ class _HomePageState extends State<HomePage> {
 
                                       // itme description container
                                       SizedBox(width: 10),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Text(
-                                              "${customer.currentCart.getGrocery(index).name}"),
-                                          Text(
-                                              "${customer.currentCart.getGrocery(index).description}"),
-                                          Text(
-                                              "\$${customer.currentCart.getGrocery(index).cost.toStringAsFixed(2)}")
-                                        ],
+                                      Container(
+                                        width:
+                                            MediaQuery.of(context).size.width -
+                                                210,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Text(
+                                                "${customer.currentCart.getGrocery(index).name}", style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 15)),
+                                            Text(
+                                              "${customer.currentCart.getGrocery(index).description}",
+                                              style: TextStyle(fontSize: 11),
+                                              maxLines: 2,
+                                            ),
+                                            SizedBox(height: 10),
+                                            Text(
+                                                "\$${customer.currentCart.getGrocery(index).cost.toStringAsFixed(2)}",
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 15))
+                                          ],
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -293,11 +306,20 @@ class _HomePageState extends State<HomePage> {
                       child: Column(
                         children: <Widget>[
                           Text(
-                              "Total Cost: \$${customer.currentCart.getTotalCost().toStringAsFixed(2)}"),
+                            "Total Cost: \$${customer.currentCart.getTotalCost().toStringAsFixed(2)}",
+                            style: TextStyle(
+                                fontWeight: FontWeight.normal, fontSize: 15),
+                          ),
                           Text(
-                              "GST 7%: \$${(customer.currentCart.getTotalCost() * 0.07).toStringAsFixed(2)}"),
+                            "GST 7%: \$${(customer.currentCart.getTotalCost() * 0.07).toStringAsFixed(2)}",
+                            style: TextStyle(
+                                fontWeight: FontWeight.normal, fontSize: 15),
+                          ),
                           Text(
-                              "Grand Total: \$${(customer.currentCart.getTotalCost() * 1.07).toStringAsFixed(2)}"),
+                            "Grand Total: \$${(customer.currentCart.getTotalCost() * 1.07).toStringAsFixed(2)}",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 20),
+                          ),
                           SizedBox(height: 10),
                           ButtonTheme(
                             height: 60,

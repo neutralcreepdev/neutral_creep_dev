@@ -45,7 +45,7 @@ class _EWalletPageState extends State<EWalletPage> {
             // current amount text ==========================================
             SizedBox(height: 30),
             Text(
-              "CURRRENT AMOUNT:\n\$${eWallet.eCreadits.toStringAsFixed(2)}",
+              "CREEP-DOLLARS:\n\$${eWallet.eCreadits.toStringAsFixed(2)}",
               style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
@@ -99,23 +99,23 @@ class _EWalletPageState extends State<EWalletPage> {
             Container(
               child: Column(
                 children: <Widget>[
-                  Text("Transection History",
+                  Text("Transaction History",
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
-                  Container(
-                    height: MediaQuery.of(context).size.height / 2,
-                    width: MediaQuery.of(context).size.width - 70,
-                    color: Colors.blue,
-                    child: Column(
-                      children: <Widget>[
-                        Container(
-                          child: Row(
-                            children: <Widget>[Text("id")],
-                          ),
-                        )
-                      ],
-                    ),
-                  )
+                  // Container(
+                  //   height: MediaQuery.of(context).size.height / 2,
+                  //   width: MediaQuery.of(context).size.width - 70,
+                  //   color: Colors.blue,
+                  //   child: Column(
+                  //     children: <Widget>[
+                  //       Container(
+                  //         child: Row(
+                  //           children: <Widget>[Text("id")],
+                  //         ),
+                  //       )
+                  //     ],
+                  //   ),
+                  // )
                 ],
               ),
             )

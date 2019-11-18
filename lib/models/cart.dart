@@ -73,13 +73,20 @@ class Grocery {
     this.supplier = dataArray[3] ?? "No Supplier";
     this.cost = double.parse(dataArray[4]) ?? 0;
 
-    String imageURLTemp = "${dataArray[5]}:${dataArray[6]}";
+    if (dataArray[5].contains("http")) {
+      String imageURLTemp = "${dataArray[5]}:${dataArray[6]}";
 
-    this.imageURL = imageURLTemp ?? null;
+      this.imageURL = imageURLTemp ?? null;
 
-    if (imageURL != null) {
-      _setImageWithURL();
+      if (imageURL != null) {
+        _setImageWithURL();
+      }
+    } else {
+      this.imageURL = null;
+      this.image = null;
     }
+
+    print("\n\n\n\n\n$dataArray\n\n\n\n\n\n");
 
     return true;
   }

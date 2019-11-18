@@ -1,3 +1,5 @@
+import 'dart:ui' as prefix0;
+
 import 'package:flutter/material.dart';
 
 import '../models/eWallet.dart';
@@ -30,31 +32,40 @@ class PaymentMadePage extends StatelessWidget {
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         color: whiteSmoke,
-        child: Center(
-          child: Column(
-            children: <Widget>[
-              Text("Purchase Confirmed"),
-              Text("Credits Remaining: ${eWallet.eCreadits}"),
-              ButtonTheme(
-                height: 60,
-                minWidth: 250,
-                child: RaisedButton(
-                    color: heidelbergRed,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(35)),
-                    child: Text(
-                      "HOME",
-                      style: TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
-                    ),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    }),
-              ),
-            ],
-          ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              "Purchase Confirmed",
+              style:
+                  TextStyle(fontWeight: prefix0.FontWeight.bold, fontSize: 28),
+            ),
+            SizedBox(height: 5),
+            Text(
+              "Credits Remaining: \$${eWallet.eCreadits.toStringAsFixed(2)}",
+              style:
+                  TextStyle(fontWeight: prefix0.FontWeight.bold, fontSize: 28),
+            ),
+            SizedBox(height: 30),
+            ButtonTheme(
+              height: 60,
+              minWidth: 250,
+              child: RaisedButton(
+                  color: heidelbergRed,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(35)),
+                  child: Text(
+                    "HOME",
+                    style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  }),
+            ),
+          ],
         ),
       ),
     );
