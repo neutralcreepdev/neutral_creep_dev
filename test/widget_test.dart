@@ -7,13 +7,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:neutral_creep_dev/pages/startPage.dart' as prefix0;
+import 'package:neutral_creep_dev/ui/launch_page.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(prefix0.StartPage());
+    await tester.pumpWidget(LaunchPage());
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);
