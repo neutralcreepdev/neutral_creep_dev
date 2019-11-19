@@ -8,6 +8,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:neutral_creep_dev/models/customer.dart';
 import 'package:neutral_creep_dev/pages/signUpPage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:encrypt/encrypt.dart' as encPkg;
 
 import '../helpers/color_helper.dart';
 
@@ -31,6 +33,63 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
   bool facebookStuff = false;
   var isRememberMe = false;
   String _email, _password;
+  SharedPreferences sp;
+  TextEditingController emailText = new TextEditingController();
+  TextEditingController passwordText = new TextEditingController();
+
+  //Encryption AES and RSA
+  static final key = encPkg.Key.fromUtf8('CSIT-321 FYPQRCODEORDERINGSYSTEM');
+  final iv = encPkg.IV.fromLength(16);
+  final enc = encPkg.Encrypter(encPkg.AES(key));
+
+  void initState() {
+    super.initState();
+    getEmailPassword();
+  }
+
+  _onChanged(bool value) async {
+    sp = await SharedPreferences.getInstance();
+    setState(() {
+      isRememberMe = value;
+      if(isRememberMe) {
+        if(emailText.text!="" && passwordText.text!="") {
+          final emailEnc = enc.encrypt(emailText.text, iv: iv);
+          final passwordEnc = enc.encrypt(passwordText.text, iv: iv);
+          sp.setBool("check", isRememberMe);
+          sp.setString("email", emailEnc.base64);
+          sp.setString("password", passwordEnc.base64);
+          sp.commit();
+          getEmailPassword();
+        }
+      } else {
+        sp.clear();
+      }
+
+    });
+  }
+
+  getEmailPassword() async {
+    sp = await SharedPreferences.getInstance();
+    setState(() {
+      isRememberMe = sp.getBool("check");
+      if (isRememberMe != null) {
+        if (isRememberMe) {
+          if(sp.getString("email")!="" && sp.getString("password")!="") {
+            String decEmailText = enc.decrypt64(sp.getString("email"), iv: iv);
+            String decPasswordText = enc.decrypt64(sp.getString("password"), iv: iv);
+            emailText.text = decEmailText;
+            passwordText.text = decPasswordText;
+          }
+        } else {
+          emailText.clear();
+          passwordText.clear();
+          sp.clear();
+        }
+      } else {
+        isRememberMe = false;
+      }
+    });
+  }
 
   Container buildLoginSignUpButtonContainer() {
     return Container(
@@ -101,31 +160,16 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
 
   Container buildRememberMeAndForgetPassContainer() {
     return Container(
-      padding: EdgeInsets.only(left: 30, right: 30),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      padding: EdgeInsets.only(left: 5.0, right: 5.0),
+      child:Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          InkWell(
-            onTap: () {
-              setState(() {
-                if (isRememberMe) {
-                  isRememberMe = false;
-                } else {
-                  isRememberMe = true;
-                }
-              });
-            },
-            child: Container(
-                child: Row(
-              children: <Widget>[
-                isRememberMe
-                    ? Icon(Icons.check_box)
-                    : Icon(Icons.check_box_outline_blank),
-                Text("Remember Me",
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-              ],
-            )),
-          ),
+              CheckboxListTile(
+                  value: isRememberMe,
+                  onChanged: _onChanged,
+                  title: new Text("Remember Me"),
+                  controlAffinity: ListTileControlAffinity.leading
+              ),
           GestureDetector(
             onTap: () async {
               await showDialog(
@@ -241,8 +285,37 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
           )
+
         ],
       ),
+//      child: Row(
+//      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//      children: <Widget>[
+//
+//        InkWell(
+//          onTap: () {
+//            setState(() {
+//              if (isRememberMe) {
+//                isRememberMe = false;
+//              } else {
+//                isRememberMe = true;
+//              }
+//            });
+//          },
+//          child: Container(
+//              child: Row(
+//                children: <Widget>[
+//                  isRememberMe
+//                      ? Icon(Icons.check_box)
+//                      : Icon(Icons.check_box_outline_blank),
+//                  Text("Remember Me",
+//                      style: TextStyle(fontWeight: FontWeight.bold)),
+//                ],
+//              )),
+//        ),
+
+//      ],
+//    ),
     );
   }
 
@@ -474,6 +547,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                               //  Email text form ====================================
                               TextFormField(
                                 textAlign: TextAlign.center,
+                                controller: emailText,
                                 keyboardType: TextInputType.emailAddress,
                                 decoration: InputDecoration(
                                   hintText: "EMAIL",
@@ -483,11 +557,11 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                                   if (emailInput.isEmpty) {
                                     return "This field is blank";
                                   }
-                                  /* bool checkEmail = RegExp(
-                                          r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                  bool checkEmail = RegExp(
+                                          r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$")
                                       .hasMatch(emailInput);
                                   if (checkEmail == false)
-                                    return "Please enter a valid email";*/
+                                    return "Please enter a valid email";
                                   return null;
                                 },
                               ),
@@ -497,6 +571,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                               TextFormField(
                                 key: _passKey,
                                 obscureText: true,
+                                controller: passwordText,
                                 textAlign: TextAlign.center,
                                 decoration: InputDecoration(
                                   hintText: "PASSWORD",
@@ -579,6 +654,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                                                 _auth.handleSignUp(
                                                     _email, _password);
                                             user.then((userValue) {
+                                              print("check uservalue: $userValue");
                                               if (userValue != null) {
                                                 Firestore.instance
                                                     .collection("users")
@@ -632,6 +708,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                                                   .getCustomerData(
                                                       userValue.uid)
                                                   .then((customer) {
+                                                    _onChanged(isRememberMe);
                                                 Navigator.pushReplacement(
                                                     context,
                                                     MaterialPageRoute(

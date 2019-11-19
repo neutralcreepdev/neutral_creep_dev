@@ -439,7 +439,7 @@ class _HomePageState extends State<HomePage> {
                                           cart: customer.currentCart);
 
 
-                                  if(customer.eWallet.creditCards.length==0) {
+                                  if(customer.eWallet.creditCards.length==0 || customer.eWallet.eCreadits <0) {
                                     Fluttertoast.showToast(
                                         msg: "Please add a credit Card or top up CreepDollars");
                                     db.getCard(customer).then((bankName) {

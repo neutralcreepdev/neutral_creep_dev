@@ -31,7 +31,7 @@
         </activity>
         <!-- Facebook Login configuration -->
         <meta-data android:name="com.facebook.sdk.ApplicationId"
-            android:value="@android:strings"/>
+            android:value="@string/facebook_app_id"/>
 
         <activity android:name="com.facebook.FacebookActivity"
             android:configChanges=

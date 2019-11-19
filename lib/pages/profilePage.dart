@@ -343,6 +343,16 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<bool> updateField(
       int val, BuildContext context, formKey, Customer customer) async {
+
+    final unitController = TextEditingController();
+    final streetController = TextEditingController();
+    final postalCodeController = TextEditingController();
+
+    final firstNameController = TextEditingController();
+    final lastNameController = TextEditingController();
+    
+    final contactNumController = TextEditingController();
+
     switch (val) {
       case 0:
         {
@@ -350,8 +360,6 @@ class _ProfilePageState extends State<ProfilePage> {
           await showDialog(
               context: context,
               builder: (BuildContext context) {
-                final firstNameController = TextEditingController();
-                final lastNameController = TextEditingController();
                 return AlertDialog(
                   content: Form(
                     key: formKey,
@@ -455,9 +463,6 @@ class _ProfilePageState extends State<ProfilePage> {
           showDialog(
               context: context,
               builder: (BuildContext context) {
-                final unitController = TextEditingController();
-                final streetController = TextEditingController();
-                final postalCodeController = TextEditingController();
 
                 return AlertDialog(
                   content: Form(
@@ -597,7 +602,6 @@ class _ProfilePageState extends State<ProfilePage> {
           showDialog(
               context: context,
               builder: (BuildContext context) {
-                final contactNumController = TextEditingController();
                 return AlertDialog(
                   content: Form(
                     key: formKey,

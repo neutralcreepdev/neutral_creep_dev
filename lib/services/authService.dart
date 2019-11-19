@@ -81,6 +81,7 @@ class AuthService {
       final result = await facebookLogin.logIn(['email']);
       final AuthCredential credential = FacebookAuthProvider.getCredential(accessToken: result.accessToken.token);
       AuthResult authResult = await _auth.signInWithCredential(credential);
+      print("hey${authResult.toString()}");
       if (authResult.additionalUserInfo.isNewUser) {
         return false;
       } else {
