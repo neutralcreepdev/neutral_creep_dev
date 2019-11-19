@@ -5,24 +5,30 @@ class EWallet {
   EWallet({this.eCreadits, this.creditCards});
 
   factory EWallet.fromMap(Map data) {
-    List<Map<String,dynamic>> creditCards = new List<Map<String,dynamic>>();
-    List<dynamic> cardData = data["creditCards"];
-    for (int i = 0; i < cardData.length; i++) {
-      /*Map expiryDate = {
+    List<Map<String, dynamic>> creditCards = new List<Map<String, dynamic>>();
+    try {
+      List<dynamic> cardData = data["creditCards"];
+      for (int i = 0; i < cardData.length; i++) {
+        /*Map expiryDate = {
         "month": cardData[i]["expiryDate"]["month"],
         "year": cardData[i]["expiryDate"]["year"]
       };*/
 
-      Map<String,dynamic> temp = {
+        Map<String, dynamic> temp = {
           "fullName": cardData[i]["fullName"],
           "cardNum": cardData[i]["cardNum"],
           "expiryMonth": cardData[i]["expiryMonth"],
           "expiryYear": cardData[i]["expiryYear"],
           "bankName": cardData[i]["bankName"]};
-      creditCards.add(temp);
+        creditCards.add(temp);
+      }
+    }catch(exception){
+      print("noCreditCard Found: ${creditCards.length}");
     }
 
-    return EWallet(creditCards: creditCards, eCreadits: data["eCredit"] ?? 0);
+    double val = data["eCredit"].toDouble();
+
+    return EWallet(creditCards: creditCards, eCreadits: val ?? 0);
   }
 
   @override

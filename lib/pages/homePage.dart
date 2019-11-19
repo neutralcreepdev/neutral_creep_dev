@@ -6,11 +6,9 @@ import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/services.dart';
 
 import '../helpers/color_helper.dart';
-import '../helpers/hash_helper.dart';
 
 import '../models/cart.dart';
 import '../models/customer.dart';
-import '../models/eWallet.dart';
 import '../models/transaction.dart';
 
 import '../services/authService.dart';
@@ -20,6 +18,8 @@ import './profilePage.dart';
 import './eWalletPage.dart';
 import './startPage.dart';
 import './deliveryListPage.dart';
+import './transactionHistory.dart';
+import './deliveryCheck.dart';
 
 class HomePage extends StatefulWidget {
   final Customer customer;
@@ -58,23 +58,23 @@ class _HomePageState extends State<HomePage> {
       if (ex.code == BarcodeScanner.CameraAccessDenied) {
         setState(() {
           result = "Camera permission was denied";
-          print("$result");
+          print("QR: $result");
         });
       } else {
         setState(() {
           result = "Unknown Error $ex";
-          print("$result");
+          print("QR: $result");
         });
       }
     } on FormatException {
       setState(() {
         result = "You pressed the back button before scanning anything";
-        print("$result");
+        print("QR: $result");
       });
     } catch (ex) {
       setState(() {
         result = "Unknown Error $ex";
-        print("$result");
+        print("QR: $result");
       });
     }
   }
@@ -82,15 +82,13 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    Future<EWallet> eWalletData = db.getEWalletData(customer.id);
-    eWalletData.then((eWallet) {
+    db.getEWalletData(customer.id).then((eWallet) {
       customer.eWallet = eWallet;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       key: _scaffoldKey,
 
@@ -152,7 +150,10 @@ class _HomePageState extends State<HomePage> {
               onTap: () {
                 Navigator.of(context).pop();
                 Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => EWalletPage(customer: customer,db: db,)));
+                    builder: (context) => EWalletPage(
+                          customer: customer,
+                          db: db,
+                        )));
                 /*
                 Future<EWallet> eWalletData = db.getEWalletData(customer.id);
                 eWalletData.then((eWallet) {
@@ -172,11 +173,14 @@ class _HomePageState extends State<HomePage> {
               ),
               onTap: () {
                 Navigator.of(context).pop();
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => ProfilePage(
-                          customer: customer,
-                          db:db,
-                        )));
+                db.getCard(customer).then((bankName) {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => ProfilePage(
+                            customer: customer,
+                            db: db,
+                            bankName: bankName,
+                          )));
+                });
               },
             ),
             SizedBox(height: 30),
@@ -191,6 +195,34 @@ class _HomePageState extends State<HomePage> {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) =>
                         deliveryPage(customer: customer, db: db)));
+              },
+            ),
+            SizedBox(height: 30),
+            InkWell(
+              child: Text(
+                "Transaction history",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+              ),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) =>
+                        TransactionHistoryPage(customer: customer, db: db)));
+              },
+            ),
+            SizedBox(height: 30),
+            InkWell(
+              child: Text(
+                "Order Status",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+              ),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) =>
+                        DeliveryCheckPage(customer: customer, db: db)));
               },
             ),
             SizedBox(height: 30),
@@ -407,7 +439,7 @@ class _HomePageState extends State<HomePage> {
                                                 db: db,
                                               )))
                                       .then((value) {
-                                    print("$value");
+                                    //print("$value");
                                   });
                                 });
                               },

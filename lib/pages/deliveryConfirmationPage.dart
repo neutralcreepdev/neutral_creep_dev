@@ -23,13 +23,14 @@ class DeliveryConfirmation extends StatelessWidget {
     String hash = _hashVal(id + dateString);
 
     print('$id$dateString');
+    Map falseResult = {"Result": false};
     return Scaffold(
         appBar: AppBar(
           //Back button
           automaticallyImplyLeading: true,
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => Navigator.pop(context, falseResult),
           ),
           backgroundColor: alablaster,
           centerTitle: true,
@@ -116,7 +117,7 @@ class DeliveryConfirmation extends StatelessWidget {
                                   style: TextStyle(fontSize: 18)),
                             ),
                             Container(
-                              child: Text("\$${order.items[index]['cost']}",
+                              child: Text("\$${order.items[index]['cost'].toStringAsFixed(2)}",
                                   style: TextStyle(fontSize: 18)),
                             )
                           ],
@@ -151,7 +152,7 @@ class DeliveryConfirmation extends StatelessWidget {
                     );
                   })),
           Text("\$${order.totalAmount}"),*/
-              Text("Total Cost: \$${order.totalAmount}"),
+              Text("Total Cost: \$${order.totalAmount.toStringAsFixed(2)}"),
               Padding(
                 padding: const EdgeInsets.fromLTRB(10, 10, 10, 120),
                 child: RaisedButton(

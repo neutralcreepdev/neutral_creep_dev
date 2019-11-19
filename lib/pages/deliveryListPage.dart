@@ -67,6 +67,10 @@ class _State extends State<deliveryPage> {
                         String status =
                             snapshot.data.documents[index]['status'].toString();
 
+                        String paymentType = snapshot
+                            .data.documents[index]['paymentType']
+                            .toString();
+
                         String tid = snapshot
                             .data.documents[index]["transactionId"]
                             .toString();
@@ -86,21 +90,26 @@ class _State extends State<deliveryPage> {
                             .data.documents[index]['totalAmount']
                             .toString());
 
-                        String collectType = snapshot.data.documents[index]["collectType"];
-                        Map timeArrival ={};
-                        if(collectType=="Delivery"){
-                          timeArrival = snapshot.data.documents[index]["timeArrival"];
+                        String collectType =
+                            snapshot.data.documents[index]["collectType"];
+                        Map timeArrival = {};
+                        if (collectType == "Delivery") {
+                          timeArrival =
+                              snapshot.data.documents[index]["timeArrival"];
                         }
 
-
                         Order order = new Order(
+                            status: status,
+                            paymentType: paymentType,
                             orderID: tid,
                             name: name,
                             address: address,
                             date: date,
                             customerId: customer.id,
                             items: items,
-                            totalAmount: totalAmount,collectType: collectType,timeArrival: timeArrival);
+                            totalAmount: totalAmount,
+                            collectType: collectType,
+                            timeArrival: timeArrival);
 
                         return Card(
                           child: ListTile(
@@ -115,7 +124,7 @@ class _State extends State<deliveryPage> {
                                         order: order, date: d, id: tid)),
                               );
                               if (result['Result'] == true) {
-                              //if (result == true) {
+                                //if (result == true) {
                                 db.setHistory(order, customer.id, tid);
                                 db.setDeliveryStatus(customer.id, tid);
                                 setState(() {});

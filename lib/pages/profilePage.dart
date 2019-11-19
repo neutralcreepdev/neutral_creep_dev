@@ -1,4 +1,5 @@
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:flutter/material.dart';
 
 import '../models/eWallet.dart';
@@ -11,26 +12,38 @@ import '../services/dbService.dart';
 class ProfilePage extends StatefulWidget {
   Customer customer;
   DBService db;
+  String bankName;
 
-  ProfilePage({this.customer, this.db});
+  ProfilePage({this.customer, this.db, this.bankName});
 
   _ProfilePageState createState() =>
-      _ProfilePageState(customer: customer, db: db);
+      _ProfilePageState(customer: customer, db: db, bankName: bankName);
 }
 
 class _ProfilePageState extends State<ProfilePage> {
   Customer customer;
   DBService db;
+  String bankName;
 
-  _ProfilePageState({this.customer, this.db});
+  _ProfilePageState({this.customer, this.db, this.bankName});
 
   final _formKey = GlobalKey<FormState>();
-  String dropdownValue = 'One';
-  String newValue = "";
+  String dropdownValue;
+  String newValue;
   bool visibilityTag = false;
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    dropdownValue = bankName;
+    newValue = bankName;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    print(dropdownValue);
+    print("nV$newValue");
     if (customer.eWallet.creditCards.length > 0)
       visibilityTag = true;
     else
@@ -60,20 +73,36 @@ class _ProfilePageState extends State<ProfilePage> {
                 backgroundImage: AssetImage('assets/images/testProfilePic.PNG'),
                 radius: 40.0,
               ),*/
-                child: Container(
-              decoration: new BoxDecoration(
-                // Circle shape
-                shape: BoxShape.circle,
-                // The border you want
-                border: new Border.all(
-                  width: 1.0,
-                  color: heidelbergRed,
+                child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  decoration: new BoxDecoration(
+                    // Circle shape
+                    shape: BoxShape.circle,
+                    // The border you want
+                    border: new Border.all(
+                      width: 1.0,
+                      color: heidelbergRed,
+                    ),
+                  ),
+                  child: CircleAvatar(
+                    backgroundImage:
+                        AssetImage('assets/images/testProfilePic.PNG'),
+                    radius: 40.0,
+                  ),
                 ),
-              ),
-              child: CircleAvatar(
-                backgroundImage: AssetImage('assets/images/testProfilePic.PNG'),
-                radius: 40.0,
-              ),
+                SizedBox(
+                  width: 20,
+                ),
+                Container(
+                    width: 100,
+                    height: 100,
+                    child: QrImage(
+                      data: customer.id,
+                      foregroundColor: heidelbergRed,
+                    )),
+              ],
             )),
             Divider(
               height: 60.0,
@@ -151,10 +180,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       DropdownButton<String>(
                         value: null,
-                        style: TextStyle(color: Colors.deepPurple),
+                        style: TextStyle(color: heidelbergRed),
                         underline: Container(
                           height: 2,
-                          color: Colors.deepPurpleAccent,
+                          color: heidelbergRed,
                         ),
                         onChanged: (newValue) {
                           setState(() {
@@ -165,10 +194,15 @@ class _ProfilePageState extends State<ProfilePage> {
                         items: //<String>['One', 'Two', 'Free', 'Four']
                             customer.eWallet.creditCards
                                 .map<DropdownMenuItem<String>>(
-                                    (Map<String,dynamic> value) {
+                                    (Map<String, dynamic> value) {
+                          String x = value["bankName"] +
+                              ": XXXX XXXX XXXX " +
+                              value["cardNum"].toString().substring(
+                                  value["cardNum"].toString().length - 4,
+                                  value["cardNum"].toString().length);
                           return DropdownMenuItem<String>(
-                            value: value["bankName"],
-                            child: Text(value["cardNum"]),
+                            value: x,
+                            child: Text("${value["bankName"]}: XXXX XXXX XXXX${value["cardNum"].toString().substring(value["cardNum"].toString().length-4,value["cardNum"].toString().length)}"),
                           );
                         }).toList(),
                       ),
@@ -277,14 +311,14 @@ class _ProfilePageState extends State<ProfilePage> {
                         );
                       });
 
-
-                  Map<String,dynamic> credit = {
-                      "fullName": _fullNameController.text,
-                      "cardNum": _cardNumController.text,
-                      "expiryMonth": _expMonthController.text,
-                      "expiryYear": _expYearController.text,
-                      "bankName": _bankNameController.text};
-                  print(credit);
+                  Map<String, dynamic> credit = {
+                    "fullName": _fullNameController.text,
+                    "cardNum": _cardNumController.text,
+                    "expiryMonth": _expMonthController.text,
+                    "expiryYear": _expYearController.text,
+                    "bankName": _bankNameController.text
+                  };
+                  //print(credit);
                   customer.eWallet.creditCards.add(credit);
                   //customer.eWallet.creditCards.clear();
 

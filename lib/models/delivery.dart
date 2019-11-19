@@ -26,7 +26,7 @@ class Delivery {
 }
 
 class Order {
-  String orderID, name, customerId;
+  String orderID, name, customerId, paymentType, status;
   Map address;
   DateTime date;
   List items;
@@ -43,7 +43,9 @@ class Order {
       this.items,
       this.totalAmount,
       this.collectType,
-      this.timeArrival});
+      this.timeArrival,
+      this.paymentType,
+      this.status});
 
   @override
   String toString() {

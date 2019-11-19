@@ -10,14 +10,13 @@ class PaymentMadePage extends StatelessWidget {
   final EWallet eWallet;
   final String paymentType;
   final String cardNo;
-bool show = false;
+  bool show = false;
 
-  PaymentMadePage({this.eWallet,this.paymentType,this.cardNo});
+  PaymentMadePage({this.eWallet, this.paymentType, this.cardNo});
 
   @override
   Widget build(BuildContext context) {
-    if(paymentType=="CreepDollars")
-      show = true;
+    if (paymentType == "CreepDollars") show = true;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: alablaster,
@@ -46,16 +45,19 @@ bool show = false;
                   TextStyle(fontWeight: prefix0.FontWeight.bold, fontSize: 28),
             ),
             SizedBox(height: 5),
-            show?Text(
-              "Credits Remaining: \$${eWallet.eCreadits.toStringAsFixed(2)}",
-              style:
-                  TextStyle(fontWeight: prefix0.FontWeight.bold, fontSize: 28),
-            ):Column(children:[Text("\nCredit Card No. ",style:
-            TextStyle(fontSize: 25)),Text(
-              "[XXXX XXXX XXXX XXXX ${cardNo.substring(12,cardNo.length)}]",
-              style:
-              TextStyle(fontSize: 25),
-            )]),
+            show
+                ? Text(
+                    "Credits Remaining: \$${eWallet.eCreadits.toStringAsFixed(2)}",
+                    style: TextStyle(
+                        fontWeight: prefix0.FontWeight.bold, fontSize: 28),
+                  )
+                : Column(children: [
+                    Text("\nCredit Card No. ", style: TextStyle(fontSize: 25)),
+                    Text(
+                      "[XXXX XXXX XXXX XXXX ${cardNo.substring(cardNo.length-4, cardNo.length)}]",
+                      style: TextStyle(fontSize: 25),
+                    )
+                  ]),
             SizedBox(height: 30),
             ButtonTheme(
               height: 60,

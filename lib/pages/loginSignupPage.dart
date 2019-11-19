@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:neutral_creep_dev/models/customer.dart';
@@ -288,7 +289,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                                         }
 
                                         if (confirmPasswordInput !=
-                                            _passKey.currentState.value) {
+                                            _passKey.currentState .value) {
                                           return "Confirm Password should match password";
                                         }
                                       },
@@ -336,29 +337,42 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                                           "id": userValue.uid,
                                           "lastLoggedIn": DateTime.now()
                                         });
-                                        Navigator.of(context).pushReplacement(MaterialPageRoute(
-                                            builder: (context) =>
-                                                SignUpPage(uid: userValue.uid,db: _db)));
+                                        Navigator.of(context).pushReplacement(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    SignUpPage(
+                                                        uid: userValue.uid,
+                                                        db: _db)));
                                       });
                                     } else {
-
-                                      Future<FirebaseUser> user = _auth
-                                          .handleEmailSignIn(_email, _password);
-                                      user.then((userValue) {
-                                        _db
-                                            .getCustomerData(userValue.uid)
-                                            .then((customer) {
-                                          Navigator.of(context).pushReplacement(
-                                              MaterialPageRoute(
-                                                  settings: RouteSettings(
-                                                      name: "home"),
-                                                  builder: (context) =>
-                                                      HomePage(
-                                                        customer: customer,
-                                                        db: _db,
-                                                      )));
-                                        });
-                                      });
+                                      Future<FirebaseUser> user;
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            user= _auth
+                                                .handleEmailSignIn(_email, _password);
+                                            user.then((userValue) {
+                                              _db
+                                                  .getCustomerData(userValue.uid)
+                                                  .then((customer) {
+                                                Navigator.of(context).pushReplacement(
+                                                    MaterialPageRoute(
+                                                        settings: RouteSettings(
+                                                            name: "home"),
+                                                        builder: (context) =>
+                                                            HomePage(
+                                                              customer: customer,
+                                                              db: _db,
+                                                            )));
+                                              });
+                                            });
+                                            return Dialog(
+                                                backgroundColor: Colors.transparent,
+                                                child:SpinKitRotatingCircle(
+                                                  color: Colors.white,
+                                                  size: 50.0,
+                                                ));
+                                          });
                                     }
                                   }
                                 },

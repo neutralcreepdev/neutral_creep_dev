@@ -19,15 +19,18 @@ class PaymentPage extends StatefulWidget {
   final Map deliveryTime;
 
   PaymentPage(
-      {this.customer, this.transaction, this.collectionMethod, this.eWallet, this.deliveryTime});
+      {this.customer,
+      this.transaction,
+      this.collectionMethod,
+      this.eWallet,
+      this.deliveryTime});
 
-  _PaymentPageState createState() =>
-      _PaymentPageState(
-          customer: customer,
-          transaction: transaction,
-          collectionMethod: collectionMethod,
-          eWallet: eWallet,
-          deliveryTime: deliveryTime);
+  _PaymentPageState createState() => _PaymentPageState(
+      customer: customer,
+      transaction: transaction,
+      collectionMethod: collectionMethod,
+      eWallet: eWallet,
+      deliveryTime: deliveryTime);
 }
 
 class _PaymentPageState extends State<PaymentPage> {
@@ -40,7 +43,11 @@ class _PaymentPageState extends State<PaymentPage> {
   String paymentType = "";
 
   _PaymentPageState(
-      {this.customer, this.transaction, this.collectionMethod, this.eWallet, this.deliveryTime});
+      {this.customer,
+      this.transaction,
+      this.collectionMethod,
+      this.eWallet,
+      this.deliveryTime});
 
   @override
   Widget build(BuildContext context) {
@@ -61,28 +68,16 @@ class _PaymentPageState extends State<PaymentPage> {
         elevation: 0.2,
       ),
       body: Container(
-        height: MediaQuery
-            .of(context)
-            .size
-            .height,
-        width: MediaQuery
-            .of(context)
-            .size
-            .width,
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
         color: whiteSmoke,
         padding: EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Container(
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .height / 3,
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
+              height: MediaQuery.of(context).size.height / 3,
+              width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
                   color: gainsboro,
                   borderRadius: BorderRadius.all(Radius.circular(16))),
@@ -100,46 +95,39 @@ class _PaymentPageState extends State<PaymentPage> {
                   ),
                   SizedBox(height: 30),
                   Text(
-                    "Total Cost: #${transaction.getCart()
-                        .getTotalCost()
-                        .toStringAsFixed(2)}",
+                    "Total Cost: #${transaction.getCart().getTotalCost().toStringAsFixed(2)}",
                     style:
-                    TextStyle(fontWeight: FontWeight.normal, fontSize: 15),
+                        TextStyle(fontWeight: FontWeight.normal, fontSize: 15),
                   ),
                   Text(
-                    "7% GST: #${(transaction.getCart().getTotalCost() * 0.07)
-                        .toStringAsFixed(2)}",
+                    "7% GST: #${(transaction.getCart().getTotalCost() * 0.07).toStringAsFixed(2)}",
                     style:
-                    TextStyle(fontWeight: FontWeight.normal, fontSize: 15),
+                        TextStyle(fontWeight: FontWeight.normal, fontSize: 15),
                   ),
                   Text(
-                    "Grand Total: #${(transaction.getCart().getTotalCost() *
-                        1.07).toStringAsFixed(2)}",
+                    "Grand Total: #${(transaction.getCart().getTotalCost() * 1.07).toStringAsFixed(2)}",
                     style:
-                    TextStyle(fontWeight: FontWeight.normal, fontSize: 15),
+                        TextStyle(fontWeight: FontWeight.normal, fontSize: 15),
                   ),
                   SizedBox(height: 30),
                   Text(
-                    "Delievery Method: ${collectionMethod == "1"
-                        ? "Self-Collect"
-                        : "Deliever to address"}",
+                    "Delievery Method: ${collectionMethod == "1" ? "Self-Collect" : "Deliever to address"}",
                     style:
-                    TextStyle(fontWeight: FontWeight.normal, fontSize: 15),
+                        TextStyle(fontWeight: FontWeight.normal, fontSize: 15),
                   ),
                   collectionMethod == "1"
                       ? Container()
                       : Text(
-                    "Address: blk 33 Some Stree Road\nUnit: 02-1234\nPostal Code: 112233",
-                    style: TextStyle(
-                        fontWeight: FontWeight.normal, fontSize: 15),
-                    textAlign: TextAlign.center,
-                  )
+                          "Address: blk 33 Some Stree Road\nUnit: 02-1234\nPostal Code: 112233",
+                          style: TextStyle(
+                              fontWeight: FontWeight.normal, fontSize: 15),
+                          textAlign: TextAlign.center,
+                        )
                 ],
               ),
             ),
             Text(
-              "Creep-Dollars Available: \$${eWallet.eCreadits.toStringAsFixed(
-                  2)}",
+              "Creep-Dollars Available: \$${eWallet.eCreadits.toStringAsFixed(2)}",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
             ),
             ButtonTheme(
@@ -158,10 +146,8 @@ class _PaymentPageState extends State<PaymentPage> {
                   ),
                   onPressed: () {
                     List<Map<String, Object>> items =
-                    new List<Map<String, Object>>();
-                    for (Grocery item in transaction
-                        .getCart()
-                        .groceries) {
+                        new List<Map<String, Object>>();
+                    for (Grocery item in transaction.getCart().groceries) {
                       items.add({
                         "id": item.id,
                         "cost": item.cost,
@@ -172,205 +158,200 @@ class _PaymentPageState extends State<PaymentPage> {
                     }
 
                     eWallet.eCreadits -=
-                    (customer.currentCart.getTotalCost() * 1.07);
+                        (customer.currentCart.getTotalCost() * 1.07);
                     DateTime dt = DateTime.now();
 
                     String toHash = transaction.id + (dt.toString());
-                    String transactionHash = hashCash.hash(toHash);
-                    paymentType = "CreepDollars";
-
-                    Firestore.instance
-                        .collection("users")
-                        .document(customer.id)
-                        .updateData({"eCredit": eWallet.eCreadits});
-
-                    Firestore.instance
-                      ..collection("Orders").document(transaction.id).setData({
-                        "dateOfTransaction": dt,
-                        "customerId": customer.id,
-                        "totalAmount": transaction.getCart().getTotalCost(),
-                        "type": "purchase",
-                        "items": items,
-                        "status": "Waiting",
-                        "paymentType": paymentType,
-                      });
-
-                    String collectType = "";
-
-                    //Self Collect
-                    if (collectionMethod == "1") {
-                      collectType = "Self-Collect";
+                    hashCash.hash(toHash).then((transactionHash) {
+                      paymentType = "CreepDollars";
                       Firestore.instance
-                        ..collection("users")
-                            .document(customer.id)
-                            .collection("Self-Collect")
+                          .collection("users")
+                          .document(customer.id)
+                          .updateData({"eCredit": eWallet.eCreadits});
+
+                      Firestore.instance
+                        ..collection("Orders")
                             .document(transaction.id)
                             .setData({
-                          "collectType":collectType,
                           "dateOfTransaction": dt,
-                          "transactionId": transaction.id,
+                          "customerId": customer.id,
                           "totalAmount": transaction.getCart().getTotalCost(),
                           "type": "purchase",
                           "items": items,
-                          "lockerNum": "",
-                          "transactionHash": transactionHash,
                           "status": "Waiting",
                           "paymentType": paymentType,
                         });
 
-                      // WIll move to another location when qr scanned on the locker. (Status collected)
-                      Firestore.instance
-                        ..collection("users")
-                            .document(customer.id)
-                            .collection("History")
-                            .document(transaction.id)
-                            .setData({
-                          "collectType": collectType,
-                          "dateOfTransaction": dt,
-                          "transactionId": transaction.id,
-                          "totalAmount": transaction.getCart().getTotalCost(),
-                          "type": "purchase",
-                          "items": items,
-                          "transactionHash": transactionHash,
-                          "status": "Waiting",
-                          "paymentType": paymentType,
-                        });
+                      String collectType = "";
 
-                      Firestore.instance
-                        ..collection("Packaging")
-                            .document(transaction.id)
-                            .setData({
-                          "collectType": collectType,
-                          "dateOfTransaction": dt,
-                          "transactionId": transaction.id,
-                          "totalAmount": transaction.getCart().getTotalCost(),
-                          "type": "purchase",
-                          "items": items,
-                          "customerId": customer.id,
-                          "name": customer.firstName + " " + customer.lastName,
-                          "address": customer.address,
-                          "paymentType": paymentType,
-                        });
-                    } else if (collectionMethod == "2") {
-                      collectType = "Delivery";
-                      Firestore.instance
-                        ..collection("users")
-                            .document(customer.id)
-                            .collection("Delivery")
-                            .document(transaction.id)
-                            .setData({
-                          "collectType":collectType,
-                          "dateOfTransaction": dt,
-                          "transactionId": transaction.id,
-                          "totalAmount": transaction.getCart().getTotalCost(),
-                          "type": "purchase",
-                          "items": items,
-                          "customerId": customer.id,
-                          "name": customer.firstName + " " + customer.lastName,
-                          "address": customer.address,
-                          "transactionHash": transactionHash,
-                          "status": "Waiting",
-                          "paymentType": paymentType,
-                          "timeArrival":deliveryTime,
-                        });
+                      //Self Collect
+                      if (collectionMethod == "1") {
+                        collectType = "Self-Collect";
+                        Firestore.instance
+                          ..collection("users")
+                              .document(customer.id)
+                              .collection("Self-Collect")
+                              .document(transaction.id)
+                              .setData({
+                            "collectType": collectType,
+                            "dateOfTransaction": dt,
+                            "transactionId": transaction.id,
+                            "totalAmount": transaction.getCart().getTotalCost(),
+                            "type": "purchase",
+                            "items": items,
+                            "lockerNum": "",
+                            "transactionHash": transactionHash,
+                            "status": "Waiting",
+                            "paymentType": paymentType,
+                          });
 
-                      //Print Transaction Delivery
-                      Firestore.instance
-                        ..collection("Packaging")
-                            .document(transaction.id)
-                            .setData({
-                          "collectType": collectType,
-                          "dateOfTransaction": dt,
-                          "transactionId": transaction.id,
-                          "totalAmount": transaction.getCart().getTotalCost(),
-                          "type": "purchase",
-                          "items": items,
-                          "customerId": customer.id,
-                          "name": customer.firstName + " " + customer.lastName,
-                          "address": customer.address,
-                          "paymentType": paymentType,
-                          "timeArrival":deliveryTime,
-                        });
-                    }
-                    customer.clearCart();
-                    Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              PaymentMadePage(
-                                eWallet: eWallet,
-                                paymentType: paymentType,
-                                cardNo: "",
-                              )),
-                      ModalRoute.withName("home"),
-                    );
+                        // WIll move to another location when qr scanned on the locker. (Status collected)
+                        Firestore.instance
+                          ..collection("users")
+                              .document(customer.id)
+                              .collection("History")
+                              .document(transaction.id)
+                              .setData({
+                            "collectType": collectType,
+                            "dateOfTransaction": dt,
+                            "transactionId": transaction.id,
+                            "totalAmount": transaction.getCart().getTotalCost(),
+                            "type": "purchase",
+                            "items": items,
+                            "transactionHash": transactionHash,
+                            "status": "Waiting",
+                            "paymentType": paymentType,
+                          });
+
+                        Firestore.instance
+                          ..collection("Packaging")
+                              .document(transaction.id)
+                              .setData({
+                            "collectType": collectType,
+                            "dateOfTransaction": dt,
+                            "transactionId": transaction.id,
+                            "totalAmount": transaction.getCart().getTotalCost(),
+                            "type": "purchase",
+                            "items": items,
+                            "customerId": customer.id,
+                            "name":
+                                customer.firstName + " " + customer.lastName,
+                            "address": customer.address,
+                            "paymentType": paymentType,
+                          });
+                      } else if (collectionMethod == "2") {
+                        collectType = "Delivery";
+                        Firestore.instance
+                          ..collection("users")
+                              .document(customer.id)
+                              .collection("Delivery")
+                              .document(transaction.id)
+                              .setData({
+                            "collectType": collectType,
+                            "dateOfTransaction": dt,
+                            "transactionId": transaction.id,
+                            "totalAmount": transaction.getCart().getTotalCost(),
+                            "type": "purchase",
+                            "items": items,
+                            "customerId": customer.id,
+                            "name":
+                                customer.firstName + " " + customer.lastName,
+                            "address": customer.address,
+                            "transactionHash": transactionHash,
+                            "status": "Waiting",
+                            "paymentType": paymentType,
+                            "timeArrival": deliveryTime,
+                          });
+
+                        //Print Transaction Delivery
+                        Firestore.instance
+                          ..collection("Packaging")
+                              .document(transaction.id)
+                              .setData({
+                            "collectType": collectType,
+                            "dateOfTransaction": dt,
+                            "transactionId": transaction.id,
+                            "totalAmount": transaction.getCart().getTotalCost(),
+                            "type": "purchase",
+                            "items": items,
+                            "customerId": customer.id,
+                            "name":
+                                customer.firstName + " " + customer.lastName,
+                            "address": customer.address,
+                            "paymentType": paymentType,
+                            "timeArrival": deliveryTime,
+                          });
+                      }
+                      customer.clearCart();
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                            builder: (context) => PaymentMadePage(
+                                  eWallet: eWallet,
+                                  paymentType: paymentType,
+                                  cardNo: "",
+                                )),
+                        ModalRoute.withName("home"),
+                      );
+                    });
                   }),
             ),
             eWallet.creditCards.length != 0
                 ? Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Container(
-                  height: MediaQuery
-                      .of(context)
-                      .size
-                      .height / 6,
-                  width: MediaQuery
-                      .of(context)
-                      .size
-                      .width -
-                      (eWallet.creditCards.length > 1 ? 100 : 50),
-                  decoration: BoxDecoration(
-                      color: gainsboro,
-                      borderRadius:
-                      BorderRadius.all(Radius.circular(16))),
-                  padding: EdgeInsets.only(left: 20),
-                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text(
-                        "${eWallet.creditCards[counter]["cardNum"]}",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20),
+                      Container(
+                        height: MediaQuery.of(context).size.height / 6,
+                        width: MediaQuery.of(context).size.width -
+                            (eWallet.creditCards.length > 1 ? 100 : 50),
+                        decoration: BoxDecoration(
+                            color: gainsboro,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(16))),
+                        padding: EdgeInsets.only(left: 20),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              "${eWallet.creditCards[counter]["cardNum"]}",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 20),
+                            ),
+                            SizedBox(height: 20),
+                            Row(
+                              children: <Widget>[
+                                Text(
+                                    "${eWallet.creditCards[counter]["fullName"]}",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15)),
+                                SizedBox(width: 30),
+                                Text(
+                                    "Exp: ${eWallet.creditCards[counter]["expiryMonth"]}/${eWallet.creditCards[counter]["expiryYear"]}",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15)),
+                              ],
+                            )
+                          ],
+                        ),
                       ),
-                      SizedBox(height: 20),
-                      Row(
-                        children: <Widget>[
-                          Text(
-                              "${eWallet.creditCards[counter]["fullName"]}",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15)),
-                          SizedBox(width: 30),
-                          Text(
-                              "Exp: ${eWallet
-                                  .creditCards[counter]["expiryMonth"]}/${eWallet
-                                  .creditCards[counter]["expiryYear"]}",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15)),
-                        ],
-                      )
+                      eWallet.creditCards.length > 1 &&
+                              counter < eWallet.creditCards.length
+                          ? IconButton(
+                              icon: Icon(Icons.arrow_forward_ios),
+                              onPressed: () {
+                                if (counter < eWallet.creditCards.length - 1) {
+                                  ++counter;
+                                } else
+                                  counter = 0;
+                                print(counter);
+                                setState(() {});
+                              },
+                            )
+                          : Container()
                     ],
-                  ),
-                ),
-                eWallet.creditCards.length > 1 &&
-                    counter < eWallet.creditCards.length
-                    ? IconButton(
-                  icon: Icon(Icons.arrow_forward_ios),
-                  onPressed: () {
-                    if (counter < eWallet.creditCards.length - 1) {
-                      ++counter;
-                    }
-                    else
-                      counter = 0;
-                    print(counter);
-                    setState(() {});
-                  },
-                )
-                    : Container()
-              ],
-            )
+                  )
                 : Container(),
             ButtonTheme(
               height: 60,
@@ -388,10 +369,8 @@ class _PaymentPageState extends State<PaymentPage> {
                   ),
                   onPressed: () {
                     List<Map<String, Object>> items =
-                    new List<Map<String, Object>>();
-                    for (Grocery item in transaction
-                        .getCart()
-                        .groceries) {
+                        new List<Map<String, Object>>();
+                    for (Grocery item in transaction.getCart().groceries) {
                       items.add({
                         "id": item.id,
                         "cost": item.cost,
@@ -401,138 +380,142 @@ class _PaymentPageState extends State<PaymentPage> {
                       });
                     }
 
-
                     DateTime dt = DateTime.now();
                     paymentType = "CreditCard";
 
                     String toHash = transaction.id + (dt.toString());
-                    String transactionHash = hashCash.hash(toHash);
-
-                    Firestore.instance
-                      ..collection("Orders").document(transaction.id).setData({
-                        "dateOfTransaction": dt,
-                        "customerId": customer.id,
-                        "totalAmount": transaction.getCart().getTotalCost(),
-                        "type": "purchase",
-                        "items": items,
-                        "status": "Waiting",
-                        "paymentType": paymentType,
-                        "creditCard": eWallet.creditCards[counter]
-                      });
-
-                    String collectType = "";
-
-                    //Self Collect
-                    if (collectionMethod == "1") {
-                      collectType = "Self-Collect";
+                    hashCash.hash(toHash).then((transactionHash) {
                       Firestore.instance
-                        ..collection("users")
-                            .document(customer.id)
-                            .collection("Self-Collect")
+                        ..collection("Orders")
                             .document(transaction.id)
                             .setData({
-                          "collectType": collectType,
                           "dateOfTransaction": dt,
-                          "transactionId": transaction.id,
+                          "customerId": customer.id,
                           "totalAmount": transaction.getCart().getTotalCost(),
                           "type": "purchase",
                           "items": items,
-                          "lockerNum": "",
-                          "transactionHash": transactionHash,
                           "status": "Waiting",
                           "paymentType": paymentType,
                           "creditCard": eWallet.creditCards[counter]
                         });
 
-                      // WIll move to another location when qr scanned on the locker. (Status collected)
-                      Firestore.instance
-                        ..collection("users")
-                            .document(customer.id)
-                            .collection("History")
-                            .document(transaction.id)
-                            .setData({
-                          "collectType": collectType,
-                          "dateOfTransaction": dt,
-                          "transactionId": transaction.id,
-                          "totalAmount": transaction.getCart().getTotalCost(),
-                          "type": "purchase",
-                          "items": items,
-                          "transactionHash": transactionHash,
-                          "status": "Waiting",
-                          "paymentType": paymentType,
-                          "creditCard": eWallet.creditCards[counter]
-                        });
+                      String collectType = "";
 
-                      Firestore.instance
-                        ..collection("Packaging")
-                            .document(transaction.id)
-                            .setData({
-                          "collectType": collectType,
-                          "dateOfTransaction": dt,
-                          "transactionId": transaction.id,
-                          "totalAmount": transaction.getCart().getTotalCost(),
-                          "type": "purchase",
-                          "items": items,
-                          "customerId": customer.id,
-                          "name": customer.firstName + " " + customer.lastName,
-                          "address": customer.address,
-                          "paymentType": paymentType,
-                          "creditCard": eWallet.creditCards[counter]
-                        });
-                    } else if (collectionMethod == "2") {
-                      collectType = "Delivery";
-                      Firestore.instance
-                        ..collection("users")
-                            .document(customer.id)
-                            .collection("Delivery")
-                            .document(transaction.id)
-                            .setData({
-                          "collectType": collectType,
-                          "dateOfTransaction": dt,
-                          "transactionId": transaction.id,
-                          "totalAmount": transaction.getCart().getTotalCost(),
-                          "type": "purchase",
-                          "items": items,
-                          "customerId": customer.id,
-                          "name": customer.firstName + " " + customer.lastName,
-                          "address": customer.address,
-                          "transactionHash": transactionHash,
-                          "status": "Waiting",
-                          "paymentType": paymentType,
-                          "creditCard": eWallet.creditCards[counter],
-                          "timeArrival":deliveryTime,
-                        });
+                      //Self Collect
+                      if (collectionMethod == "1") {
+                        collectType = "Self-Collect";
+                        Firestore.instance
+                          ..collection("users")
+                              .document(customer.id)
+                              .collection("Self-Collect")
+                              .document(transaction.id)
+                              .setData({
+                            "collectType": collectType,
+                            "dateOfTransaction": dt,
+                            "transactionId": transaction.id,
+                            "totalAmount": transaction.getCart().getTotalCost(),
+                            "type": "purchase",
+                            "items": items,
+                            "lockerNum": "",
+                            "transactionHash": transactionHash,
+                            "status": "Waiting",
+                            "paymentType": paymentType,
+                            "creditCard": eWallet.creditCards[counter]
+                          });
 
-                      //Print Transaction Delivery
-                      Firestore.instance
-                        ..collection("Packaging")
-                            .document(transaction.id)
-                            .setData({
-                          "collectType": collectType,
-                          "dateOfTransaction": dt,
-                          "transactionId": transaction.id,
-                          "totalAmount": transaction.getCart().getTotalCost(),
-                          "type": "purchase",
-                          "items": items,
-                          "customerId": customer.id,
-                          "name": customer.firstName + " " + customer.lastName,
-                          "address": customer.address,
-                          "paymentType": paymentType,
-                          "creditCard": eWallet.creditCards[counter],
-                          "timeArrival":deliveryTime,
-                        });
-                    }
-                    customer.clearCart();
-                    Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              PaymentMadePage(
-                                eWallet: eWallet,
-                                paymentType: paymentType,
-                                cardNo: eWallet.creditCards[counter]["cardNum"],
-                              )),
-                      ModalRoute.withName("home"),
-                    );
+                        // WIll move to another location when qr scanned on the locker. (Status collected)
+                        Firestore.instance
+                          ..collection("users")
+                              .document(customer.id)
+                              .collection("History")
+                              .document(transaction.id)
+                              .setData({
+                            "collectType": collectType,
+                            "dateOfTransaction": dt,
+                            "transactionId": transaction.id,
+                            "totalAmount": transaction.getCart().getTotalCost(),
+                            "type": "purchase",
+                            "items": items,
+                            "transactionHash": transactionHash,
+                            "status": "Waiting",
+                            "paymentType": paymentType,
+                            "creditCard": eWallet.creditCards[counter]
+                          });
+
+                        Firestore.instance
+                          ..collection("Packaging")
+                              .document(transaction.id)
+                              .setData({
+                            "collectType": collectType,
+                            "dateOfTransaction": dt,
+                            "transactionId": transaction.id,
+                            "totalAmount": transaction.getCart().getTotalCost(),
+                            "type": "purchase",
+                            "items": items,
+                            "customerId": customer.id,
+                            "name":
+                                customer.firstName + " " + customer.lastName,
+                            "address": customer.address,
+                            "paymentType": paymentType,
+                            "creditCard": eWallet.creditCards[counter]
+                          });
+                      } else if (collectionMethod == "2") {
+                        collectType = "Delivery";
+                        Firestore.instance
+                          ..collection("users")
+                              .document(customer.id)
+                              .collection("Delivery")
+                              .document(transaction.id)
+                              .setData({
+                            "collectType": collectType,
+                            "dateOfTransaction": dt,
+                            "transactionId": transaction.id,
+                            "totalAmount": transaction.getCart().getTotalCost(),
+                            "type": "purchase",
+                            "items": items,
+                            "customerId": customer.id,
+                            "name":
+                                customer.firstName + " " + customer.lastName,
+                            "address": customer.address,
+                            "transactionHash": transactionHash,
+                            "status": "Waiting",
+                            "paymentType": paymentType,
+                            "creditCard": eWallet.creditCards[counter],
+                            "timeArrival": deliveryTime,
+                          });
+
+                        //Print Transaction Delivery
+                        Firestore.instance
+                          ..collection("Packaging")
+                              .document(transaction.id)
+                              .setData({
+                            "collectType": collectType,
+                            "dateOfTransaction": dt,
+                            "transactionId": transaction.id,
+                            "totalAmount": transaction.getCart().getTotalCost(),
+                            "type": "purchase",
+                            "items": items,
+                            "customerId": customer.id,
+                            "name":
+                                customer.firstName + " " + customer.lastName,
+                            "address": customer.address,
+                            "paymentType": paymentType,
+                            "creditCard": eWallet.creditCards[counter],
+                            "timeArrival": deliveryTime,
+                          });
+                      }
+                      customer.clearCart();
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                            builder: (context) => PaymentMadePage(
+                                  eWallet: eWallet,
+                                  paymentType: paymentType,
+                                  cardNo: eWallet.creditCards[counter]
+                                      ["cardNum"],
+                                )),
+                        ModalRoute.withName("home"),
+                      );
+                    });
                   }),
             ),
             SizedBox(height: 30)

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class hashCash {
-  static String hash(String secret) {
+  static Future<String> hash(String secret)async {
     bool fake = true;
     var bytes1, bytes2, bytes3, hmacSha256, digest;
 
@@ -28,7 +28,7 @@ class hashCash {
         bytes2 = temp;
       }
     }
-    Fluttertoast.showToast(msg: "Hash done: ${digest.toString()}");
+    await Fluttertoast.showToast(msg: "Hash done: ${digest.toString()}");
     return digest.toString();
   }
 
