@@ -6,9 +6,11 @@ class Delivery {
   void clear() {
     orders.clear();
   }
+
   int getOrdersSize() {
     return orders.length;
   }
+
   Order getOrders(int index) {
     return orders[index];
   }
@@ -29,10 +31,19 @@ class Order {
   DateTime date;
   List items;
   double totalAmount;
+  String collectType;
+  Map timeArrival;
 
   Order(
-      {this.orderID, this.name, this.address, this.date, this.customerId, this.items, this.totalAmount
-      });
+      {this.orderID,
+      this.name,
+      this.address,
+      this.date,
+      this.customerId,
+      this.items,
+      this.totalAmount,
+      this.collectType,
+      this.timeArrival});
 
   @override
   String toString() {
@@ -41,6 +52,5 @@ class Order {
         "LOCATION: ${address['street']}\n"
         "UNIT: ${address['unit']}\n"
         "POSTAL CODE: ${address['postalCode']}\n";
-
   }
 }

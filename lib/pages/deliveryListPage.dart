@@ -86,6 +86,13 @@ class _State extends State<deliveryPage> {
                             .data.documents[index]['totalAmount']
                             .toString());
 
+                        String collectType = snapshot.data.documents[index]["collectType"];
+                        Map timeArrival ={};
+                        if(collectType=="Delivery"){
+                          timeArrival = snapshot.data.documents[index]["timeArrival"];
+                        }
+
+
                         Order order = new Order(
                             orderID: tid,
                             name: name,
@@ -93,7 +100,7 @@ class _State extends State<deliveryPage> {
                             date: date,
                             customerId: customer.id,
                             items: items,
-                            totalAmount: totalAmount);
+                            totalAmount: totalAmount,collectType: collectType,timeArrival: timeArrival);
 
                         return Card(
                           child: ListTile(

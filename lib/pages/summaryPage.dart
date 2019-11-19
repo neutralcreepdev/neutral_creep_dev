@@ -11,6 +11,7 @@ class SummaryPage extends StatefulWidget {
   final PurchaseTransaction transaction;
   final Customer customer;
   final DBService db;
+
   SummaryPage({this.transaction, this.customer, this.db});
 
   _SummaryPageState createState() =>
@@ -23,7 +24,10 @@ class _SummaryPageState extends State<SummaryPage> {
   final DBService db;
 
   _SummaryPageState({this.transaction, this.customer, this.db});
+
   var _dropDownMenuValue = "1";
+
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -191,16 +195,122 @@ class _SummaryPageState extends State<SummaryPage> {
                               fontWeight: FontWeight.bold,
                               color: Colors.white),
                         ),
-                        onPressed: () {
-                          db.getEWalletData(customer.id).then((eWallet) {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => PaymentPage(
-                                      transaction: transaction,
-                                      customer: customer,
-                                      collectionMethod: _dropDownMenuValue,
-                                      eWallet: eWallet,
-                                    )));
-                          });
+                        onPressed: () async {
+                          final _timeController = TextEditingController();
+                          final _dayController = TextEditingController();
+                          final _monthController = TextEditingController();
+                          final _yearController = TextEditingController();
+                          if (_dropDownMenuValue == "2") {
+                            await showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    content: Form(
+                                      key: _formKey,
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text("Enter Delivery Details"),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: TextFormField(
+                                              decoration: InputDecoration(
+                                                  hintText: "Time"),
+                                              controller: _timeController,
+                                            ),
+                                          ),
+                                          Padding(
+                                              padding: EdgeInsets.all(8.0),
+                                              child: Row(children: [
+                                                Expanded(
+                                                  child: TextField(
+                                                    textAlign: TextAlign.center,
+                                                    decoration: InputDecoration(
+                                                        hintText: "Day"),
+                                                    controller: _dayController,
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: 20,
+                                                ),
+                                                Expanded(
+                                                  child: TextField(
+                                                    textAlign: TextAlign.center,
+                                                    decoration: InputDecoration(
+                                                        hintText: "Month"),
+                                                    controller:
+                                                        _monthController,
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: 20,
+                                                ),
+                                                Expanded(
+                                                  child: TextField(
+                                                    textAlign: TextAlign.center,
+                                                    decoration: InputDecoration(
+                                                        hintText: "Year"),
+                                                    controller: _yearController,
+                                                  ),
+                                                )
+                                              ])),
+                                          Center(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: RaisedButton(
+                                                child: Text("Submit"),
+                                                onPressed: () {
+                                                  if (_formKey.currentState
+                                                      .validate()) {
+                                                    _formKey.currentState
+                                                        .save();
+                                                    Navigator.pop(context);
+                                                  }
+                                                },
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                });
+
+                            Map date = {
+                              "day": _dayController.text,
+                              "month": _monthController.text,
+                              "year": _yearController.text
+                            };
+                            Map deliveryTime = {
+                              "date": date,
+                              "time": _timeController.text
+                            };
+                            print(deliveryTime);
+                            db.getEWalletData(customer.id).then((eWallet) {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => PaymentPage(
+                                        transaction: transaction,
+                                        customer: customer,
+                                        collectionMethod: _dropDownMenuValue,
+                                        eWallet: eWallet,
+                                        deliveryTime: deliveryTime,
+                                      )));
+                            });
+                          }
+                          else
+                            db.getEWalletData(customer.id).then((eWallet) {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => PaymentPage(
+                                    transaction: transaction,
+                                    customer: customer,
+                                    collectionMethod: _dropDownMenuValue,
+                                    eWallet: eWallet,
+                                    deliveryTime: new Map(),
+                                  )));
+                            });
                         }),
                   ),
                   SizedBox(height: 30),

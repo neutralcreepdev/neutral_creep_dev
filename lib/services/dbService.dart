@@ -140,6 +140,7 @@ class DBService {
         "address": order.address,
         "status": "Delivered",
         "transactionHash": hashVal,
+        "timeArrival":order.timeArrival,
       });
   }
 
