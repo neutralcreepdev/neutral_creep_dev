@@ -10,19 +10,6 @@ class DBService {
   final Firestore _db = Firestore.instance;
 
   Future<int> getTransactionId(String uid) async {
-    /*var snap = await _db
-        .collection("users")
-        .document(uid)
-        .collection("Self-Collect")
-        .getDocuments();
-
-    var snap2 = await _db
-        .collection("users")
-        .document(uid)
-        .collection("Delivery")
-        .getDocuments();
-
-    int counter = snap.documents.length + snap2.documents.length;*/
     var snap = await _db.collection("Orders").getDocuments();
     int counter = snap.documents.length;
     return ++counter;
@@ -74,7 +61,7 @@ class DBService {
 
     getPointsId().then((pointId) {
       String finalID = pointId.toString().padLeft(8, "0");
-      hashCash.hash(finalID + (dt.toString())).then((pointHash) {
+      HashCash.hash(finalID + (dt.toString())).then((pointHash) {
         Firestore.instance
           ..collection("Points").document(finalID).setData({
             "type": "deduct",
@@ -104,10 +91,9 @@ class DBService {
 
   void writeNewCustomer(Customer customer) {
     Firestore.instance
-      ..collection("users").document(customer.id).updateData({
+      ..collection("users").document(customer.id).setData({
         "id": customer.id,
-        "firstName": customer.firstName,
-        "lastName": customer.lastName,
+        "name": customer.name,
         "contactNum": customer.contactNum,
         "address": customer.address,
         "dob": customer.dob,
@@ -135,7 +121,7 @@ class DBService {
       String finalID = topUpID.toString().padLeft(8, "0");
       DateTime dt = DateTime.now();
       String toHash = finalID + (dt.toString());
-      hashCash.hash(toHash).then((transactionHash) {
+      HashCash.hash(toHash).then((transactionHash) {
         Firestore.instance
           ..collection("TopUp").document(finalID).setData({
             "dateOfTopUp": dt,
@@ -232,7 +218,7 @@ class DBService {
         String finalID = "";
         getTopUpId().then((topUpID) {
           String toHash = finalID + (dt.toString());
-          hashCash.hash(toHash).then((transactionHash) async {
+          HashCash.hash(toHash).then((transactionHash) async {
             try {
               finalID = topUpID.toString().padLeft(8, "0");
               Firestore.instance
@@ -317,7 +303,7 @@ class DBService {
   void setHistory(Order order, String uid, String tid) {
     //Requires the hash here -> get transactionID + uid
     String toHash = tid + (order.date.toString());
-    hashCash.hash(toHash).then((hashVal) {
+    HashCash.hash(toHash).then((hashVal) {
       Firestore.instance
         ..collection("users")
             .document(uid)
@@ -341,14 +327,12 @@ class DBService {
     });
   }
 
-  void updateProfile(Customer customer) {
+  Future<void> updateProfile(Customer customer) async {
     Firestore.instance
       ..collection("users").document(customer.id).updateData({
-        "firstName": customer.firstName,
-        "lastName": customer.lastName,
+        "name": customer.name,
         "contactNum": customer.contactNum,
         "address": customer.address,
-        "dob": customer.dob,
       });
   }
 

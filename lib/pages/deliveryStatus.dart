@@ -21,8 +21,8 @@ class DeliveryStatusPage extends StatefulWidget {
 
   DeliveryStatusPage({this.order, this.customer, this.status, this.db});
 
-  _DeliveryStatusPageState createState() =>
-      _DeliveryStatusPageState(customer:customer,order: order, status: status,db: db);
+  _DeliveryStatusPageState createState() => _DeliveryStatusPageState(
+      customer: customer, order: order, status: status, db: db);
 }
 
 class _DeliveryStatusPageState extends State<DeliveryStatusPage> {
@@ -35,7 +35,7 @@ class _DeliveryStatusPageState extends State<DeliveryStatusPage> {
 
   String result = "";
 
-  String hashedlockNo ="";
+  String hashedlockNo = "";
 
   Future getData() async {
     var firestore = Firestore.instance;
@@ -55,16 +55,15 @@ class _DeliveryStatusPageState extends State<DeliveryStatusPage> {
       setState(() {
         result = qrResult;
 
-
         if (result == hashedlockNo) {
           Fluttertoast.showToast(msg: "Thank you for using Neutral Creep!");
 
           /************Delete from Self-Collect, Add to History, Update user status to received*******************/
 
           String toHash = order.orderID + (order.date).toString();
-          hashCash.hash(toHash).then((transactionHash) {
-            if (order.paymentType ==
-                "CreditCard") { // WIll move to another location when qr scanned on the locker. (Status collected)
+          HashCash.hash(toHash).then((transactionHash) {
+            if (order.paymentType == "CreditCard") {
+              // WIll move to another location when qr scanned on the locker. (Status collected)
               Firestore.instance
                 ..collection("users")
                     .document(customer.id)
@@ -77,16 +76,14 @@ class _DeliveryStatusPageState extends State<DeliveryStatusPage> {
                   "totalAmount": order.totalAmount,
                   "type": "purchase",
                   "items": order.items,
-                  "transactionHash":transactionHash,
+                  "transactionHash": transactionHash,
                   "status": "Collected",
                   "paymentType": order.paymentType,
                   "creditCard": customer.eWallet.creditCards[order.counter],
-                  "lockerNum":lockerNo,
+                  "lockerNum": lockerNo,
                   "customerId": customer.id
                 });
-            }
-            else if(order.paymentType ==
-                "CreepDollars"){
+            } else if (order.paymentType == "CreepDollars") {
               Firestore.instance
                 ..collection("users")
                     .document(customer.id)
@@ -99,16 +96,15 @@ class _DeliveryStatusPageState extends State<DeliveryStatusPage> {
                   "totalAmount": order.totalAmount,
                   "type": "purchase",
                   "items": order.items,
-                  "transactionHash":transactionHash,
+                  "transactionHash": transactionHash,
                   "status": "Collected",
                   "paymentType": order.paymentType,
-                  "lockerNum":lockerNo,
+                  "lockerNum": lockerNo,
                   "customerId": customer.id
                 });
             }
             db.delete(customer.id, order.orderID, "Self-Collect");
             Navigator.pop(context);
-
           });
         } else {
           Fluttertoast.showToast(msg: "chou ji dan");
@@ -141,7 +137,6 @@ class _DeliveryStatusPageState extends State<DeliveryStatusPage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: alablaster,
@@ -169,9 +164,9 @@ class _DeliveryStatusPageState extends State<DeliveryStatusPage> {
               if (snapshot.data.documents[i]['collectType'] == "Self-Collect")
                 lockerNo = snapshot.data.documents[i]['lockerNum'];
 
-              var bytes1 = utf8.encode(lockerNo);         // data being hashed
+              var bytes1 = utf8.encode(lockerNo); // data being hashed
               hashedlockNo = sha256.convert(bytes1).toString();
-             // Fluttertoast.showToast(msg: hashedlockNo);
+              // Fluttertoast.showToast(msg: hashedlockNo);
             }
           }
           if (status == "Self-Collect") {
@@ -248,16 +243,7 @@ class _DeliveryStatusPageState extends State<DeliveryStatusPage> {
                               ),
                             ],
                           ),
-
                           SizedBox(height: 10),
-//                      index + 1 != transaction.getCart().getCartSize()
-//                          ? Container(
-//                              width: MediaQuery.of(context).size.width - 30,
-//                              height: 1,
-//                              color: Colors.grey,
-//                            )
-//                          : Container(),
-//                      SizedBox(height: 10)
                         ],
                       );
                     },
@@ -283,7 +269,7 @@ class _DeliveryStatusPageState extends State<DeliveryStatusPage> {
                               color: heidelbergRed,
                             ),
                             onPressed: () {
-                              _scanQR(hashedlockNo,lockerNo);
+                              _scanQR(hashedlockNo, lockerNo);
                             },
                           ),
                         ],

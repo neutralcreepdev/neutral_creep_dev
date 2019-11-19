@@ -28,14 +28,14 @@ class AuthService {
   }
 
   Future<FirebaseUser> handleSignUp(String email, String password) async {
-   try {
-     final FirebaseUser user = (await _auth.createUserWithEmailAndPassword(
-         email: email, password: password))
-         .user;
-     return user;
-   }catch(exception){
-     return null;
-   }
+    try {
+      final FirebaseUser user = (await _auth.createUserWithEmailAndPassword(
+              email: email, password: password))
+          .user;
+      return user;
+    } catch (exception) {
+      return null;
+    }
   }
 
   void initiateFacebookLogin() async {
@@ -56,7 +56,11 @@ class AuthService {
 
   @override
   Future<void> resetPassword(String email) async {
-    await _auth.sendPasswordResetEmail(email: email).then((val){Fluttertoast.showToast(msg: "Reset Instructions sent to $email");}).catchError((){Fluttertoast.showToast(msg: "Unable to recognize $email");});
+    await _auth.sendPasswordResetEmail(email: email).then((val) {
+      Fluttertoast.showToast(msg: "Reset Instructions sent to $email");
+    }).catchError(() {
+      Fluttertoast.showToast(msg: "Unable to recognize $email");
+    });
   }
 
   Future<FirebaseUser> signInWithFb() async {
@@ -66,7 +70,7 @@ class AuthService {
       final FacebookAccessToken accessToken = result.accessToken;
 
       AuthCredential credential =
-      FacebookAuthProvider.getCredential(accessToken: accessToken.token);
+          FacebookAuthProvider.getCredential(accessToken: accessToken.token);
 
       FirebaseUser fbUser = (await _auth.signInWithCredential(credential)).user;
       print(fbUser);
@@ -79,7 +83,8 @@ class AuthService {
     try {
       final facebookLogin = FacebookLogin();
       final result = await facebookLogin.logIn(['email']);
-      final AuthCredential credential = FacebookAuthProvider.getCredential(accessToken: result.accessToken.token);
+      final AuthCredential credential = FacebookAuthProvider.getCredential(
+          accessToken: result.accessToken.token);
       AuthResult authResult = await _auth.signInWithCredential(credential);
       print("hey${authResult.toString()}");
       if (authResult.additionalUserInfo.isNewUser) {
@@ -93,8 +98,7 @@ class AuthService {
     }
   }
 
-  Future<FirebaseUser> handleEmailSignIn(
-      String email, String password, BuildContext context) async {
+  Future<FirebaseUser> emailSignIn({String email, String password}) async {
     FirebaseUser user;
     try {
       user = (await _auth.signInWithEmailAndPassword(
@@ -103,14 +107,10 @@ class AuthService {
       ))
           .user;
       return user;
-    } catch (exception) {
-      print("null here");
-      user = null;
-      return user;
+    } catch (e) {
+      return null;
     }
   }
-
-
 
   Future<bool> checkAccount() async {
     try {

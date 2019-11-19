@@ -2,7 +2,7 @@ import 'dart:ui' as prefix0;
 
 import 'package:flutter/material.dart';
 
-import'../models/customer.dart';
+import '../models/customer.dart';
 import '../helpers/color_helper.dart';
 
 class PaymentMadePage extends StatelessWidget {
@@ -12,7 +12,8 @@ class PaymentMadePage extends StatelessWidget {
   final int pointsEarned;
   bool show = false;
 
-  PaymentMadePage({this.customer, this.paymentType, this.cardNo, this.pointsEarned});
+  PaymentMadePage(
+      {this.customer, this.paymentType, this.cardNo, this.pointsEarned});
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +44,8 @@ class PaymentMadePage extends StatelessWidget {
             children: <Widget>[
               Text(
                 "Purchase Confirmed",
-                style:
-                    TextStyle(fontWeight: prefix0.FontWeight.bold, fontSize: 28),
+                style: TextStyle(
+                    fontWeight: prefix0.FontWeight.bold, fontSize: 28),
               ),
               SizedBox(height: 5),
               show
@@ -54,16 +55,20 @@ class PaymentMadePage extends StatelessWidget {
                           fontWeight: prefix0.FontWeight.bold, fontSize: 28),
                     )
                   : Column(children: [
-                      Text("\nCredit Card No. ", style: TextStyle(fontSize: 25)),
+                      Text("\nCredit Card No. ",
+                          style: TextStyle(fontSize: 25)),
                       Text(
-                        "[XXXX XXXX XXXX XXXX ${cardNo.substring(cardNo.length-4, cardNo.length)}]",
+                        "[XXXX XXXX XXXX XXXX ${cardNo.substring(cardNo.length - 4, cardNo.length)}]",
                         style: TextStyle(fontSize: 25),
                       )
                     ]),
-              pointsEarned != 0 ? Text("Points Earned: $pointsEarned",
-                style: TextStyle(
-                    fontWeight: prefix0.FontWeight.bold, fontSize: 28),
-              ):Container(),
+              pointsEarned != 0
+                  ? Text(
+                      "Points Earned: $pointsEarned",
+                      style: TextStyle(
+                          fontWeight: prefix0.FontWeight.bold, fontSize: 28),
+                    )
+                  : Container(),
               SizedBox(height: 30),
               ButtonTheme(
                 height: 60,
@@ -80,7 +85,7 @@ class PaymentMadePage extends StatelessWidget {
                           color: Colors.white),
                     ),
                     onPressed: () {
-                        Navigator.pop(context);
+                      Navigator.pop(context);
                     }),
               ),
             ],

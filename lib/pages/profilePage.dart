@@ -119,8 +119,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                     child: CircleAvatar(
-                      backgroundImage:
-                          AssetImage('assets/images/C.jpg'),
+                      backgroundImage: AssetImage('assets/images/C.jpg'),
                       radius: 40.0,
                     ),
                   ),
@@ -163,14 +162,14 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
               SizedBox(height: 10.0),
-              Text(
-                '${customer.lastName} ${customer.firstName}',
-                style: TextStyle(
-                    color: heidelbergRed,
-                    letterSpacing: 2.0,
-                    fontSize: 28.0,
-                    fontWeight: FontWeight.bold),
-              ),
+              // Text(
+              //   '${customer.lastName} ${customer.firstName}',
+              //   style: TextStyle(
+              //       color: heidelbergRed,
+              //       letterSpacing: 2.0,
+              //       fontSize: 28.0,
+              //       fontWeight: FontWeight.bold),
+              // ),
               SizedBox(height: 25.0),
               Row(
                 children: <Widget>[
@@ -343,14 +342,13 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<bool> updateField(
       int val, BuildContext context, formKey, Customer customer) async {
-
     final unitController = TextEditingController();
     final streetController = TextEditingController();
     final postalCodeController = TextEditingController();
 
     final firstNameController = TextEditingController();
     final lastNameController = TextEditingController();
-    
+
     final contactNumController = TextEditingController();
 
     switch (val) {
@@ -438,10 +436,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                     color: heidelbergRed,
                                     onPressed: () {
                                       if (_formKey.currentState.validate()) {
-                                        customer.firstName =
-                                            firstNameController.text.toString();
-                                        customer.lastName =
-                                            lastNameController.text.toString();
+                                        // customer.n =
+                                        //     firstNameController.text.toString();
+                                        // customer.lastName =
+                                        //     lastNameController.text.toString();
                                         _formKey.currentState.save();
                                         Navigator.pop(context);
                                       }
@@ -463,7 +461,6 @@ class _ProfilePageState extends State<ProfilePage> {
           showDialog(
               context: context,
               builder: (BuildContext context) {
-
                 return AlertDialog(
                   content: Form(
                     key: formKey,
@@ -623,7 +620,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                 validator: (value) {
                                   if (value.isEmpty) {
                                     return 'Please input contact Number!';
-                                  } else if (value.length != 8 || int.parse(value)<80000000) {
+                                  } else if (value.length != 8 ||
+                                      int.parse(value) < 80000000) {
                                     return 'Please input correct Contact Number!';
                                   }
                                   return null;
@@ -743,7 +741,7 @@ class _MyDialogState extends State<MyDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       content: Container(
-        height: MediaQuery.of(context).size.height - 450,
+        height: MediaQuery.of(context).size.height - 200,
         width: MediaQuery.of(context).size.width,
         child: Form(
           key: widget.formKey,

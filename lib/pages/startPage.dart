@@ -21,10 +21,9 @@ class StartPage extends StatelessWidget {
               top: 80,
               child: Column(
                 children: <Widget>[
-                  Text(
-                    "Welcome to",
-                    style: TextStyle(fontSize: 50),
-                  ),
+                  Text("Welcome to",
+                      style:
+                          TextStyle(fontSize: 50, fontFamily: "Air Americana")),
                   Text("Neutral Creep",
                       style: TextStyle(
                           fontSize: 60,

@@ -30,20 +30,7 @@ class _EWalletPageState extends State<EWalletPage> {
   Widget build(BuildContext context) {
     bool typeBool = false;
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: alablaster,
-        centerTitle: true,
-        elevation: 0.2,
-        iconTheme: IconThemeData(color: heidelbergRed, size: 30),
-        title: Text(
-          "E-Wallet",
-          style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-              fontSize: 30,
-              letterSpacing: 3),
-        ),
-      ),
+      appBar: appBar(),
       body: Container(
         color: whiteSmoke,
         height: MediaQuery.of(context).size.height,
@@ -170,10 +157,9 @@ class _EWalletPageState extends State<EWalletPage> {
                                 String bankInfo = snapshot
                                     .data.documents[index]['bankInfo']
                                     .toString();
-                                if(bankInfo == "Top Up through redemption"){
+                                if (bankInfo == "Top Up through redemption") {
                                   bankName = "Top Up through redemption";
-                                }
-                                else {
+                                } else {
                                   var bankDetails = bankInfo.split("|");
                                   bankName = bankDetails[0];
                                   cardNum = bankDetails[1].substring(
@@ -203,10 +189,10 @@ class _EWalletPageState extends State<EWalletPage> {
                                     else if (type == "Transfer")
                                       typeBool = true;
 
-                                    if(bankName == "Top Up through redemption")
+                                    if (bankName == "Top Up through redemption")
                                       redemption = true;
                                     else
-                                      redemption=false;
+                                      redemption = false;
 
                                     showDialog(
                                         context: context,
@@ -328,30 +314,37 @@ class _EWalletPageState extends State<EWalletPage> {
                                                         SizedBox(
                                                           height: 15,
                                                         ),
-                                                        redemption?Text(
-                                                            "Updated Through: ",
-                                                            style: TextStyle(
-                                                                fontSize: 13,
-                                                                color:
-                                                                heidelbergRed,
-                                                                fontWeight:
-                                                                FontWeight
-                                                                    .bold)):Text(
-                                                            "Credit Card Used: ",
-                                                            style: TextStyle(
-                                                                fontSize: 13,
-                                                                color:
-                                                                    heidelbergRed,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold)),
-                                                        redemption?Text(
-                                                            "$bankName",
-                                                            style: TextStyle(
-                                                                fontSize: 20)):Text(
-                                                            "$bankName\nXXXX XXXX XXXX $cardNum",
-                                                            style: TextStyle(
-                                                                fontSize: 20)),
+                                                        redemption
+                                                            ? Text(
+                                                                "Updated Through: ",
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        13,
+                                                                    color:
+                                                                        heidelbergRed,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold))
+                                                            : Text(
+                                                                "Credit Card Used: ",
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        13,
+                                                                    color:
+                                                                        heidelbergRed,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold)),
+                                                        redemption
+                                                            ? Text("$bankName",
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        20))
+                                                            : Text(
+                                                                "$bankName\nXXXX XXXX XXXX $cardNum",
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        20)),
                                                         SizedBox(
                                                           height: 15,
                                                         ),
@@ -400,15 +393,34 @@ class _EWalletPageState extends State<EWalletPage> {
                       fontSize: 30,
                       letterSpacing: 3),
                 ),
-                onPressed: () {Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => RedeemPage(
-                      customer: customer,
-                      db: db,
-                    )));},
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => RedeemPage(
+                            customer: customer,
+                            db: db,
+                          )));
+                },
               ),
             )
           ],
         ),
+      ),
+    );
+  }
+
+  AppBar appBar() {
+    return AppBar(
+      backgroundColor: alablaster,
+      centerTitle: true,
+      elevation: 0.2,
+      iconTheme: IconThemeData(color: heidelbergRed, size: 30),
+      title: Text(
+        "E-Wallet",
+        style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: 30,
+            letterSpacing: 3),
       ),
     );
   }

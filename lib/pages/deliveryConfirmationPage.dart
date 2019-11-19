@@ -146,8 +146,13 @@ class DeliveryConfirmation extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Text("Total Cost:", style: TextStyle(fontSize: 20),),
-                        Text("\$${order.totalAmount.toStringAsFixed(2)}",style: TextStyle(fontSize: 20,color: heidelbergRed)),
+                        Text(
+                          "Total Cost:",
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        Text("\$${order.totalAmount.toStringAsFixed(2)}",
+                            style:
+                                TextStyle(fontSize: 20, color: heidelbergRed)),
                       ],
                     ),
                     SizedBox(height: 30),
@@ -158,8 +163,6 @@ class DeliveryConfirmation extends StatelessWidget {
                       onTap: () async {
                         String compare = await _scanQR();
                         String compare2 = compare.toString();
-                        print('$compare2');
-                        //String compare = "e7465a87ca50f1cc038489f1fc76a0a1deeaa1801a3792ef1ff00eb77c958c18";
                         result = _compareHash(hash, compare2);
 
                         if (result) {
@@ -173,10 +176,10 @@ class DeliveryConfirmation extends StatelessWidget {
                         width: MediaQuery.of(context).size.width,
                         height: 128.1,
                         decoration: BoxDecoration(
-                          color: heidelbergRed,
-
-                            border: Border(top: BorderSide(width: 2.0, color: Colors.black),)
-                        ),
+                            color: heidelbergRed,
+                            border: Border(
+                              top: BorderSide(width: 2.0, color: Colors.black),
+                            )),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
@@ -185,10 +188,12 @@ class DeliveryConfirmation extends StatelessWidget {
                               size: 50,
                               color: alablaster,
                             ),
-                            SizedBox(width: 20,),
+                            SizedBox(
+                              width: 20,
+                            ),
                             Text(
                               "Confirm Delivery",
-                              style: TextStyle(color: alablaster,fontSize: 30),
+                              style: TextStyle(color: alablaster, fontSize: 30),
                             )
                           ],
                         ),

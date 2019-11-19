@@ -47,7 +47,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
             builder: (context, snapshot) {
               if (!snapshot.hasData) return Text('loading');
               return Container(
-                height: 1000,
+                  height: 1000,
                   width: 500,
                   child: ListView.builder(
                       itemCount: snapshot.data.documents.length,
@@ -96,59 +96,51 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                                               height: 25,
                                               color: heidelbergRed,
                                             ),
-                                                Text("Payment Type:",
-                                                    style: TextStyle(
-                                                        fontSize: 13,
-                                                        color: heidelbergRed,
-                                                        fontWeight:
-                                                        FontWeight.bold)),
-
-                                                Text(
-                                                    "$paymentType",
-                                                    style: TextStyle(
-                                                        fontSize: 20)),
-                                                SizedBox(
-                                                  height: 15,
-                                                ),
-                                                Text("Items:",
+                                            Text("Payment Type:",
                                                 style: TextStyle(
                                                     fontSize: 13,
                                                     color: heidelbergRed,
                                                     fontWeight:
                                                         FontWeight.bold)),
-
-                                                Text(
-                                                    "$items",
-                                                    style: TextStyle(
-                                                        fontSize: 20)),
-                                                SizedBox(
-                                                  height: 15,
-                                                ),
-                                                Text("Date of Transaction: ",
-                                                    style: TextStyle(
-                                                        fontSize: 13,
-                                                        color: heidelbergRed,
-                                                        fontWeight:
+                                            Text("$paymentType",
+                                                style: TextStyle(fontSize: 20)),
+                                            SizedBox(
+                                              height: 15,
+                                            ),
+                                            Text("Items:",
+                                                style: TextStyle(
+                                                    fontSize: 13,
+                                                    color: heidelbergRed,
+                                                    fontWeight:
                                                         FontWeight.bold)),
-                                                Text(
-                                                  "${date.substring(0, date.length - 7)}",
-                                                  style:
-                                                  TextStyle(fontSize: 20),
-                                                ),
-                                                SizedBox(
-                                                  height: 15,
-                                                ),
-                                                Text("Total Amount: ",
-                                                    style: TextStyle(
-                                                        fontSize: 13,
-                                                        color: heidelbergRed,
-                                                        fontWeight:
+                                            Text("$items",
+                                                style: TextStyle(fontSize: 20)),
+                                            SizedBox(
+                                              height: 15,
+                                            ),
+                                            Text("Date of Transaction: ",
+                                                style: TextStyle(
+                                                    fontSize: 13,
+                                                    color: heidelbergRed,
+                                                    fontWeight:
                                                         FontWeight.bold)),
-                                                Text(
-                                                  "\$$totalAmount",
-                                                  style:
-                                                  TextStyle(fontSize: 20),
-                                                ),
+                                            Text(
+                                              "${date.substring(0, date.length - 7)}",
+                                              style: TextStyle(fontSize: 20),
+                                            ),
+                                            SizedBox(
+                                              height: 15,
+                                            ),
+                                            Text("Total Amount: ",
+                                                style: TextStyle(
+                                                    fontSize: 13,
+                                                    color: heidelbergRed,
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                            Text(
+                                              "\$$totalAmount",
+                                              style: TextStyle(fontSize: 20),
+                                            ),
                                           ]));
                                     });
                               }),
@@ -162,109 +154,3 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
     return history;
   }
 }
-
-
-//Row(
-//children: <Widget>[
-//SizedBox(width: 10),
-//Container(
-//width: MediaQuery.of(context)
-//.size
-//    .width /
-//8,
-//child: Text("No.",
-//style: TextStyle(
-//fontWeight: FontWeight.bold,
-//fontSize: 20))),
-//Container(
-//width: MediaQuery.of(context)
-//.size
-//    .width /
-//8 *
-//4 -
-//40,
-//child: Text("Item",
-//style: TextStyle(
-//fontWeight: FontWeight.bold,
-//fontSize: 20)),
-//),
-//SizedBox(width: 10),
-//Container(
-//width: MediaQuery.of(context)
-//.size
-//    .width /
-//8 +
-//10,
-//child: Text("Qty",
-//style: TextStyle(
-//fontWeight: FontWeight.bold,
-//fontSize: 20)),
-//),
-//Container(
-//child: Text("Cost",
-//style: TextStyle(
-//fontWeight: FontWeight.bold,
-//fontSize: 20)),
-//)
-//],
-//),
-//SizedBox(height: 5),
-//Container(
-//width: MediaQuery.of(context).size.width -
-//10,
-//height: 1,
-//color: Colors.black,
-//),
-//SizedBox(height: 10),
-//Expanded(
-//child: ListView.builder(
-//itemCount: items.length,
-//itemBuilder: (context, index) {
-//return Column(children: <Widget>[
-//Row(
-//children: <Widget>[
-//SizedBox(width: 10),
-//Container(
-//width: MediaQuery.of(
-//context)
-//    .size
-//    .width /
-//8,
-//child: Text(
-//"${index + 1}",
-//style: TextStyle(
-//fontSize: 18))),
-//Container(
-//width:
-//MediaQuery.of(context)
-//    .size
-//    .width /
-//8 *
-//4 -
-//30,
-//child: Text(
-//"${items[index]['name']}",
-//style: TextStyle(
-//fontSize: 18)),
-//),
-//SizedBox(width: 10),
-//Container(
-//width:
-//MediaQuery.of(context)
-//    .size
-//    .width /
-//8 +
-//10,
-//child: Text(
-//"${items[index]['quantity']}",
-//style: TextStyle(
-//fontSize: 18)),
-//),
-//Container(
-//child: Text(
-//"\$${items[index]['cost'].toStringAsFixed(2)}",
-//style: TextStyle(
-//fontSize: 18)),
-//)
-//],
-//),

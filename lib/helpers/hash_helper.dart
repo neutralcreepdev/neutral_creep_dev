@@ -3,8 +3,8 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-class hashCash {
-  static Future<String> hash(String secret)async {
+class HashCash {
+  static Future<String> hash(String secret) async {
     bool fake = true;
     var bytes1, bytes2, bytes3, hmacSha256, digest;
 

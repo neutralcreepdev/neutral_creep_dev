@@ -10,26 +10,29 @@ class Customer extends User {
 
   Customer(
       {String id,
-      String firstName,
-      String lastName,
+      String name,
       Map dob,
       String contactNum,
       Map address,
       this.eWallet,
       this.transactions,
       this.currentCart})
-      : super(id, firstName, lastName, dob, contactNum, address);
+      : super(id, name, dob, contactNum, address);
+
+  void updateCustomer(Customer customerData) {
+    this.id = customerData.id;
+    this.name = customerData.name;
+
+    this.dob = customerData.dob;
+    this.contactNum = customerData.contactNum;
+    this.address = customerData.address;
+    this.currentCart = Cart();
+  }
 
   factory Customer.fromMap(Map data) {
     return Customer(
         id: data["id"] ?? "",
-        firstName: data["firstName"] ?? "",
-        lastName: data["lastName"] ?? "",
-        dob: {
-          "day": data["dob"]["day"] ?? 0,
-          "month": data["dob"]["month"] ?? 0,
-          "year": data["dob"]["year"] ?? 0
-        },
+        name: data["name"] ?? "",
         contactNum: data["contactNum"] ?? "",
         address: {
           "street": data["address"]["street"] ?? "",
@@ -39,10 +42,11 @@ class Customer extends User {
         currentCart: new Cart());
   }
 
-  void createNewCustomer(){
+  void createNewCustomer() {
     this.currentCart = new Cart();
-    List<Map<String,dynamic>> creditCards = new List<Map<String,dynamic>>();
-    this.eWallet = new EWallet(eCreadits: 0, creditCards: creditCards, points: 0);
+    List<Map<String, dynamic>> creditCards = new List<Map<String, dynamic>>();
+    this.eWallet =
+        new EWallet(eCreadits: 0, creditCards: creditCards, points: 0);
   }
 
   void clearCart() {

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:neutral_creep_dev/models/customer.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-import 'package:neutral_creep_dev/helpers/color_helper.dart';
-import 'package:neutral_creep_dev/services/dbService.dart';
-
-import 'package:neutral_creep_dev/pages/homePage.dart';
+import '../services/dbService.dart';
+import '../models/models.dart';
+import 'homePage.dart';
+import 'components/sign_up/components.dart';
+import '../helpers/color_helper.dart';
+import 'components/sign_up/logic.dart';
 
 class SignUpPage extends StatefulWidget {
   final String uid;
@@ -32,24 +33,22 @@ class _SignUpPageState extends State<SignUpPage> {
   final _unitController = TextEditingController();
   final _postalCodeController = TextEditingController();
   DateTime dob;
-  bool initial=true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: alablaster,
-          centerTitle: true,
-          title: Text(
-            "Registration",
-            style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 30,
-                letterSpacing: 3),
-          ),
-          elevation: 0.2,
-        ),
+            backgroundColor: alablaster,
+            centerTitle: true,
+            title: Text(
+              "Registration",
+              style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 30,
+                  letterSpacing: 3),
+            ),
+            elevation: 0.2),
         body: SingleChildScrollView(
           child: Container(
             child: Column(
@@ -59,135 +58,31 @@ class _SignUpPageState extends State<SignUpPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
-                      TextFormField(
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.all(8.0),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5.0),
-                          ),
-                          hintText: "First Name",
-                          errorText: _validateField(_firstNameController.text) ? null: 'Please input your first name!',
-                        ),
-                        controller: _firstNameController,
-                      ),
+                      FirstNameTextField(controller: _firstNameController),
                       SizedBox(height: 10),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.all(8.0),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5.0),
-                          ),
-                          hintText: "Last Name",
-                          errorText: _validateField(_lastNameController.text) ? null: 'Please input your last name!',
-
-                        ),
-                        controller: _lastNameController,
-
-
-                      ),
+                      LastNameTextField(controller: _lastNameController),
                       SizedBox(height: 10),
-                      RaisedButton(
-                        shape: new RoundedRectangleBorder(
-                            borderRadius: new BorderRadius.circular(5.0),
-                            side: BorderSide(color: Colors.grey)),
-                          onPressed: () {
-
-                          int x = DateTime.now().year-80;
-                          int y = DateTime.now().year-18;
-                            DatePicker.showDatePicker(context,
-                                showTitleActions: true,
-                                minTime: DateTime(x, 12, 31),
-                                maxTime: DateTime(y, 01, 01),
-                                onConfirm: (date) {
-                              dob = date;
-                              setState(() {});
-                            },
-                                currentTime: DateTime.now(),
-                                locale: LocaleType.en);
-                          },
-                          child: (dob.toString()=="null")
-                              ? Text(
-                                  'Select Your Date of Birth',
-                                  style: TextStyle(
-                                      fontSize: 18),
-                                )
-                              : Text(
-                                  '${dob.toString().substring(0,10)}',
-                                  style: TextStyle(
-                                      fontSize: 18, color: Colors.blue),
-                                )
-                      ),
+                      DOBButton(onPressed: () => getDOB(), dob: dob),
                       SizedBox(height: 10),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.all(8.0),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5.0),
-                          ),
-                          hintText: "Contact Number",
-                          errorText: _validateCN(_contactNumController.text),
-                        ),
-                        keyboardType: TextInputType.number,
-                        controller: _contactNumController,
-
-                      ),
+                      ContactNumTextField(controller: _contactNumController),
                       SizedBox(height: 10),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.all(8.0),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5.0),
-                          ),
-                          hintText: "Street",
-                          errorText: _validateField(_streetController.text) ? null: 'Please input your street!',
-                        ),
-                        controller: _streetController,
-                      ),
+                      StreetTextField(controller: _streetController),
                       SizedBox(height: 10),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.all(8.0),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5.0),
-                          ),
-                          hintText: "Unit",
-                          errorText: _validateField(_unitController.text) ? null: 'Please input your unit!',
-                        ),
-                        controller: _unitController,
-                      ),
+                      UnitTextField(controller: _unitController),
                       SizedBox(height: 10),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.all(8.0),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5.0),
-                          ),
-                          hintText: "Postal Code",
-                          errorText: _validatePC(_postalCodeController.text),
-                        ),
-                        controller: _postalCodeController,
-                          keyboardType: TextInputType.number,
-                      ),
+                      PostalCodeTextField(controller: _postalCodeController),
                       SizedBox(height: 10),
                     ],
                   ),
                 ),
                 RaisedButton(
                   onPressed: () {
-                    if(validateFn()) {
-                      customer = _confirmDetails(uid, dob);
-                      db.writeNewCustomer(customer);
-                      Fluttertoast.showToast(msg: "You have signed up successfully!");
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          settings: RouteSettings(name: "home"),
-                          builder: (context) => HomePage(
-                            customer: customer,
-                            db: db,
-                          )));
-                    }else{
-                      Fluttertoast.showToast(msg: "Please fill in the missing fields!");
-                      setState(() {
-                      });
+                    if (validateFn()) {
+                      handleValidForm(context);
+                    } else {
+                      setState(() {});
+                      Fluttertoast.showToast(
+                          msg: "Please fill in the missing fields!");
                     }
                   },
                   child: Text('confirm'),
@@ -198,71 +93,50 @@ class _SignUpPageState extends State<SignUpPage> {
         ));
   }
 
-  Customer _confirmDetails(String uid, DateTime dateOfBirth) {
-    Customer customer;
-      String firstName = _firstNameController.text;
-      String lastName = _lastNameController.text;
-      String day = dateOfBirth.toString().substring(8,10);
-      String month = dateOfBirth.toString().substring(5,7);
-      String year = dateOfBirth.toString().substring(0,4);
-      String contactNum = _contactNumController.text;
-      String street = _streetController.text;
-      String unit = _unitController.text;
-      String postalCode = _postalCodeController.text;
-
-      Map address = {"street": street, "unit": unit, "postalCode": postalCode};
-      Map dob = {"day": day, "month": month, "year": year};
-
-      customer = new Customer(
-          id: uid,
-          firstName: firstName,
-          lastName: lastName,
-          dob: dob,
-          contactNum: contactNum,
-          address: address);
-      customer.createNewCustomer();
-
-    return customer;
+  void handleValidForm(BuildContext context) {
+    customer = confirmDetails();
+    db.writeNewCustomer(customer);
+    Fluttertoast.showToast(msg: "You have signed up successfully!");
+    Navigator.of(context).pushReplacement(MaterialPageRoute(
+        settings: RouteSettings(name: "home"),
+        builder: (context) => HomePage(customer: customer, db: db)));
   }
 
-  bool _validateField(String temp) {
-    if(!initial) {
-      if (temp.isEmpty) {
-        return false;
-      } else
-        return true;
-    } else {
-      return true;
-    }
+  Customer confirmDetails() {
+    return SignUpLogic.confirmDetails(
+      uid: uid,
+      firstName: _firstNameController.text,
+      lastName: _lastNameController.text,
+      dateOfBirth: dob,
+      street: _streetController.text,
+      unit: _unitController.text,
+      postalCode: _postalCodeController.text,
+      contactNum: _contactNumController.text,
+    );
   }
 
-  String _validateCN(String CN) {
-    if(!initial) {
-      if (CN.isEmpty)
-        return "Please input your contact number!";
-      if (CN.length != 8)
-        return "Please enter 8 digits for your contact number!";
-    }
-    return null;
+  void getDOB() {
+    int x = DateTime.now().year - 80;
+    int y = DateTime.now().year - 18;
+    DatePicker.showDatePicker(context,
+        showTitleActions: true,
+        minTime: DateTime(x, 12, 31),
+        maxTime: DateTime(y, 01, 01), onConfirm: (date) {
+      setState(() {
+        dob = date;
+      });
+    }, currentTime: DateTime.now(), locale: LocaleType.en);
   }
 
-  String _validatePC(String PC) {
-    if(!initial) {
-      if (PC.isEmpty)
-        return "Please input your postal code!";
-      if (PC.length != 6)
-        return "Please enter 6 digits for your postal code!";
-    }
-    return null;
-  }
-
-
-  bool validateFn(){
-    bool temp=true;
-    if(_firstNameController.text.isEmpty || _lastNameController.text.isEmpty || dob.toString()=="null" || _contactNumController.text.isEmpty
-    || _streetController.text.isEmpty || _unitController.text.isEmpty || _contactNumController.text.length!=8 || _postalCodeController.text.length!=6)
-      temp=false;
-    initial=false;
-    return temp;
+  bool validateFn() {
+    return SignUpLogic.validateForm(
+      firstName: _firstNameController.text,
+      lastName: _lastNameController.text,
+      dob: dob,
+      street: _streetController.text,
+      unit: _unitController.text,
+      postalCode: _postalCodeController.text,
+      contactNum: _contactNumController.text,
+    );
   }
 }

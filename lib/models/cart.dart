@@ -7,6 +7,14 @@ class Cart {
     groceries.clear();
   }
 
+  double getGrandTotal() {
+    return getTotalCost() + getGST();
+  }
+
+  double getGST() {
+    return getTotalCost() * 0.07;
+  }
+
   double getTotalCost() {
     double cost = 0;
     for (Grocery item in groceries) {
@@ -35,14 +43,13 @@ class Cart {
   bool repeatCheck(Grocery item) {
     if (groceries.length != 0)
       for (int i = 0; i < groceries.length; i++) {
-        if(item.id==groceries[i].id) {
+        if (item.id == groceries[i].id) {
           groceries[i].quantity++;
           return true;
         }
       }
     return false;
   }
-
 
   @override
   String toString() {
@@ -101,6 +108,10 @@ class Grocery {
     print("\n\n\n\n\n$dataArray\n\n\n\n\n\n");
 
     return true;
+  }
+
+  double getTotalCost() {
+    return cost * quantity;
   }
 
   void _setImageWithURL() {

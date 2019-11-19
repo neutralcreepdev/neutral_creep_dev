@@ -24,6 +24,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
   font_awesome_flutter: ^8.5.0
+  swipedetector: ^1.2.0
 
   firebase_core: ^0.4.0+9
   firebase_analytics: ^5.0.2
@@ -47,9 +48,7 @@ dependencies:
   flutter_datetime_picker: ^1.2.8
   intl: ^0.16.0
 
-
-
-
+  provider: ^3.1.0+1
 
 dev_dependencies:
   flutter_test:
@@ -95,3 +94,14 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+  fonts:
+    - family: Air Americana
+      fonts:
+        - asset: assets/fonts/AirAmericana.ttf
+    - family: Menlo
+      fonts:
+        - asset: assets/fonts/Menlo.ttc
+    - family: Space Mono
+      fonts:
+        - asset: assets/fonts/SpaceMono-Regular.ttf
