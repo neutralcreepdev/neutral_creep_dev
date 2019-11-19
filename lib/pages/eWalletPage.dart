@@ -74,6 +74,7 @@ class _EWalletPageState extends State<EWalletPage> {
                       child: Text(
                         "TOP-UP",
                         style: TextStyle(
+                          color: whiteSmoke,
                             fontWeight: FontWeight.bold, fontSize: 20),
                       ),
                       onPressed: () {
@@ -101,6 +102,7 @@ class _EWalletPageState extends State<EWalletPage> {
                       child: Text(
                         "TRANSFER",
                         style: TextStyle(
+                          color: whiteSmoke,
                             fontWeight: FontWeight.bold, fontSize: 20),
                       ),
                       onPressed: () {

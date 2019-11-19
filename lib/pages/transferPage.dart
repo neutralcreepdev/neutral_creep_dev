@@ -23,6 +23,7 @@ class _TransferPageState extends State<TransferPage> {
   Customer customer;
   DBService db;
   final _textController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   _TransferPageState({this.customer, this.db});
 
@@ -43,50 +44,79 @@ class _TransferPageState extends State<TransferPage> {
               letterSpacing: 3),
         ),
       ),
-      body: Center(
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text("Enter Amount to transfer:", style: TextStyle(color: heidelbergRed, fontSize: 25,fontWeight: FontWeight.bold),),
-              SizedBox(height: 75,),
-              Container(
-                height: 100,
-                decoration: BoxDecoration(
-                  border: new Border.all(
-                    width: 2.0,
-                    color: heidelbergRed,
+      body: Form(
+        key: _formKey,
+        child: Center(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  "Enter Amount to transfer:",
+                  style: TextStyle(
+                      color: heidelbergRed,
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  height: 75,
+                ),
+                Container(
+                  width: 250,
+                  child: TextFormField(
+                    validator: (val) {
+                      if (val.isEmpty)
+                        return "Please enter amount to transfer";
+                      else if (int.parse(val) <= 0)
+                        return "Please enter correct amount to transfer!";
+                      return null;
+                    },
+                    controller: _textController,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.attach_money,
+                        color: heidelbergRed,
+                      ),
+                      enabledBorder: const OutlineInputBorder(
+                        borderSide:
+                            const BorderSide(color: heidelbergRed, width: 0.0),
+                      ),
+                    ),
+                    textInputAction: TextInputAction.done,
+                    keyboardType: TextInputType.numberWithOptions(decimal: true),
+                    textAlign: TextAlign.center,
                   ),
                 ),
-                width: MediaQuery.of(context).size.width - 150,
-                child: TextField(
-                  controller: _textController,
-                  decoration: InputDecoration(border: InputBorder.none),
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  textAlign: TextAlign.center,
+                SizedBox(
+                  height: 75,
                 ),
-              ),SizedBox(height: 75,),
-              ButtonTheme(
-                minWidth: 250,
-                height: 85,
-                child: FlatButton(
-                  child: Text("Scan Friend's code", style: TextStyle(color: whiteSmoke, fontSize: 25),),
-                  onPressed: ()async {
-                    try {
-                      var friendID = await _scanQR();
-                      await db.transferCredit(friendID.toString(), customer,
-                          double.parse(_textController.text.toString()));
+                ButtonTheme(
+                  minWidth: 250,
+                  height: 85,
+                  child: FlatButton(
+                    child: Text(
+                      "Scan Friend's code",
+                      style: TextStyle(color: whiteSmoke, fontSize: 25),
+                    ),
+                    onPressed: () async {
+                      if (_formKey.currentState.validate()) {
+                        _formKey.currentState.save();
+                        try {
+                          var friendID = await _scanQR();
+                          await db.transferCredit(friendID.toString(), customer,
+                              double.parse(_textController.text.toString()));
 
-                      //Goes back to front page
-                        Navigator.pop(context);
-
-                    }catch(e){
-                      print("hzp");
-                    }
-                  },
-                  color: heidelbergRed,
-                ),
-              )
-            ]),
+                          //Goes back to front page
+                          Navigator.pop(context);
+                        } catch (e) {
+                          print("hzp");
+                        }
+                      }
+                    },
+                    color: heidelbergRed,
+                  ),
+                )
+              ]),
+        ),
       ),
     );
   }

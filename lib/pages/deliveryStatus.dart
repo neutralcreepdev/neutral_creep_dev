@@ -142,7 +142,6 @@ class _DeliveryStatusPageState extends State<DeliveryStatusPage> {
   @override
   Widget build(BuildContext context) {
 
-    print("${customer.id} &&&&&&& ${order.collectType}");
     return Scaffold(
       appBar: AppBar(
         backgroundColor: alablaster,

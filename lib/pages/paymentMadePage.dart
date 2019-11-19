@@ -32,52 +32,55 @@ class PaymentMadePage extends StatelessWidget {
         elevation: 0.2,
         leading: Container(),
       ),
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        color: whiteSmoke,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              "Purchase Confirmed",
-              style:
-                  TextStyle(fontWeight: prefix0.FontWeight.bold, fontSize: 28),
-            ),
-            SizedBox(height: 5),
-            show
-                ? Text(
-                    "Credits Remaining: \$${eWallet.eCreadits.toStringAsFixed(2)}",
-                    style: TextStyle(
-                        fontWeight: prefix0.FontWeight.bold, fontSize: 28),
-                  )
-                : Column(children: [
-                    Text("\nCredit Card No. ", style: TextStyle(fontSize: 25)),
-                    Text(
-                      "[XXXX XXXX XXXX XXXX ${cardNo.substring(cardNo.length-4, cardNo.length)}]",
-                      style: TextStyle(fontSize: 25),
+      body: WillPopScope(
+        onWillPop: () async => false,
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          color: whiteSmoke,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                "Purchase Confirmed",
+                style:
+                    TextStyle(fontWeight: prefix0.FontWeight.bold, fontSize: 28),
+              ),
+              SizedBox(height: 5),
+              show
+                  ? Text(
+                      "Credits Remaining: \$${eWallet.eCreadits.toStringAsFixed(2)}",
+                      style: TextStyle(
+                          fontWeight: prefix0.FontWeight.bold, fontSize: 28),
                     )
-                  ]),
-            SizedBox(height: 30),
-            ButtonTheme(
-              height: 60,
-              minWidth: 250,
-              child: RaisedButton(
-                  color: heidelbergRed,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(35)),
-                  child: Text(
-                    "HOME",
-                    style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
-                  onPressed: () {
-                      Navigator.pop(context);
-                  }),
-            ),
-          ],
+                  : Column(children: [
+                      Text("\nCredit Card No. ", style: TextStyle(fontSize: 25)),
+                      Text(
+                        "[XXXX XXXX XXXX XXXX ${cardNo.substring(cardNo.length-4, cardNo.length)}]",
+                        style: TextStyle(fontSize: 25),
+                      )
+                    ]),
+              SizedBox(height: 30),
+              ButtonTheme(
+                height: 60,
+                minWidth: 250,
+                child: RaisedButton(
+                    color: heidelbergRed,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(35)),
+                    child: Text(
+                      "HOME",
+                      style: TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
+                    ),
+                    onPressed: () {
+                        Navigator.pop(context);
+                    }),
+              ),
+            ],
+          ),
         ),
       ),
     );

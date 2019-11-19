@@ -18,7 +18,6 @@ import '../services/dbService.dart';
 import './profilePage.dart';
 import './eWalletPage.dart';
 import './startPage.dart';
-import './deliveryListPage.dart';
 import './transactionHistory.dart';
 import './deliveryCheck.dart';
 

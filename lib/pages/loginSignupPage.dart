@@ -201,11 +201,14 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
       ),
     );
   }
-  bool validatePWStructure(String password){
-    String patt = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~.,*%^]).{8,}$';
+
+  bool validatePWStructure(String password) {
+    String patt =
+        r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~.,*%^]).{8,}$';
     RegExp createRegExp = new RegExp(patt);
     return createRegExp.hasMatch(password);
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -251,6 +254,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                               //  Email text form ====================================
                               TextFormField(
                                 textAlign: TextAlign.center,
+                                keyboardType: TextInputType.emailAddress,
                                 decoration: InputDecoration(
                                   hintText: "EMAIL",
                                 ),
@@ -259,9 +263,12 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                                   if (emailInput.isEmpty) {
                                     return "This field is blank";
                                   }
-                                  bool checkEmail = RegExp(r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(emailInput);
-                                  if(checkEmail==false)
+                                  bool checkEmail = RegExp(
+                                          r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                      .hasMatch(emailInput);
+                                  if (checkEmail == false)
                                     return "Please enter a valid email";
+                                  return null;
                                 },
                               ),
 
@@ -280,11 +287,13 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                                   if (passwordInput.isEmpty) {
                                     return "This field is blank";
                                   }
-                                  if(passwordInput.length!=8){
+                                  if (passwordInput.length != 8) {
                                     return "Please enter a 8 alphanumeric password";
                                   }
-                                  if(validatePWStructure(passwordInput)==false)
+                                  if (validatePWStructure(passwordInput) ==
+                                      false)
                                     return "Password must include at least 1 lowercase\nand uppercase alphabet, digit and symbol";
+                                  return null;
                                 },
                               ),
 
@@ -302,12 +311,11 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                                           return "This field is blank";
                                         }
 
-
-
                                         if (confirmPasswordInput !=
                                             _passKey.currentState.value) {
                                           return "Confirm Password should match password";
                                         }
+                                        return null;
                                       },
                                     )
                                   : Container(),
@@ -367,7 +375,8 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                                                                   uid: userValue
                                                                       .uid,
                                                                   db: _db)));
-                                            }).catchError((onError, stacktrace) {
+                                            }).catchError(
+                                                (onError, stacktrace) {
                                               print(stacktrace);
                                               Navigator.pop(context);
                                               x = false;
@@ -398,7 +407,8 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                                                 Navigator.pushReplacement(
                                                     context,
                                                     MaterialPageRoute(
-                                                        settings: RouteSettings(name: "home"),
+                                                        settings: RouteSettings(
+                                                            name: "home"),
                                                         builder: (context) =>
                                                             HomePage(
                                                               customer:

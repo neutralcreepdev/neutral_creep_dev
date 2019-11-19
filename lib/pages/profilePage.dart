@@ -538,7 +538,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   return null;
                                 },
                                 textAlign: TextAlign.center,
-                                keyboardType: TextInputType.number,
+                                keyboardType: TextInputType.numberWithOptions(),
                                 decoration: InputDecoration(
                                   labelText: "Postal Code",
                                   prefixIcon: Icon(
@@ -619,13 +619,13 @@ class _ProfilePageState extends State<ProfilePage> {
                                 validator: (value) {
                                   if (value.isEmpty) {
                                     return 'Please input contact Number!';
-                                  } else if (value.length != 8) {
+                                  } else if (value.length != 8 || int.parse(value)<80000000) {
                                     return 'Please input correct Contact Number!';
                                   }
                                   return null;
                                 },
                                 textAlign: TextAlign.center,
-                                keyboardType: TextInputType.number,
+                                keyboardType: TextInputType.numberWithOptions(),
                                 decoration: InputDecoration(
                                   labelText: "Contact Number",
                                   prefixIcon: Icon(

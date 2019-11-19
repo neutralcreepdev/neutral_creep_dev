@@ -117,12 +117,20 @@ class _PaymentPageState extends State<PaymentPage> {
                   ),
                   collectionMethod == "1"
                       ? Container()
-                      : Text(
-                          "Address: blk 33 Some Stree Road\nUnit: 02-1234\nPostal Code: 112233",
-                          style: TextStyle(
-                              fontWeight: FontWeight.normal, fontSize: 15),
-                          textAlign: TextAlign.center,
-                        )
+                      : Column(children: [
+                          Text(
+                            "Address: blk 33 Some Stree Road\nUnit: 02-1234\nPostal Code: 112233",
+                            style: TextStyle(
+                                fontWeight: FontWeight.normal, fontSize: 15),
+                            textAlign: TextAlign.center,
+                          ),
+                          Text(
+                            "\nDelivery Time: ${deliveryTime['date']['day']}/${deliveryTime['date']['month']}/${deliveryTime['date']['year']} ${deliveryTime['time']}",
+                            style: TextStyle(
+                                fontWeight: FontWeight.normal, fontSize: 15),
+                            textAlign: TextAlign.center,
+                          )
+                        ]),
                 ],
               ),
             ),

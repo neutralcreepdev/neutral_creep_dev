@@ -20,19 +20,21 @@ class _TopUpPageState extends State<TopUpPage> {
   final DBService db;
   int _selectedIndex;
   String bankInfo = "";
+  final _formKey = GlobalKey<FormState>();
 
   _TopUpPageState({this.customer, this.db});
 
   final _textController = TextEditingController();
 
-@override
+  @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _selectedIndex=0;
-    bankInfo = customer.eWallet.creditCards[0]["bankName"] + "|" + customer.eWallet.creditCards[0]["cardNum"];
-
-}
+    _selectedIndex = 0;
+    bankInfo = customer.eWallet.creditCards[0]["bankName"] +
+        "|" +
+        customer.eWallet.creditCards[0]["cardNum"];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,126 +58,152 @@ class _TopUpPageState extends State<TopUpPage> {
       ),
       backgroundColor: whiteSmoke,
       body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              SizedBox(height: 70),
-              Text(
-                "CREEP-DOLLARS Balance:\n\$${currVal.toStringAsFixed(2)}",
-                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 75),
-              Text("Enter top-up amount"),
-              Container(
-                width: MediaQuery.of(context).size.width - 100,
-                child: TextField(
-                  controller: _textController,
-                  decoration: InputDecoration(),
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+        child: Form(
+          key: _formKey,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                SizedBox(height: 70),
+                Text(
+                  "CREEP-DOLLARS Balance:\n\$${currVal.toStringAsFixed(2)}",
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
-              ),
-              SizedBox(height: 50),
-              Text("credit Card:"),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  height: 300,
-                  width: MediaQuery.of(context).size.width - 60,
-                  decoration: BoxDecoration(
-                      color: alablaster,
-                      border: Border.all(width: 2),
-                      borderRadius: BorderRadius.all(Radius.circular(16))),
-                  child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: customer.eWallet.creditCards.length,
-                      itemBuilder: (context, index) {
-                        return index == 0
-                            ? Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.vertical(
-                                      top: Radius.circular(14),
-                                      bottom: Radius.circular(0)),
+                SizedBox(height: 75),
+                Text("Enter top-up amount"),
+                Container(
+                  width: MediaQuery.of(context).size.width - 100,
+                  child: TextFormField(
+                    controller: _textController,
+                    validator: (val) {
+                      if (val.isEmpty)
+                        return "Please enter amount to transfer";
+                      else if (int.parse(val) <= 0)
+                        return "Please enter correct amount to transfer!";
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.attach_money,
+                        color: heidelbergRed,
+                      ),
+                      enabledBorder: const OutlineInputBorder(
+                        borderSide:
+                            const BorderSide(color: heidelbergRed, width: 0.0),
+                      ),
+                    ),
+                    keyboardType: TextInputType.numberWithOptions(decimal: true),
+                    textAlign: TextAlign.center,
+                    textInputAction: TextInputAction.done,
+                  ),
+                ),
+                SizedBox(height: 50),
+                Text("credit Card:"),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    height: 300,
+                    width: MediaQuery.of(context).size.width - 60,
+                    decoration: BoxDecoration(
+                        color: alablaster,
+                        border: Border.all(width: 2),
+                        borderRadius: BorderRadius.all(Radius.circular(16))),
+                    child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: customer.eWallet.creditCards.length,
+                        itemBuilder: (context, index) {
+                          return index == 0
+                              ? Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(14),
+                                        bottom: Radius.circular(0)),
+                                    color: _selectedIndex != null &&
+                                            _selectedIndex == index
+                                        ? heidelbergRed
+                                        : alablaster,
+                                  ),
+                                  width: MediaQuery.of(context).size.width,
+                                  child: ListTile(
+                                    title: Text(
+                                      "${customer.eWallet.creditCards[index]["bankName"]} : XXXX XXXX XXXX ${customer.eWallet.creditCards[index]["cardNum"].toString().substring(customer.eWallet.creditCards[index]["cardNum"].toString().length - 4, customer.eWallet.creditCards[index]["cardNum"].toString().length)}\n${customer.eWallet.creditCards[index]["expiryMonth"]}-${customer.eWallet.creditCards[index]["expiryYear"]}",
+                                      style: _selectedIndex != null &&
+                                              _selectedIndex == index
+                                          ? TextStyle(color: alablaster)
+                                          : TextStyle(color: Colors.black),
+                                    ),
+                                    onTap: () {
+                                      _selectedIndex = index;
+                                      bankInfo = customer.eWallet
+                                              .creditCards[index]["bankName"] +
+                                          "|" +
+                                          customer.eWallet.creditCards[index]
+                                              ["cardNum"];
+                                      print("BankInfo: $bankInfo");
+                                      setState(() {});
+                                    },
+                                  ),
+                                )
+                              : Container(
+                                  width: MediaQuery.of(context).size.width,
                                   color: _selectedIndex != null &&
                                           _selectedIndex == index
                                       ? heidelbergRed
                                       : alablaster,
-                                ),
-                                width: MediaQuery.of(context).size.width,
-                                child: ListTile(
-                                  title: Text(
-                                    "${customer.eWallet.creditCards[index]["bankName"]} : XXXX XXXX XXXX ${customer.eWallet.creditCards[index]["cardNum"].toString().substring(customer.eWallet.creditCards[index]["cardNum"].toString().length - 4, customer.eWallet.creditCards[index]["cardNum"].toString().length)}\n${customer.eWallet.creditCards[index]["expiryMonth"]}-${customer.eWallet.creditCards[index]["expiryYear"]}",
-                                    style: _selectedIndex != null &&
-                                            _selectedIndex == index
-                                        ? TextStyle(color: alablaster)
-                                        : TextStyle(color: Colors.black),
+                                  child: ListTile(
+                                    title: Text(
+                                      "${customer.eWallet.creditCards[index]["bankName"]} : XXXX XXXX XXXX ${customer.eWallet.creditCards[index]["cardNum"].toString().substring(customer.eWallet.creditCards[index]["cardNum"].toString().length - 4, customer.eWallet.creditCards[index]["cardNum"].toString().length)}\n${customer.eWallet.creditCards[index]["expiryMonth"]}-${customer.eWallet.creditCards[index]["expiryYear"]}",
+                                      style: _selectedIndex != null &&
+                                              _selectedIndex == index
+                                          ? TextStyle(color: alablaster)
+                                          : TextStyle(color: Colors.black),
+                                    ),
+                                    onTap: () {
+                                      _selectedIndex = index;
+                                      bankInfo = customer.eWallet
+                                              .creditCards[index]["bankName"] +
+                                          "|" +
+                                          customer.eWallet.creditCards[index]
+                                              ["cardNum"];
+                                      print("BankInfo: $bankInfo");
+                                      setState(() {});
+                                    },
                                   ),
-                                  onTap: () {
-                                    _selectedIndex = index;
-                                    bankInfo = customer.eWallet.creditCards[index]
-                                            ["bankName"] +
-                                        "|" +
-                                        customer.eWallet.creditCards[index]
-                                            ["cardNum"];
-                                    print("BankInfo: $bankInfo");
-                                    setState(() {});
-                                  },
-                                ),
-                              )
-                            : Container(
-                                width: MediaQuery.of(context).size.width,
-                                color: _selectedIndex != null &&
-                                        _selectedIndex == index
-                                    ? heidelbergRed
-                                    : alablaster,
-                                child: ListTile(
-                                  title: Text(
-                                    "${customer.eWallet.creditCards[index]["bankName"]} : XXXX XXXX XXXX ${customer.eWallet.creditCards[index]["cardNum"].toString().substring(customer.eWallet.creditCards[index]["cardNum"].toString().length - 4, customer.eWallet.creditCards[index]["cardNum"].toString().length)}\n${customer.eWallet.creditCards[index]["expiryMonth"]}-${customer.eWallet.creditCards[index]["expiryYear"]}",
-                                    style: _selectedIndex != null &&
-                                            _selectedIndex == index
-                                        ? TextStyle(color: alablaster)
-                                        : TextStyle(color: Colors.black),
-                                  ),
-                                  onTap: () {
-                                    _selectedIndex = index;
-                                    bankInfo = customer.eWallet.creditCards[index]["bankName"] + "|" + customer.eWallet.creditCards[index]["cardNum"];
-                                    print("BankInfo: $bankInfo");
-                                    setState(() {});
-                                  },
-                                ),
-                              );
-                      }),
-                ),
-              ),
-              SizedBox(height: 30),
-              ButtonTheme(
-                height: 60,
-                minWidth: 300,
-                child: RaisedButton(
-                  color: heidelbergRed,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(35)),
-                  child: Text(
-                    "Confirm",
-                    style: TextStyle(
-                        fontSize: 40,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
+                                );
+                        }),
                   ),
-                  onPressed: () {
-                    print("BankInfo: $bankInfo");
-                    String addVal = _textController.text;
-                    customer.eWallet.add(addVal);
-                    print('eCredits: ${customer.eWallet.eCreadits}');
-                    //Fluttertoast.showToast(msg: bankInfo);
-                    db.updateECredit(customer, double.parse(addVal), bankInfo);
-                    Navigator.of(context).popUntil(ModalRoute.withName("home"));
-                  },
                 ),
-              )
-            ],
+                SizedBox(height: 30),
+                ButtonTheme(
+                  height: 60,
+                  minWidth: 300,
+                  child: RaisedButton(
+                    color: heidelbergRed,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(35)),
+                    child: Text(
+                      "Confirm",
+                      style: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
+                    ),
+                    onPressed: () {
+                      if (_formKey.currentState.validate()) {
+                        _formKey.currentState.save();
+                        String addVal = _textController.text;
+                        customer.eWallet.add(addVal);
+                        db.updateECredit(
+                            customer, double.parse(addVal), bankInfo);
+                        Navigator.of(context)
+                            .popUntil(ModalRoute.withName("home"));
+                      }
+                    },
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),
@@ -203,7 +231,8 @@ class CustomTileState extends State<CustomTile> {
 
   CustomTileState({this.bankInfo, this.customer, this.index});
 
-  int _selectedIndex=0;
+  int _selectedIndex = 0;
+
   @override
   void initState() {
     super.initState();
