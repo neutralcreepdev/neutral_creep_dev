@@ -1,5 +1,6 @@
 import 'dart:ffi';
 
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -21,11 +22,13 @@ class LoginSignUpPage extends StatefulWidget {
 
 class _LoginSignUpPageState extends State<LoginSignUpPage> {
   final _formKey = GlobalKey<FormState>();
+  final _form2 = GlobalKey<FormState>();
   final _passKey = GlobalKey<FormFieldState>();
   final _auth = AuthService();
   final _db = DBService();
   var isSignUp = true;
   bool googleStuff = false;
+  bool facebookStuff = false;
   var isRememberMe = false;
   String _email, _password;
 
@@ -123,9 +126,120 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
               ],
             )),
           ),
-          Text(
-            "Forget Password?",
-            style: TextStyle(fontWeight: FontWeight.bold),
+          GestureDetector(
+            onTap: () async {
+              await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  final _textController = TextEditingController();
+                  final _textController2 = TextEditingController();
+                  return AlertDialog(
+                    title: Text("Reset Password"),
+                    content: Form(
+                      key: _form2,
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: 200,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text("Enter email to reset password"),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width - 100,
+                              child: TextFormField(
+                                controller: _textController,
+                                validator: (val) {
+                                  if (val.isEmpty)
+                                    return "Please enter email";
+                                  else if (!val.contains("@."))
+                                    return "Please enter valid email!";
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  prefixIcon: Icon(
+                                    Icons.email,
+                                    color: heidelbergRed,
+                                  ),
+                                  hintText: "Enter email",
+                                  enabledBorder: const OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                        color: heidelbergRed, width: 0.0),
+                                  ),
+                                ),
+                                keyboardType: TextInputType.emailAddress,
+                                textAlign: TextAlign.center,
+                                textInputAction: TextInputAction.done,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 30,
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width - 100,
+                              child: TextFormField(
+                                controller: _textController2,
+                                validator: (val) {
+                                  if (val.isEmpty)
+                                    return "Please enter confirmation email";
+                                  else if (!val.contains("@."))
+                                    return "Please enter valid email!";
+                                  else if (_textController.text.toString() !=
+                                      val) {
+                                    return "Please enter the same email as above";
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  prefixIcon: Icon(
+                                    Icons.email,
+                                    color: heidelbergRed,
+                                  ),
+                                  hintText: "Re-enter email",
+                                  enabledBorder: const OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                        color: heidelbergRed, width: 0.0),
+                                  ),
+                                ),
+                                keyboardType: TextInputType.emailAddress,
+                                textAlign: TextAlign.center,
+                                textInputAction: TextInputAction.done,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    actions: <Widget>[
+                      // usually buttons at the bottom of the dialog
+                      FlatButton(
+                        child: new Text("Confirm"),
+                        onPressed: () {
+                          if (_form2.currentState.validate()) {
+                            _form2.currentState.save();
+                            _auth
+                                .resetPassword(_textController.text.toString());
+                            Navigator.of(context).pop();
+                          }
+                        },
+                      ),
+                      FlatButton(
+                        child: new Text("Cancel"),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            child: Text(
+              "Forget Password?",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
           )
         ],
       ),
@@ -169,7 +283,60 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                     ),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(35)),
-                    onPressed: () {},
+                    onPressed: () async {
+                      bool x = true;
+                      await showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            _auth.FBcheckAccount().then((val) {
+                              facebookStuff = val;
+                              print(facebookStuff);
+                              Future<FirebaseUser> user = _auth.signInWithFb();
+                              user.then((userValue) {
+                                if (facebookStuff == false) {
+                                  Firestore.instance
+                                      .collection("users")
+                                      .document("${userValue.uid}")
+                                      .setData({
+                                    "id": userValue.uid,
+                                    "lastLoggedIn": DateTime.now()
+                                  });
+
+                                  Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                          builder: (context) => SignUpPage(
+                                              uid: userValue.uid, db: _db)));
+                                } else {
+                                  _db
+                                      .getCustomerData(userValue.uid)
+                                      .then((customer) {
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            settings:
+                                                RouteSettings(name: "home"),
+                                            builder: (context) => HomePage(
+                                                  customer: customer,
+                                                  db: _db,
+                                                )));
+                                  });
+                                }
+                              });
+                            }).catchError((onError, stacktrace) {
+                              print(stacktrace);
+                              Navigator.pop(context);
+                              x = false;
+                            });
+                            return Dialog(
+                                backgroundColor: Colors.transparent,
+                                child: x
+                                    ? SpinKitRotatingCircle(
+                                        color: Colors.white,
+                                        size: 50.0,
+                                      )
+                                    : Text("lame"));
+                          });
+                    },
                   ),
                 ),
                 ButtonTheme(
@@ -198,8 +365,8 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                             _auth.checkAccount().then((val) {
                               googleStuff = val;
                               print(googleStuff);
-                            Future<FirebaseUser> user =
-                                _auth.signInWithGoogle();
+                              Future<FirebaseUser> user =
+                                  _auth.signInWithGoogle();
                               user.then((userValue) {
                                 if (googleStuff == false) {
                                   Firestore.instance
@@ -316,11 +483,11 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                                   if (emailInput.isEmpty) {
                                     return "This field is blank";
                                   }
-                                  bool checkEmail = RegExp(
+                                  /* bool checkEmail = RegExp(
                                           r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
                                       .hasMatch(emailInput);
                                   if (checkEmail == false)
-                                    return "Please enter a valid email";
+                                    return "Please enter a valid email";*/
                                   return null;
                                 },
                               ),
@@ -412,22 +579,30 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                                                 _auth.handleSignUp(
                                                     _email, _password);
                                             user.then((userValue) {
-                                              Firestore.instance
-                                                  .collection("users")
-                                                  .document("${userValue.uid}")
-                                                  .setData({
-                                                "id": userValue.uid,
-                                                "lastLoggedIn": DateTime.now()
-                                              });
+                                              if (userValue != null) {
+                                                Firestore.instance
+                                                    .collection("users")
+                                                    .document(
+                                                        "${userValue.uid}")
+                                                    .setData({
+                                                  "id": userValue.uid,
+                                                  "lastLoggedIn": DateTime.now()
+                                                });
 
-                                              Navigator.of(context)
-                                                  .pushReplacement(
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              SignUpPage(
-                                                                  uid: userValue
-                                                                      .uid,
-                                                                  db: _db)));
+                                                Navigator.of(context)
+                                                    .pushReplacement(
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                SignUpPage(
+                                                                    uid: userValue
+                                                                        .uid,
+                                                                    db: _db)));
+                                              } else {
+                                                Navigator.of(context).pop();
+                                                Fluttertoast.showToast(
+                                                    msg:
+                                                        "Email is already in use!", toastLength: Toast.LENGTH_LONG);
+                                              }
                                             }).catchError(
                                                 (onError, stacktrace) {
                                               print(stacktrace);
