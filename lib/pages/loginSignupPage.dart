@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:neutral_creep_dev/models/customer.dart';
+import 'package:neutral_creep_dev/pages/signUpPage.dart';
 
 import '../helpers/color_helper.dart';
 
@@ -335,18 +336,9 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                                           "id": userValue.uid,
                                           "lastLoggedIn": DateTime.now()
                                         });
-
-                                        Customer customer = new Customer();
-
-                                        Navigator.of(context).pushReplacement(
-                                            MaterialPageRoute(
-                                                settings:
-                                                    RouteSettings(name: "home"),
-                                                builder: (context) => HomePage(
-                                                      customer: customer,
-                                                      auth: _auth,
-                                                      db: _db,
-                                                    )));
+                                        Navigator.of(context).pushReplacement(MaterialPageRoute(
+                                            builder: (context) =>
+                                                SignUpPage(uid: userValue.uid,db: _db)));
                                       });
                                     } else {
                                       Future<FirebaseUser> user = _auth
@@ -362,7 +354,6 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                                                   builder: (context) =>
                                                       HomePage(
                                                         customer: customer,
-                                                        auth: _auth,
                                                         db: _db,
                                                       )));
                                         });

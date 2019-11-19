@@ -8,6 +8,7 @@ class Transaction {
   double totalAmount;
   DateTime dateOfTransaction;
   TransactionType type;
+  String status;
 
   @override
   String toString() {

@@ -18,15 +18,16 @@ import '../services/dbService.dart';
 import './profilePage.dart';
 import './eWalletPage.dart';
 import './startPage.dart';
+import './deliveryListPage.dart';
 
 class HomePage extends StatefulWidget {
   final Customer customer;
-  final AuthService auth;
   final DBService db;
 
-  HomePage({this.customer, this.auth, this.db});
+  HomePage({this.customer, this.db});
+
   _HomePageState createState() =>
-      _HomePageState(customer: customer, auth: auth, db: db);
+      _HomePageState(customer: customer, db: db);
 }
 
 class _HomePageState extends State<HomePage> {
@@ -79,6 +80,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    print('eCredits: ${customer.eWallet.eCreadits}');
+
     return Scaffold(
       key: _scaffoldKey,
 
@@ -173,6 +176,33 @@ class _HomePageState extends State<HomePage> {
                     MaterialPageRoute(builder: (context) => StartPage()));
               },
             ),
+            SizedBox(height: 30),
+            InkWell(
+              child: Text(
+                "Delivery Info",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+              ),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) =>
+                        deliveryPage(customer: customer, db: db)));
+              },
+            ),
+            SizedBox(height: 30),
+            InkWell(
+              child: Text(
+                "ProxyTopUp",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+              ),
+              onTap: () {
+                customer.eWallet.add500();
+                print('eCredits: ${customer.eWallet.eCreadits}');
+                db.updateECredit(customer);
+              },
+            ),
           ],
         ),
       ),
@@ -234,7 +264,8 @@ class _HomePageState extends State<HomePage> {
                                               CrossAxisAlignment.start,
                                           children: <Widget>[
                                             Text(
-                                                "${customer.currentCart.getGrocery(index).name}", style: TextStyle(
+                                                "${customer.currentCart.getGrocery(index).name}",
+                                                style: TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 15)),
                                             Text(

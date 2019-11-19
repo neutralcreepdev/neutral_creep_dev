@@ -39,6 +39,12 @@ class Customer extends User {
         currentCart: new Cart());
   }
 
+  void createNewCustomer(){
+    this.currentCart = new Cart();
+    List<CreditCard> creditCards = new List<CreditCard>();
+    this.eWallet = new EWallet(eCreadits: 0, creditCards: creditCards);
+  }
+
   void clearCart() {
     currentCart.clear();
   }

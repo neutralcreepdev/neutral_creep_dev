@@ -29,7 +29,12 @@ class EWallet {
   String toString() {
     return "eCredits=$eCreadits, creditCards=$creditCards";
   }
+
+  void add500(){
+    eCreadits+=500.00;
+  }
 }
+
 
 class CreditCard {
   String fullName, cardNum, bankName;

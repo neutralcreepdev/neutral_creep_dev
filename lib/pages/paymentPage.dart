@@ -130,33 +130,99 @@ class _PaymentPageState extends State<PaymentPage> {
                         color: Colors.white),
                   ),
                   onPressed: () {
+                    List<Map<String, Object>> items =
+                        new List<Map<String, Object>>();
+                    for (Grocery item in transaction.getCart().groceries) {
+                      items.add({"id": item.id, "quantity": item.quantity, "description":item.description, "name":item.name});
+                    }
+
                     eWallet.eCreadits -=
                         (customer.currentCart.getTotalCost() * 1.07);
                     Firestore.instance
                         .collection("users")
                         .document(customer.id)
                         .updateData({"eCredit": eWallet.eCreadits});
-                    customer.clearCart();
 
-                    List<Map<String, Object>> items =
-                        new List<Map<String, Object>>();
-                    for (Grocery item in transaction.getCart().groceries) {
-                      items.add({"id": item.id, "quanity": item.quantity});
-                    }
-
+                    String temp = "";
                     Firestore.instance
-                      ..collection("users")
-                          .document(customer.id)
-                          .collection("transactions")
+                      ..collection("Orders")
                           .document(transaction.id)
                           .setData({
                         "dateOfTransaction": DateTime.now(),
-                        "id": transaction.id,
+                        "customer": customer.id,
                         "totalAmount": transaction.getCart().getTotalCost(),
                         "type": "purchase",
-                        "items": items
+                        "items": items,
+
+                        "status": "Packaged",
                       });
 
+                    if (collectionMethod == "1") {
+                      Firestore.instance
+                        ..collection("users")
+                            .document(customer.id)
+                            .collection("Self-Collect")
+                            .document(transaction.id)
+                            .setData({
+                          "dateOfTransaction": DateTime.now(),
+                          "transactionId": transaction.id,
+                          "totalAmount": transaction.getCart().getTotalCost(),
+                          "type": "purchase",
+                          "items": items,
+
+                          "status": "Packaged",
+                        });
+
+                      Firestore.instance
+                        ..collection("users")
+                            .document(customer.id)
+                            .collection("History")
+                            .document(transaction.id)
+                            .setData({
+                          "dateOfTransaction": DateTime.now(),
+                          "transactionId": transaction.id,
+                          "totalAmount": transaction.getCart().getTotalCost(),
+                          "type": "purchase",
+                          "items": items,
+                          "collectionMethod": "Self-Collect",
+
+                          "status": "Packaged",
+                        });
+                    } else if (collectionMethod == "2") {
+                      Firestore.instance
+                        ..collection("users")
+                            .document(customer.id)
+                            .collection("Delivery")
+                            .document(transaction.id)
+                            .setData({
+                          "dateOfTransaction": DateTime.now(),
+                          "transactionId": transaction.id,
+                          "totalAmount": transaction.getCart().getTotalCost(),
+                          "type": "purchase",
+                          "items": items,
+                          "customerId": customer.id,
+                          "name": customer.firstName+" "+customer.lastName,
+                          "address": customer.address,
+
+                          "status": "Packaged",
+                        });
+
+                      //Print Transaction Delivery
+                      Firestore.instance
+                        ..collection("Delivery")
+                            .document(transaction.id)
+                            .setData({
+                          "dateOfTransaction": DateTime.now(),
+                          "transactionId": transaction.id,
+                          "totalAmount": transaction.getCart().getTotalCost(),
+                          "type": "purchase",
+                          "items": items,
+                          "customerId": customer.id,
+                          "name": customer.firstName+" "+customer.lastName,
+                          "address": customer.address,
+                        });
+                    }
+                    customer.clearCart();
                     Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(
                           builder: (context) => PaymentMadePage(
