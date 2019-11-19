@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:neutral_creep_dev/pages/summaryPage.dart';
@@ -50,8 +51,12 @@ class _HomePageState extends State<HomePage> {
         print("\n\n\n\n$result\n\n\n\n\n");
         Grocery temp = new Grocery();
         if (temp.setGroceryWithStringInput(result)) {
-          temp.quantity = 1;
-          customer.currentCart.addGrocery(temp);
+          if (customer.currentCart.repeatCheck(temp)) {
+            print("same items");
+          } else {
+            temp.quantity = 1;
+            customer.currentCart.addGrocery(temp);
+          }
         }
       });
     } on PlatformException catch (ex) {
@@ -89,371 +94,393 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        key: _scaffoldKey,
 
-      // AppBar =================================================
-      appBar: AppBar(
-        backgroundColor: alablaster,
-        centerTitle: true,
-        title: Text(
-          "Home",
-          style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-              fontSize: 30,
-              letterSpacing: 3),
-        ),
-        elevation: 0.2,
-        leading: IconButton(
-          icon: Icon(
-            Icons.menu,
-            color: heidelbergRed,
-            size: 40,
+        // AppBar =================================================
+        appBar: AppBar(
+          backgroundColor: alablaster,
+          centerTitle: true,
+          title: Text(
+            "Home",
+            style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 30,
+                letterSpacing: 3),
           ),
-          onPressed: () {
-            _scaffoldKey.currentState.openDrawer();
-          },
-        ),
-        actions: <Widget>[
-          IconButton(
+          elevation: 0.2,
+          leading: IconButton(
             icon: Icon(
-              FontAwesomeIcons.qrcode,
-              size: 30,
+              Icons.menu,
               color: heidelbergRed,
+              size: 40,
             ),
             onPressed: () {
-              // setState(() {
-              //   cartDb[customer.currentCart.getCartSize()].quantity = 1;
-              //   customer.currentCart
-              //       .addGrocery(cartDb[customer.currentCart.getCartSize()]);
-              // });
-
-              _scanQR();
+              _scaffoldKey.currentState.openDrawer();
             },
           ),
-          SizedBox(width: 20),
-        ],
-      ),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(
+                FontAwesomeIcons.qrcode,
+                size: 30,
+                color: heidelbergRed,
+              ),
+              onPressed: () {
+                // setState(() {
+                //   cartDb[customer.currentCart.getCartSize()].quantity = 1;
+                //   customer.currentCart
+                //       .addGrocery(cartDb[customer.currentCart.getCartSize()]);
+                // });
 
-      // Drawer =================================================
-      drawer: Drawer(
-        child: ListView(
-          children: <Widget>[
-            SizedBox(height: 30),
-            InkWell(
-              child: Text(
-                "E-Wallet",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => EWalletPage(
-                          customer: customer,
-                          db: db,
-                        )));
-                /*
-                Future<EWallet> eWalletData = db.getEWalletData(customer.id);
-                eWalletData.then((eWallet) {
-                  customer.eWallet = eWallet;
-                  Navigator.of(context).pop();
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => EWalletPage(customer: customer)));
-                });*/
+                _scanQR();
               },
             ),
-            SizedBox(height: 30),
-            InkWell(
-              child: Text(
-                "Profile",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                Navigator.of(context).pop();
-                db.getCard(customer).then((bankName) {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => ProfilePage(
-                            customer: customer,
-                            db: db,
-                            bankName: bankName,
-                          )));
-                });
-              },
-            ),
-            SizedBox(height: 30),
-            InkWell(
-              child: Text(
-                "Delivery Info",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) =>
-                        deliveryPage(customer: customer, db: db)));
-              },
-            ),
-            SizedBox(height: 30),
-            InkWell(
-              child: Text(
-                "Transaction history",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) =>
-                        TransactionHistoryPage(customer: customer, db: db)));
-              },
-            ),
-            SizedBox(height: 30),
-            InkWell(
-              child: Text(
-                "Order Status",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) =>
-                        DeliveryCheckPage(customer: customer, db: db)));
-              },
-            ),
-            SizedBox(height: 30),
-            InkWell(
-              child: Text(
-                "Logout",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                FirebaseAuth.instance.signOut();
-                Navigator.of(context).pop();
-                Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => StartPage()));
-              },
-            ),
-            SizedBox(height: 30),
-            /*InkWell(
-              child: Text(
-                "ProxyTopUp",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                Future<EWallet> eWalletData = db.getEWalletData(customer.id);
-                eWalletData.then((eWallet) {
-                  eWallet.add500();
-                  print('eCredits: ${eWallet.eCreadits}');
-                  customer.eWallet = eWallet;
-                  db.updateECredit(customer, 500);
-                });
-                //
-                //print('eCredits: ${customer.eWallet.eCreadits}');
-              },
-            ),*/
+            SizedBox(width: 20),
           ],
         ),
-      ),
 
-      // Body =================================================
-      body: Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          color: whiteSmoke,
-          child: customer.currentCart.getCartSize() > 0
-              ? Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Expanded(
-                      child: ListView.builder(
-                          itemCount: customer.currentCart.getCartSize(),
-                          itemBuilder: (context, index) {
-                            return Card(
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Row(
-                                    children: <Widget>[
-                                      //item image container
-                                      Container(
-                                        height: 100,
-                                        width: 100,
-                                        decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: Colors.black)),
-                                        child: Stack(
-                                          children: <Widget>[
-                                            Center(
-                                                child: Text(
-                                              "Image not found",
-                                              style: TextStyle(fontSize: 10),
-                                            )),
-                                            customer.currentCart
-                                                        .getGrocery(index)
-                                                        .image !=
-                                                    null
-                                                ? customer.currentCart
-                                                    .getGrocery(index)
-                                                    .image
-                                                : Container(),
-                                          ],
+        // Drawer =================================================
+        drawer: Drawer(
+          child: ListView(
+            children: <Widget>[
+              SizedBox(height: 30),
+              InkWell(
+                child: Text(
+                  "E-Wallet",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                ),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => EWalletPage(
+                            customer: customer,
+                            db: db,
+                          )));
+                  /*
+                  Future<EWallet> eWalletData = db.getEWalletData(customer.id);
+                  eWalletData.then((eWallet) {
+                    customer.eWallet = eWallet;
+                    Navigator.of(context).pop();
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => EWalletPage(customer: customer)));
+                  });*/
+                },
+              ),
+              SizedBox(height: 30),
+              InkWell(
+                child: Text(
+                  "Profile",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                ),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  db.getCard(customer).then((bankName) {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => ProfilePage(
+                              customer: customer,
+                              db: db,
+                              bankName: bankName,
+                            )));
+                  });
+                },
+              ),
+              /*SizedBox(height: 30),
+              InkWell(
+                child: Text(
+                  "Delivery Info",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                ),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) =>
+                          deliveryPage(customer: customer, db: db)));
+                },
+              ),*/
+              SizedBox(height: 30),
+              InkWell(
+                child: Text(
+                  "Transaction history",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                ),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) =>
+                          TransactionHistoryPage(customer: customer, db: db)));
+                },
+              ),
+              SizedBox(height: 30),
+              InkWell(
+                child: Text(
+                  "Order Status",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                ),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) =>
+                          DeliveryCheckPage(customer: customer, db: db)));
+                },
+              ),
+              SizedBox(height: 30),
+              InkWell(
+                child: Text(
+                  "Logout",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                ),
+                onTap: () {
+                  FirebaseAuth.instance.signOut();
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => StartPage()));
+                },
+              ),
+              SizedBox(height: 30),
+              /*InkWell(
+                child: Text(
+                  "ProxyTopUp",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                ),
+                onTap: () {
+                  Future<EWallet> eWalletData = db.getEWalletData(customer.id);
+                  eWalletData.then((eWallet) {
+                    eWallet.add500();
+                    print('eCredits: ${eWallet.eCreadits}');
+                    customer.eWallet = eWallet;
+                    db.updateECredit(customer, 500);
+                  });
+                  //
+                  //print('eCredits: ${customer.eWallet.eCreadits}');
+                },
+              ),*/
+            ],
+          ),
+        ),
+
+        // Body =================================================
+        body: Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            color: whiteSmoke,
+            child: customer.currentCart.getCartSize() > 0
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Expanded(
+                        child: ListView.builder(
+                            itemCount: customer.currentCart.getCartSize(),
+                            itemBuilder: (context, index) {
+                              return Card(
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    Row(
+                                      children: <Widget>[
+                                        //item image container
+                                        Container(
+                                          height: 100,
+                                          width: 100,
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: Colors.black)),
+                                          child: Stack(
+                                            children: <Widget>[
+                                              Center(
+                                                  child: Text(
+                                                "Image not found",
+                                                style: TextStyle(fontSize: 10),
+                                              )),
+                                              customer.currentCart
+                                                          .getGrocery(index)
+                                                          .image !=
+                                                      null
+                                                  ? customer.currentCart
+                                                      .getGrocery(index)
+                                                      .image
+                                                  : Container(),
+                                            ],
+                                          ),
                                         ),
-                                      ),
 
-                                      // itme description container
-                                      SizedBox(width: 10),
-                                      Container(
-                                        width:
-                                            MediaQuery.of(context).size.width -
-                                                210,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: <Widget>[
-                                            Text(
-                                                "${customer.currentCart.getGrocery(index).name}",
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 15)),
-                                            Text(
-                                              "${customer.currentCart.getGrocery(index).description}",
-                                              style: TextStyle(fontSize: 11),
-                                              maxLines: 2,
-                                            ),
-                                            SizedBox(height: 10),
-                                            Text(
-                                                "\$${customer.currentCart.getGrocery(index).cost.toStringAsFixed(2)}",
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 15))
-                                          ],
+                                        // itme description container
+                                        SizedBox(width: 10),
+                                        Container(
+                                          width:
+                                              MediaQuery.of(context).size.width -
+                                                  210,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              Text(
+                                                  "${customer.currentCart.getGrocery(index).name}",
+                                                  style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 15)),
+                                              Text(
+                                                "${customer.currentCart.getGrocery(index).description}",
+                                                style: TextStyle(fontSize: 11),
+                                                maxLines: 2,
+                                              ),
+                                              SizedBox(height: 10),
+                                              Text(
+                                                  "\$${customer.currentCart.getGrocery(index).cost.toStringAsFixed(2)}",
+                                                  style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 15))
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
+                                      ],
+                                    ),
 
-                                  // add qty container
-                                  Column(
-                                    children: <Widget>[
-                                      FlatButton(
-                                        child: Icon(Icons.arrow_drop_up),
-                                        onPressed: () {
-                                          setState(() {
-                                            customer.currentCart
-                                                .getGrocery(index)
-                                                .quantity += 1;
-                                          });
-                                        },
-                                      ),
-                                      Text(
-                                          "${customer.currentCart.getGrocery(index).quantity}"),
-                                      FlatButton(
-                                        child: (customer.currentCart
+                                    // add qty container
+                                    Column(
+                                      children: <Widget>[
+                                        FlatButton(
+                                          child: Icon(Icons.arrow_drop_up),
+                                          onPressed: () {
+                                            setState(() {
+                                              customer.currentCart
+                                                  .getGrocery(index)
+                                                  .quantity += 1;
+                                            });
+                                          },
+                                        ),
+                                        Text(
+                                            "${customer.currentCart.getGrocery(index).quantity}"),
+                                        FlatButton(
+                                          child: (customer.currentCart
+                                                      .getGrocery(index)
+                                                      .quantity >
+                                                  1)
+                                              ? Icon(Icons.arrow_drop_down)
+                                              : Icon(Icons.clear),
+                                          onPressed: () {
+                                            if (customer.currentCart
                                                     .getGrocery(index)
                                                     .quantity >
-                                                1)
-                                            ? Icon(Icons.arrow_drop_down)
-                                            : Icon(Icons.clear),
-                                        onPressed: () {
-                                          if (customer.currentCart
-                                                  .getGrocery(index)
-                                                  .quantity >
-                                              1) {
-                                            setState(() {
-                                              customer.currentCart
-                                                  .getGrocery(index)
-                                                  .quantity -= 1;
-                                            });
-                                          } else {
-                                            setState(() {
-                                              customer.currentCart
-                                                  .removeGrocery(index);
-                                            });
-                                          }
-                                        },
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            );
-                          }),
-                    ),
-                    Container(
-                      padding: EdgeInsets.all(10),
-                      child: Column(
-                        children: <Widget>[
-                          Text(
-                            "Total Cost: \$${customer.currentCart.getTotalCost().toStringAsFixed(2)}",
-                            style: TextStyle(
-                                fontWeight: FontWeight.normal, fontSize: 15),
-                          ),
-                          Text(
-                            "GST 7%: \$${(customer.currentCart.getTotalCost() * 0.07).toStringAsFixed(2)}",
-                            style: TextStyle(
-                                fontWeight: FontWeight.normal, fontSize: 15),
-                          ),
-                          Text(
-                            "Grand Total: \$${(customer.currentCart.getTotalCost() * 1.07).toStringAsFixed(2)}",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 20),
-                          ),
-                          SizedBox(height: 10),
-                          ButtonTheme(
-                            height: 60,
-                            minWidth: 250,
-                            child: RaisedButton(
-                              color: heidelbergRed,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(35)),
-                              child: Text(
-                                "SUMMARY",
-                                style: TextStyle(
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white),
-                              ),
-                              onPressed: () {
-                                PurchaseTransaction transaction =
-                                    new PurchaseTransaction(
-                                        cart: customer.currentCart);
+                                                1) {
+                                              setState(() {
+                                                customer.currentCart
+                                                    .getGrocery(index)
+                                                    .quantity -= 1;
+                                              });
+                                            } else {
+                                              setState(() {
+                                                customer.currentCart
+                                                    .removeGrocery(index);
+                                              });
+                                            }
+                                          },
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              );
+                            }),
+                      ),
+                      Container(
+                        padding: EdgeInsets.all(10),
+                        child: Column(
+                          children: <Widget>[
+                            Text(
+                              "Total Cost: \$${customer.currentCart.getTotalCost().toStringAsFixed(2)}",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.normal, fontSize: 15),
+                            ),
+                            Text(
+                              "GST 7%: \$${(customer.currentCart.getTotalCost() * 0.07).toStringAsFixed(2)}",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.normal, fontSize: 15),
+                            ),
+                            Text(
+                              "Grand Total: \$${(customer.currentCart.getTotalCost() * 1.07).toStringAsFixed(2)}",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 20),
+                            ),
+                            SizedBox(height: 10),
+                            ButtonTheme(
+                              height: 60,
+                              minWidth: 250,
+                              child: RaisedButton(
+                                color: heidelbergRed,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(35)),
+                                child: Text(
+                                  "SUMMARY",
+                                  style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
+                                ),
+                                onPressed: () {
+                                  PurchaseTransaction transaction =
+                                      new PurchaseTransaction(
+                                          cart: customer.currentCart);
 
-                                db
-                                    .getTransactionId(customer.id)
-                                    .then((transactionId) {
-                                  transaction.setId(
-                                      transactionId.toString().padLeft(8, "0"));
-                                  Navigator.of(context)
-                                      .push(MaterialPageRoute(
-                                          builder: (context) => SummaryPage(
+
+                                  if(customer.eWallet.eCreadits <= 0 || customer.eWallet.creditCards.length==0) {
+                                    Fluttertoast.showToast(
+                                        msg: "Please add a credit Card or top up CreepDollars");
+                                    db.getCard(customer).then((bankName) {
+                                      Navigator.of(context).push(MaterialPageRoute(
+                                          builder: (context) => ProfilePage(
+                                            customer: customer,
+                                            db: db,
+                                            bankName: bankName,
+                                          )));
+                                    });
+                                  }
+
+                                  else {
+                                    db
+                                        .getTransactionId(customer.id)
+                                        .then((transactionId) {
+                                      transaction.setId(
+                                          transactionId.toString().padLeft(
+                                              8, "0"));
+                                      Navigator.of(context)
+                                          .push(MaterialPageRoute(
+                                          builder: (context) =>
+                                              SummaryPage(
+
                                                 transaction: transaction,
                                                 customer: customer,
                                                 db: db,
                                               )))
-                                      .then((value) {
-                                    //print("$value");
-                                  });
-                                });
-                              },
+                                          .then((value) {
+                                        //print("$value");
+                                      });
+                                    });
+                                  }
+                                },
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 30)
-                  ],
-                )
-              : Center(
-                  child: Text("current nothing in cart"),
-                )),
+                      SizedBox(height: 30)
+                    ],
+                  )
+                : Center(
+                    child: Text("current nothing in cart"),
+                  )),
+      ),
     );
   }
 }

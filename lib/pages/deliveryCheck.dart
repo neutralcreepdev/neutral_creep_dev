@@ -14,6 +14,7 @@ import '../services/dbService.dart';
 import './profilePage.dart';
 import './startPage.dart';
 import './deliveryStatus.dart';
+import './deliveryConfirmationPage.dart';
 
 class DeliveryCheckPage extends StatefulWidget {
   final Customer customer;
@@ -84,12 +85,17 @@ class _DeliveryCheckPageState extends State<DeliveryCheckPage> {
   Text filterText(Delivery totalList, Delivery deliveryList,
       Delivery selfCollectList, int index) {
     Text text;
-    if (_dropDownValue == "1")
-      text = new Text(totalList.getOrders(index).toString());
-    else if (_dropDownValue == "2")
-      text = new Text(deliveryList.getOrders(index).toString());
-    else
-      text = new Text(selfCollectList.getOrders(index).toString());
+    if (_dropDownValue == "1") {
+      if (totalList.getOrders(index).collectType == "Delivery") {
+        text = Order.showDelivery(totalList.getOrders(index));
+      } else {
+        text = Order.showSelfCollect(totalList.getOrders(index));
+      }
+    } else if (_dropDownValue == "2") {
+      text = Order.showDelivery(totalList.getOrders(index));
+    } else {
+      text = Order.showSelfCollect(totalList.getOrders(index));
+    }
 
     return text;
   }
@@ -121,29 +127,36 @@ class _DeliveryCheckPageState extends State<DeliveryCheckPage> {
         width: MediaQuery.of(context).size.width,
         color: whiteSmoke,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            DropdownButton(
-              isExpanded: true,
-              value: _dropDownValue,
-              items: [
-                DropdownMenuItem(
-                  child: Text("All"),
-                  value: "1",
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
+              child: Container(
+                width: 200,
+                child: DropdownButton(
+                  isExpanded: true,
+                  value: _dropDownValue,
+                  items: [
+                    DropdownMenuItem(
+                      child: Text("All"),
+                      value: "1",
+                    ),
+                    DropdownMenuItem(
+                      child: Text("Deliveries"),
+                      value: "2",
+                    ),
+                    DropdownMenuItem(
+                      child: Text("Self-Collect"),
+                      value: "3",
+                    )
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      _dropDownValue = value;
+                    });
+                  },
                 ),
-                DropdownMenuItem(
-                  child: Text("Deliveries"),
-                  value: "2",
-                ),
-                DropdownMenuItem(
-                  child: Text("Self-Collect"),
-                  value: "3",
-                )
-              ],
-              onChanged: (value) {
-                setState(() {
-                  _dropDownValue = value;
-                });
-              },
+              ),
             ),
             FutureBuilder(
                 future: getDeliveries(),
@@ -156,6 +169,7 @@ class _DeliveryCheckPageState extends State<DeliveryCheckPage> {
                       Delivery _totalList = new Delivery();
 
                       if (!snapshot.hasData) return Text('Loading...');
+                      if (!snapshot2.hasData) return Text('Loading...');
                       int deliverySize = snapshot.data.documents.length;
                       int selfCollectSize = snapshot2.data.documents.length;
                       int totalSize = deliverySize + selfCollectSize;
@@ -179,6 +193,16 @@ class _DeliveryCheckPageState extends State<DeliveryCheckPage> {
                             .toString());
                         String collectTypeTemp =
                             snapshot.data.documents[i]['collectType'];
+                        String customerId =
+                            snapshot.data.documents[i]['customerId'];
+
+                        String paymentType =
+                            snapshot.data.documents[i]['paymentType'];
+
+                        Map timeArrival =
+                            snapshot.data.documents[i]['timeArrival'];
+
+                        int counter = snapshot.data.documents[i]['counter'];
                         _deliveryList.addOrders(new Order(
                             orderID: orderIDTemp,
                             name: nameTemp,
@@ -187,7 +211,11 @@ class _DeliveryCheckPageState extends State<DeliveryCheckPage> {
                             items: items,
                             status: statusTemp,
                             collectType: collectTypeTemp,
-                            totalAmount: totalAmountTemp));
+                            totalAmount: totalAmountTemp,
+                            counter: counter,
+                            customerId: customerId,
+                            paymentType: paymentType,
+                            timeArrival: timeArrival));
                         _totalList.addOrders(new Order(
                             orderID: orderIDTemp,
                             name: nameTemp,
@@ -196,7 +224,11 @@ class _DeliveryCheckPageState extends State<DeliveryCheckPage> {
                             items: items,
                             status: statusTemp,
                             collectType: collectTypeTemp,
-                            totalAmount: totalAmountTemp));
+                            totalAmount: totalAmountTemp,
+                            counter: counter,
+                            customerId: customerId,
+                            paymentType: paymentType,
+                            timeArrival: timeArrival));
                       }
 
                       for (int i = 0;
@@ -224,6 +256,13 @@ class _DeliveryCheckPageState extends State<DeliveryCheckPage> {
                             .toString());
                         String collectTypeTemp =
                             snapshot2.data.documents[i]['collectType'];
+                        String customerId =
+                            snapshot2.data.documents[i]['customerId'];
+
+                        String paymentType =
+                            snapshot2.data.documents[i]['paymentType'];
+
+                        int counter = snapshot2.data.documents[i]['counter'];
                         _totalList.addOrders(new Order(
                             orderID: orderIDTemp,
                             name: nameTemp,
@@ -232,7 +271,10 @@ class _DeliveryCheckPageState extends State<DeliveryCheckPage> {
                             items: items,
                             status: statusTemp,
                             collectType: collectTypeTemp,
-                            totalAmount: totalAmountTemp));
+                            totalAmount: totalAmountTemp,
+                            counter: counter,
+                            customerId: customerId,
+                            paymentType: paymentType));
                         _selfCollectList.addOrders(new Order(
                             orderID: orderIDTemp,
                             name: nameTemp,
@@ -241,7 +283,10 @@ class _DeliveryCheckPageState extends State<DeliveryCheckPage> {
                             items: items,
                             status: statusTemp,
                             collectType: collectTypeTemp,
-                            totalAmount: totalAmountTemp));
+                            totalAmount: totalAmountTemp,
+                            counter: counter,
+                            customerId: customerId,
+                            paymentType: paymentType));
                       }
                       return Container(
                           height: MediaQuery.of(context).size.height - 140,
@@ -266,40 +311,121 @@ class _DeliveryCheckPageState extends State<DeliveryCheckPage> {
                                                 _deliveryList,
                                                 _selfCollectList,
                                                 index),
-                                            onTap: () => _setCardColor(index),
-                                            onLongPress: () {
-
+                                            //onTap: () => _setCardColor(index),
+                                            onTap: () async {
                                               if (_dropDownValue == "1") {
-                                                print("${customer.id} and ${_totalList
-                                                    .getOrders(
-                                                    index).collectType}");
-                                                Navigator.of(context).push(
+                                                if (_totalList
+                                                        .getOrders(index)
+                                                        .collectType ==
+                                                    "Self-Collect") {
+                                                  Navigator.of(context).push(
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              DeliveryStatusPage(
+                                                                  db: db,
+                                                                  order: _totalList
+                                                                      .getOrders(
+                                                                          index),
+                                                                  customer:
+                                                                      customer)));
+                                                } else if (_totalList
+                                                        .getOrders(index)
+                                                        .collectType ==
+                                                    "Delivery") {
+                                                  var d = (snapshot.data
+                                                              .documents[index]
+                                                          ['dateOfTransaction'])
+                                                      .toDate();
 
+                                                  dynamic result =
+                                                      await Navigator.push(
+                                                    context,
                                                     MaterialPageRoute(
                                                         builder: (context) =>
-                                                            DeliveryStatusPage(
+                                                            DeliveryConfirmation(
                                                                 order: _totalList
                                                                     .getOrders(
                                                                         index),
-                                                                customer:
-                                                                    customer)));
+                                                                date: d,
+                                                                id: _totalList
+                                                                    .getOrders(
+                                                                        index)
+                                                                    .orderID)),
+                                                  );
+                                                  if (result['Result'] ==
+                                                      true) {
+                                                    //if (result == true) {
+                                                    db.setHistory(
+                                                        _totalList
+                                                            .getOrders(index),
+                                                        customer.id,
+                                                        _totalList
+                                                            .getOrders(index)
+                                                            .orderID);
+                                                    db.delete(
+                                                        customer.id,
+                                                        _totalList
+                                                            .getOrders(index)
+                                                            .orderID,
+                                                        "Delivery");
+                                                    setState(() {});
+                                                  }
+                                                }
                                               } else if (_dropDownValue ==
                                                   "2") {
-                                                Navigator.of(context).push(
+                                                var d = (snapshot.data
+                                                            .documents[index]
+                                                        ['dateOfTransaction'])
+                                                    .toDate();
+                                                dynamic result =
+                                                    await Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          DeliveryConfirmation(
+                                                              order: _deliveryList
+                                                                  .getOrders(
+                                                                      index),
+                                                              date: d,
+                                                              id: _deliveryList
+                                                                  .getOrders(
+                                                                      index)
+                                                                  .orderID)),
+                                                );
+                                                if (result['Result'] == true) {
+                                                  //if (result == true) {
+                                                  db.setHistory(
+                                                      _deliveryList
+                                                          .getOrders(index),
+                                                      customer.id,
+                                                      _deliveryList
+                                                          .getOrders(index)
+                                                          .orderID);
+                                                  db.delete(
+                                                      customer.id,
+                                                      _deliveryList
+                                                          .getOrders(index)
+                                                          .orderID,
+                                                      "Delivery");
+                                                  setState(() {});
+                                                }
+
+                                                /*Navigator.of(context).push(
                                                     MaterialPageRoute(
                                                         builder: (context) =>
-                                                            DeliveryStatusPage(
+                                                            DeliveryStatusPage(db: db,
                                                                 order: _deliveryList
                                                                     .getOrders(
                                                                         index),
                                                                 customer:
-                                                                    customer)));
+                                                                    customer)));*/
                                               } else if (_dropDownValue ==
                                                   "3") {
                                                 Navigator.of(context).push(
                                                     MaterialPageRoute(
                                                         builder: (context) =>
                                                             DeliveryStatusPage(
+                                                              db: db,
                                                               order:
                                                                   _selfCollectList
                                                                       .getOrders(
@@ -317,7 +443,7 @@ class _DeliveryCheckPageState extends State<DeliveryCheckPage> {
                                 child: Column(
                                   children: <Widget>[
                                     SizedBox(height: 10),
-                                    ButtonTheme(
+                                    /*ButtonTheme(
                                       height: 60,
                                       minWidth: 250,
                                       child: Column(
@@ -353,7 +479,7 @@ class _DeliveryCheckPageState extends State<DeliveryCheckPage> {
                                           ),
                                         ],
                                       ),
-                                    ),
+                                    ),*/
                                   ],
                                 ),
                               ),

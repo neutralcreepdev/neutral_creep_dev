@@ -71,16 +71,17 @@ class _TransferPageState extends State<TransferPage> {
                 child: FlatButton(
                   child: Text("Scan Friend's code", style: TextStyle(color: whiteSmoke, fontSize: 25),),
                   onPressed: ()async {
-                    var friendID = await _scanQR();
-                    db.transferCredit(friendID.toString(), customer,
-                        double.parse(_textController.text.toString()));
-                    Fluttertoast.showToast(
-                        msg: "Transfer to $friendID completed!");
+                    try {
+                      var friendID = await _scanQR();
+                      await db.transferCredit(friendID.toString(), customer,
+                          double.parse(_textController.text.toString()));
 
-                    //Goes back to front page
-                    Navigator.of(context).popUntil(
-                      ModalRoute.withName("home"),
-                    );
+                      //Goes back to front page
+                        Navigator.pop(context);
+
+                    }catch(e){
+                      print("hzp");
+                    }
                   },
                   color: heidelbergRed,
                 ),

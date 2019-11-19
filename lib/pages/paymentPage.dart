@@ -180,6 +180,7 @@ class _PaymentPageState extends State<PaymentPage> {
                           "items": items,
                           "status": "Waiting",
                           "paymentType": paymentType,
+                          "counter": counter,
                         });
 
                       String collectType = "";
@@ -203,24 +204,8 @@ class _PaymentPageState extends State<PaymentPage> {
                             "transactionHash": transactionHash,
                             "status": "Waiting",
                             "paymentType": paymentType,
-                          });
-
-                        // WIll move to another location when qr scanned on the locker. (Status collected)
-                        Firestore.instance
-                          ..collection("users")
-                              .document(customer.id)
-                              .collection("History")
-                              .document(transaction.id)
-                              .setData({
-                            "collectType": collectType,
-                            "dateOfTransaction": dt,
-                            "transactionId": transaction.id,
-                            "totalAmount": transaction.getCart().getTotalCost(),
-                            "type": "purchase",
-                            "items": items,
-                            "transactionHash": transactionHash,
-                            "status": "Waiting",
-                            "paymentType": paymentType,
+                            "counter": counter,
+                            "customerId": customer.id
                           });
 
                         Firestore.instance
@@ -238,6 +223,7 @@ class _PaymentPageState extends State<PaymentPage> {
                                 customer.firstName + " " + customer.lastName,
                             "address": customer.address,
                             "paymentType": paymentType,
+                            "counter": counter,
                           });
                       } else if (collectionMethod == "2") {
                         collectType = "Delivery";
@@ -261,6 +247,8 @@ class _PaymentPageState extends State<PaymentPage> {
                             "status": "Waiting",
                             "paymentType": paymentType,
                             "timeArrival": deliveryTime,
+                            "counter": counter,
+                            "actualTime": "",
                           });
 
                         //Print Transaction Delivery
@@ -280,6 +268,8 @@ class _PaymentPageState extends State<PaymentPage> {
                             "address": customer.address,
                             "paymentType": paymentType,
                             "timeArrival": deliveryTime,
+                            "counter": counter,
+                            "actualTime": "",
                           });
                       }
                       customer.clearCart();
@@ -396,7 +386,8 @@ class _PaymentPageState extends State<PaymentPage> {
                           "items": items,
                           "status": "Waiting",
                           "paymentType": paymentType,
-                          "creditCard": eWallet.creditCards[counter]
+                          "creditCard": eWallet.creditCards[counter],
+                          "counter": counter,
                         });
 
                       String collectType = "";
@@ -420,26 +411,8 @@ class _PaymentPageState extends State<PaymentPage> {
                             "transactionHash": transactionHash,
                             "status": "Waiting",
                             "paymentType": paymentType,
-                            "creditCard": eWallet.creditCards[counter]
-                          });
-
-                        // WIll move to another location when qr scanned on the locker. (Status collected)
-                        Firestore.instance
-                          ..collection("users")
-                              .document(customer.id)
-                              .collection("History")
-                              .document(transaction.id)
-                              .setData({
-                            "collectType": collectType,
-                            "dateOfTransaction": dt,
-                            "transactionId": transaction.id,
-                            "totalAmount": transaction.getCart().getTotalCost(),
-                            "type": "purchase",
-                            "items": items,
-                            "transactionHash": transactionHash,
-                            "status": "Waiting",
-                            "paymentType": paymentType,
-                            "creditCard": eWallet.creditCards[counter]
+                            "creditCard": eWallet.creditCards[counter],
+                            "counter": counter,
                           });
 
                         Firestore.instance
@@ -457,7 +430,8 @@ class _PaymentPageState extends State<PaymentPage> {
                                 customer.firstName + " " + customer.lastName,
                             "address": customer.address,
                             "paymentType": paymentType,
-                            "creditCard": eWallet.creditCards[counter]
+                            "creditCard": eWallet.creditCards[counter],
+                            "counter": counter,
                           });
                       } else if (collectionMethod == "2") {
                         collectType = "Delivery";
@@ -482,6 +456,8 @@ class _PaymentPageState extends State<PaymentPage> {
                             "paymentType": paymentType,
                             "creditCard": eWallet.creditCards[counter],
                             "timeArrival": deliveryTime,
+                            "counter": counter,
+                            "actualTime": "",
                           });
 
                         //Print Transaction Delivery
@@ -502,19 +478,20 @@ class _PaymentPageState extends State<PaymentPage> {
                             "paymentType": paymentType,
                             "creditCard": eWallet.creditCards[counter],
                             "timeArrival": deliveryTime,
+                            "counter": counter,
+                            "actualTime": "",
                           });
                       }
                       customer.clearCart();
                       Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
+                          MaterialPageRoute(
                             builder: (context) => PaymentMadePage(
-                                  eWallet: eWallet,
-                                  paymentType: paymentType,
-                                  cardNo: eWallet.creditCards[counter]
-                                      ["cardNum"],
-                                )),
-                        ModalRoute.withName("home"),
-                      );
+                              eWallet: eWallet,
+                              paymentType: paymentType,
+                              cardNo: eWallet.creditCards[counter]["cardNum"],
+                            ),
+                          ),
+                          ModalRoute.withName('home'));
                     });
                   }),
             ),

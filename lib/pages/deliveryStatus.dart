@@ -3,32 +3,39 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/services.dart';
-
+import 'package:neutral_creep_dev/services/dbService.dart';
+import 'package:crypto/crypto.dart';
+import 'dart:convert';
 import '../models/customer.dart';
 import '../models/delivery.dart';
 
 import '../helpers/color_helper.dart';
+import '../helpers/hash_helper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DeliveryStatusPage extends StatefulWidget {
   final Order order;
   final Customer customer;
   final String status;
+  final DBService db;
 
-  DeliveryStatusPage({this.order, this.customer, this.status});
+  DeliveryStatusPage({this.order, this.customer, this.status, this.db});
 
   _DeliveryStatusPageState createState() =>
-      _DeliveryStatusPageState(customer:customer,order: order, status: status);
+      _DeliveryStatusPageState(customer:customer,order: order, status: status,db: db);
 }
 
 class _DeliveryStatusPageState extends State<DeliveryStatusPage> {
   final Order order;
   final Customer customer;
   final String status;
+  final DBService db;
 
-  _DeliveryStatusPageState({this.order, this.customer, this.status});
+  _DeliveryStatusPageState({this.order, this.customer, this.status, this.db});
 
   String result = "";
+
+  String hashedlockNo ="";
 
   Future getData() async {
     var firestore = Firestore.instance;
@@ -41,16 +48,68 @@ class _DeliveryStatusPageState extends State<DeliveryStatusPage> {
     return qn;
   }
 
-  Future _scanQR(String lockerNo) async {
+  Future _scanQR(String hashedlockNo, String lockerNo) async {
     try {
       String qrResult = await BarcodeScanner.scan();
 
       setState(() {
         result = qrResult;
-        if (result == lockerNo) {
+
+
+        if (result == hashedlockNo) {
           Fluttertoast.showToast(msg: "Thank you for using Neutral Creep!");
 
           /************Delete from Self-Collect, Add to History, Update user status to received*******************/
+
+          String toHash = order.orderID + (order.date).toString();
+          hashCash.hash(toHash).then((transactionHash) {
+            if (order.paymentType ==
+                "CreditCard") { // WIll move to another location when qr scanned on the locker. (Status collected)
+              Firestore.instance
+                ..collection("users")
+                    .document(customer.id)
+                    .collection("History")
+                    .document(order.orderID)
+                    .setData({
+                  "collectType": order.collectType,
+                  "dateOfTransaction": order.date,
+                  "transactionId": order.orderID,
+                  "totalAmount": order.totalAmount,
+                  "type": "purchase",
+                  "items": order.items,
+                  "transactionHash":transactionHash,
+                  "status": "Collected",
+                  "paymentType": order.paymentType,
+                  "creditCard": customer.eWallet.creditCards[order.counter],
+                  "lockerNum":lockerNo,
+                  "customerId": customer.id
+                });
+            }
+            else if(order.paymentType ==
+                "CreepDollars"){
+              Firestore.instance
+                ..collection("users")
+                    .document(customer.id)
+                    .collection("History")
+                    .document(order.orderID)
+                    .setData({
+                  "collectType": order.collectType,
+                  "dateOfTransaction": order.date,
+                  "transactionId": order.orderID,
+                  "totalAmount": order.totalAmount,
+                  "type": "purchase",
+                  "items": order.items,
+                  "transactionHash":transactionHash,
+                  "status": "Collected",
+                  "paymentType": order.paymentType,
+                  "lockerNum":lockerNo,
+                  "customerId": customer.id
+                });
+            }
+            db.delete(customer.id, order.orderID, "Self-Collect");
+            Navigator.pop(context);
+
+          });
         } else {
           Fluttertoast.showToast(msg: "chou ji dan");
         }
@@ -82,6 +141,7 @@ class _DeliveryStatusPageState extends State<DeliveryStatusPage> {
 
   @override
   Widget build(BuildContext context) {
+
     print("${customer.id} &&&&&&& ${order.collectType}");
     return Scaffold(
       appBar: AppBar(
@@ -109,6 +169,10 @@ class _DeliveryStatusPageState extends State<DeliveryStatusPage> {
               status = snapshot.data.documents[i]['status'];
               if (snapshot.data.documents[i]['collectType'] == "Self-Collect")
                 lockerNo = snapshot.data.documents[i]['lockerNum'];
+
+              var bytes1 = utf8.encode(lockerNo);         // data being hashed
+              hashedlockNo = sha256.convert(bytes1).toString();
+             // Fluttertoast.showToast(msg: hashedlockNo);
             }
           }
           if (status == "Self-Collect") {
@@ -220,7 +284,7 @@ class _DeliveryStatusPageState extends State<DeliveryStatusPage> {
                               color: heidelbergRed,
                             ),
                             onPressed: () {
-                              _scanQR(lockerNo);
+                              _scanQR(hashedlockNo,lockerNo);
                             },
                           ),
                         ],

@@ -32,6 +32,18 @@ class Cart {
     return groceries[index];
   }
 
+  bool repeatCheck(Grocery item) {
+    if (groceries.length != 0)
+      for (int i = 0; i < groceries.length; i++) {
+        if(item.id==groceries[i].id) {
+          groceries[i].quantity++;
+          return true;
+        }
+      }
+    return false;
+  }
+
+
   @override
   String toString() {
     return "groceries=$groceries";

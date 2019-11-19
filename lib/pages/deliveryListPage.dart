@@ -97,6 +97,7 @@ class _State extends State<deliveryPage> {
                           timeArrival =
                               snapshot.data.documents[index]["timeArrival"];
                         }
+                        int counter = snapshot.data.documents[index]['counter'];
 
                         Order order = new Order(
                             status: status,
@@ -109,7 +110,8 @@ class _State extends State<deliveryPage> {
                             items: items,
                             totalAmount: totalAmount,
                             collectType: collectType,
-                            timeArrival: timeArrival);
+                            timeArrival: timeArrival,
+                            counter: counter);
 
                         return Card(
                           child: ListTile(
@@ -125,8 +127,8 @@ class _State extends State<deliveryPage> {
                               );
                               if (result['Result'] == true) {
                                 //if (result == true) {
-                                db.setHistory(order, customer.id, tid);
-                                db.setDeliveryStatus(customer.id, tid);
+                                db.setHistory(order,order.customerId, tid);
+                                db.delete(order.customerId, tid, "Delivery");
                                 setState(() {});
                               }
                             },

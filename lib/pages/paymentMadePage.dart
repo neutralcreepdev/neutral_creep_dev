@@ -74,7 +74,7 @@ class PaymentMadePage extends StatelessWidget {
                         color: Colors.white),
                   ),
                   onPressed: () {
-                    Navigator.of(context).pop();
+                      Navigator.pop(context);
                   }),
             ),
           ],

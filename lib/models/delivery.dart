@@ -33,6 +33,7 @@ class Order {
   double totalAmount;
   String collectType;
   Map timeArrival;
+  int counter;
 
   Order(
       {this.orderID,
@@ -45,7 +46,8 @@ class Order {
       this.collectType,
       this.timeArrival,
       this.paymentType,
-      this.status});
+      this.status,
+      this.counter});
 
   @override
   String toString() {
@@ -54,5 +56,16 @@ class Order {
         "LOCATION: ${address['street']}\n"
         "UNIT: ${address['unit']}\n"
         "POSTAL CODE: ${address['postalCode']}\n";
+  }
+
+  static Widget showDelivery(Order order){
+
+    Text text = new Text(order.collectType+"\n"+order.orderID+"\n"+order.address['street']+ order.address['unit'] + "\n" + order.address['postalCode']+"\n" + order.date.toString());
+    return text;
+  }
+
+  static Widget showSelfCollect(Order order){
+    Text text = new Text(order.collectType+"\n"+order.orderID + "\n" + order.date.toString());
+    return text;
   }
 }

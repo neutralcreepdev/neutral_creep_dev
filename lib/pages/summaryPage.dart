@@ -1,6 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:neutral_creep_dev/pages/paymentPage.dart';
 import 'package:neutral_creep_dev/services/dbService.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 import '../models/transaction.dart';
 import '../models/customer.dart';
@@ -28,9 +31,11 @@ class _SummaryPageState extends State<SummaryPage> {
   var _dropDownMenuValue = "1";
 
   final _formKey = GlobalKey<FormState>();
+  String time = "Touch to select time";
 
   @override
   Widget build(BuildContext context) {
+    final f = new DateFormat('yyyy-MM-dd hh:mm');
     return Scaffold(
       appBar: AppBar(
         backgroundColor: alablaster,
@@ -204,91 +209,18 @@ class _SummaryPageState extends State<SummaryPage> {
                             await showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    content: Form(
-                                      key: _formKey,
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Text("Enter Delivery Details"),
-                                          Padding(
-                                            padding: EdgeInsets.all(8.0),
-                                            child: TextFormField(
-                                              decoration: InputDecoration(
-                                                  hintText: "Time"),
-                                              controller: _timeController,
-                                            ),
-                                          ),
-                                          Padding(
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Row(children: [
-                                                Expanded(
-                                                  child: TextField(
-                                                    textAlign: TextAlign.center,
-                                                    decoration: InputDecoration(
-                                                        hintText: "Day"),
-                                                    controller: _dayController,
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                  width: 20,
-                                                ),
-                                                Expanded(
-                                                  child: TextField(
-                                                    textAlign: TextAlign.center,
-                                                    decoration: InputDecoration(
-                                                        hintText: "Month"),
-                                                    controller:
-                                                        _monthController,
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                  width: 20,
-                                                ),
-                                                Expanded(
-                                                  child: TextField(
-                                                    textAlign: TextAlign.center,
-                                                    decoration: InputDecoration(
-                                                        hintText: "Year"),
-                                                    controller: _yearController,
-                                                  ),
-                                                )
-                                              ])),
-                                          Center(
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: RaisedButton(
-                                                child: Text("Submit"),
-                                                onPressed: () {
-                                                  if (_formKey.currentState
-                                                      .validate()) {
-                                                    _formKey.currentState
-                                                        .save();
-                                                    Navigator.pop(context);
-                                                  }
-                                                },
-                                              ),
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
+                                  //return AlertDialog(
+                                  return MyDialog(
+                                    time: time,
+                                    transaction: transaction,
+                                    customer: customer,
+                                    db: db,
+                                    dropDownMenuValue: _dropDownMenuValue,
                                   );
-                                });
-
-                            Map date = {
-                              "day": _dayController.text,
-                              "month": _monthController.text,
-                              "year": _yearController.text
-                            };
-                            Map deliveryTime = {
-                              "date": date,
-                              "time": _timeController.text
-                            };
-                            print(deliveryTime);
+                                }
+                                //}
+                                );
+                          } else
                             db.getEWalletData(customer.id).then((eWallet) {
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) => PaymentPage(
@@ -296,20 +228,8 @@ class _SummaryPageState extends State<SummaryPage> {
                                         customer: customer,
                                         collectionMethod: _dropDownMenuValue,
                                         eWallet: eWallet,
-                                        deliveryTime: deliveryTime,
+                                        deliveryTime: new Map(),
                                       )));
-                            });
-                          }
-                          else
-                            db.getEWalletData(customer.id).then((eWallet) {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => PaymentPage(
-                                    transaction: transaction,
-                                    customer: customer,
-                                    collectionMethod: _dropDownMenuValue,
-                                    eWallet: eWallet,
-                                    deliveryTime: new Map(),
-                                  )));
                             });
                         }),
                   ),
@@ -321,5 +241,159 @@ class _SummaryPageState extends State<SummaryPage> {
         ),
       ),
     );
+  }
+}
+
+class MyDialog extends StatefulWidget {
+  String time;
+  DBService db;
+  Customer customer;
+  String dropDownMenuValue;
+  Transaction transaction;
+
+  MyDialog(
+      {this.time,
+      this.customer,
+      this.db,
+      this.transaction,
+      this.dropDownMenuValue});
+
+  @override
+  _MyDialogState createState() => new _MyDialogState(
+      time: time,
+      customer: customer,
+      db: db,
+      dropDownMenuValue: dropDownMenuValue,
+      transaction: transaction);
+}
+
+class _MyDialogState extends State<MyDialog> {
+  final f = new DateFormat('yyyy-MM-dd hh:mm');
+  String time;
+  DBService db;
+  Customer customer;
+  String dropDownMenuValue;
+  Transaction transaction;
+
+  _MyDialogState(
+      {this.time,
+      this.customer,
+      this.db,
+      this.transaction,
+      this.dropDownMenuValue});
+
+  Map deliveryTime;
+
+  @override
+  Widget build(BuildContext context) {
+    Map date;
+
+    DateTime now = DateTime.now();
+    var test = now.add(new Duration(days: 1));
+    DateTime nextTime =
+        new DateTime(now.year, now.month, now.day, now.hour + 1, now.minute);
+    return AlertDialog(
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text("Enter Delivery Details", style: TextStyle(fontSize: 14)),
+          SizedBox(
+            height: 10,
+          ),
+          FlatButton(
+            child: Text(
+              time,
+              style: TextStyle(fontSize: 25, color: heidelbergRed),
+            ),
+            onPressed: () {
+              DatePicker.showPicker(context,
+                  showTitleActions: true,
+                  pickerModel: CustomPicker(
+                    currentTime: test,
+                    minTime: DateTime(test.year, test.month, test.day),
+                    maxTime: DateTime(2019, 12, 31),
+                  ), onConfirm: (data) {
+                time = DateFormat('yyyy-MM-dd – kk:mm').format(data);
+                String year = time.substring(0, 4);
+                String month = time.substring(5, 7);
+                String day = time.substring(8, 10);
+                String hrSec = time.substring(11, 16);
+                date = {"day": day, "month": month, "year": year};
+                deliveryTime = {"date": date, "time": hrSec};
+
+                setState(() {});
+              });
+              /*await DatePicker.showDateTimePicker(context,
+                  showTitleActions: true,
+                  minTime: DateTime(test.year,test.month,test.day),
+                  maxTime: DateTime(2019, 12, 31),
+                  currentTime: test, onConfirm: (data) {
+                time = data.toString();
+                String year = time.substring(0, 4);
+                String month = time.substring(5, 7);
+                String day = time.substring(8, 10);
+                String hrSec = time.substring(11, 18);
+                date = {"day": day, "month": month, "year": year};
+                deliveryTime = {"date": date, "time": hrSec};
+                print(deliveryTime);
+
+                setState(() {});
+              });*/
+            },
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: RaisedButton(
+                child: Text("Submit"),
+                onPressed: () {
+                  db.getEWalletData(customer.id).then((eWallet) {
+                    print("hello$deliveryTime");
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => PaymentPage(
+                              transaction: transaction,
+                              customer: customer,
+                              collectionMethod: dropDownMenuValue,
+                              eWallet: eWallet,
+                              deliveryTime: deliveryTime,
+                            )));
+                  });
+                },
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class CustomPicker extends DateTimePickerModel {
+  String digits(int value, int length) {
+    return '$value'.padLeft(length, "0");
+  }
+
+  CustomPicker({
+    DateTime currentTime,
+    LocaleType locale,
+    DateTime maxTime,
+    DateTime minTime,
+  }) : super(
+            locale: locale,
+            currentTime: currentTime,
+            maxTime: maxTime,
+            minTime: minTime);
+
+  @override
+  String middleStringAtIndex(int index) {
+    if (index >= 9 && index < 20) {
+      return this.digits(index, 2);
+    } else {
+      return null;
+    }
   }
 }

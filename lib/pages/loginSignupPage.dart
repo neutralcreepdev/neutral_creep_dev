@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -199,7 +201,11 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
       ),
     );
   }
-
+  bool validatePWStructure(String password){
+    String patt = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~.,*%^]).{8,}$';
+    RegExp createRegExp = new RegExp(patt);
+    return createRegExp.hasMatch(password);
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -253,6 +259,9 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                                   if (emailInput.isEmpty) {
                                     return "This field is blank";
                                   }
+                                  bool checkEmail = RegExp(r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(emailInput);
+                                  if(checkEmail==false)
+                                    return "Please enter a valid email";
                                 },
                               ),
 
@@ -271,6 +280,11 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                                   if (passwordInput.isEmpty) {
                                     return "This field is blank";
                                   }
+                                  if(passwordInput.length!=8){
+                                    return "Please enter a 8 alphanumeric password";
+                                  }
+                                  if(validatePWStructure(passwordInput)==false)
+                                    return "Password must include at least 1 lowercase\nand uppercase alphabet, digit and symbol";
                                 },
                               ),
 
@@ -288,8 +302,10 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                                           return "This field is blank";
                                         }
 
+
+
                                         if (confirmPasswordInput !=
-                                            _passKey.currentState .value) {
+                                            _passKey.currentState.value) {
                                           return "Confirm Password should match password";
                                         }
                                       },
@@ -323,56 +339,124 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white),
                                 ),
-                                onPressed: () {
+                                onPressed: () async {
+                                  bool x = true;
                                   if (_formKey.currentState.validate()) {
                                     _formKey.currentState.save();
                                     if (isSignUp) {
-                                      Future<FirebaseUser> user =
-                                          _auth.handleSignUp(_email, _password);
-                                      user.then((userValue) {
-                                        Firestore.instance
-                                            .collection("users")
-                                            .document("${userValue.uid}")
-                                            .setData({
-                                          "id": userValue.uid,
-                                          "lastLoggedIn": DateTime.now()
-                                        });
-                                        Navigator.of(context).pushReplacement(
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    SignUpPage(
-                                                        uid: userValue.uid,
-                                                        db: _db)));
-                                      });
-                                    } else {
-                                      Future<FirebaseUser> user;
-                                      showDialog(
+                                      await showDialog(
                                           context: context,
                                           builder: (BuildContext context) {
-                                            user= _auth
-                                                .handleEmailSignIn(_email, _password);
+                                            Future<FirebaseUser> user =
+                                                _auth.handleSignUp(
+                                                    _email, _password);
+                                            user.then((userValue) {
+                                              Firestore.instance
+                                                  .collection("users")
+                                                  .document("${userValue.uid}")
+                                                  .setData({
+                                                "id": userValue.uid,
+                                                "lastLoggedIn": DateTime.now()
+                                              });
+
+                                              Navigator.of(context)
+                                                  .pushReplacement(
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              SignUpPage(
+                                                                  uid: userValue
+                                                                      .uid,
+                                                                  db: _db)));
+                                            }).catchError((onError, stacktrace) {
+                                              print(stacktrace);
+                                              Navigator.pop(context);
+                                              x = false;
+                                            });
+                                            return Dialog(
+                                                backgroundColor:
+                                                    Colors.transparent,
+                                                child: x
+                                                    ? SpinKitRotatingCircle(
+                                                        color: Colors.white,
+                                                        size: 50.0,
+                                                      )
+                                                    : Text("lame"));
+                                          });
+                                    } else {
+                                      Future<FirebaseUser> user;
+
+                                      await showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            user = _auth.handleEmailSignIn(
+                                                _email, _password, context);
                                             user.then((userValue) {
                                               _db
-                                                  .getCustomerData(userValue.uid)
+                                                  .getCustomerData(
+                                                      userValue.uid)
                                                   .then((customer) {
-                                                Navigator.of(context).pushReplacement(
+                                                Navigator.pushReplacement(
+                                                    context,
                                                     MaterialPageRoute(
-                                                        settings: RouteSettings(
-                                                            name: "home"),
+                                                        settings: RouteSettings(name: "home"),
                                                         builder: (context) =>
                                                             HomePage(
-                                                              customer: customer,
+                                                              customer:
+                                                                  customer,
                                                               db: _db,
                                                             )));
                                               });
+                                              /*Navigator.of(context)
+                                                    .pushReplacement(
+                                                        MaterialPageRoute(
+                                                            settings:
+                                                                RouteSettings(
+                                                                    name:
+                                                                        "home"),
+                                                            builder:
+                                                                (context) =>
+                                                                    HomePage(
+                                                                      customer:
+                                                                          customer,
+                                                                      db: _db,
+                                                                    )));
+                                              });*/
+                                            }).catchError((error, stackTrace) {
+                                              Navigator.pop(context);
+                                              x = false;
                                             });
                                             return Dialog(
-                                                backgroundColor: Colors.transparent,
-                                                child:SpinKitRotatingCircle(
-                                                  color: Colors.white,
-                                                  size: 50.0,
-                                                ));
+                                                backgroundColor:
+                                                    Colors.transparent,
+                                                child: x
+                                                    ? SpinKitRotatingCircle(
+                                                        color: Colors.white,
+                                                        size: 50.0,
+                                                      )
+                                                    : Text("lame"));
                                           });
+                                      if (x == false) {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            // return object of type Dialog
+                                            return AlertDialog(
+                                              title: new Text("Error"),
+                                              content: new Text(
+                                                  "Incorrect Login Details"),
+                                              actions: <Widget>[
+                                                // usually buttons at the bottom of the dialog
+                                                new FlatButton(
+                                                  child: new Text("OK"),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      }
                                     }
                                   }
                                 },

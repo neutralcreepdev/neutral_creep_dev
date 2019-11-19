@@ -32,14 +32,21 @@ class AuthService {
     return user;
   }
 
-  Future<FirebaseUser> handleEmailSignIn(String email, String password) async {
-    final FirebaseUser user = (await _auth.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    ))
-        .user;
-
-    return user;
+  Future<FirebaseUser> handleEmailSignIn(
+      String email, String password, BuildContext context) async {
+    FirebaseUser user;
+    try {
+      user = (await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      ))
+          .user;
+      return user;
+    } catch (exception) {
+      print("null here");
+      user = null;
+      return user;
+    }
   }
 
   Future<FirebaseUser> handleGoogleSignIn() async {

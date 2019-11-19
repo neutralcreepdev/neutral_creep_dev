@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:neutral_creep_dev/helpers/color_helper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
@@ -18,12 +19,12 @@ class DeliveryConfirmation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool result = false;
-    String dateString =
-        date.toString().substring(0, date.toString().length);
+    String dateString = date.toString().substring(0, date.toString().length);
     String hash = _hashVal(id + dateString);
 
     print('$id$dateString');
     Map falseResult = {"Result": false};
+
     return Scaffold(
         appBar: AppBar(
           //Back button
@@ -92,6 +93,7 @@ class DeliveryConfirmation extends StatelessWidget {
               ),
               SizedBox(height: 10),
               Expanded(
+                flex: 4,
                 child: ListView.builder(
                   itemCount: order.items.length,
                   itemBuilder: (context, index) {
@@ -107,8 +109,8 @@ class DeliveryConfirmation extends StatelessWidget {
                             Container(
                               width: MediaQuery.of(context).size.width / 8 * 4 -
                                   30,
-                              child:
-                                  Text("${order.items[index]['name']}", style: TextStyle(fontSize: 18)),
+                              child: Text("${order.items[index]['name']}",
+                                  style: TextStyle(fontSize: 18)),
                             ),
                             SizedBox(width: 10),
                             Container(
@@ -117,7 +119,8 @@ class DeliveryConfirmation extends StatelessWidget {
                                   style: TextStyle(fontSize: 18)),
                             ),
                             Container(
-                              child: Text("\$${order.items[index]['cost'].toStringAsFixed(2)}",
+                              child: Text(
+                                  "\$${order.items[index]['cost'].toStringAsFixed(2)}",
                                   style: TextStyle(fontSize: 18)),
                             )
                           ],
@@ -136,41 +139,62 @@ class DeliveryConfirmation extends StatelessWidget {
                   },
                 ),
               ),
-              /*Column(
-        children: <Widget>[
-          Text("Order ID: ${order.orderID}"),
-          Expanded(
-              child: ListView.builder(
-                  itemCount: order.items.length,
-                  itemBuilder: (context, index) {
-                    return Row(
+              Expanded(
+                flex: 2,
+                child: Column(
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Text("${order.items[index]['name']}"),
-                        Text("${order.items[index]['description']}"),
-                        Text("${order.items[index]['quantity']}")
+                        Text("Total Cost:", style: TextStyle(fontSize: 20),),
+                        Text("\$${order.totalAmount.toStringAsFixed(2)}",style: TextStyle(fontSize: 20,color: heidelbergRed)),
                       ],
-                    );
-                  })),
-          Text("\$${order.totalAmount}"),*/
-              Text("Total Cost: \$${order.totalAmount.toStringAsFixed(2)}"),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(10, 10, 10, 120),
-                child: RaisedButton(
-                  child: Text("Confirm Order"),
-                  color: heidelbergRed,
-                  onPressed: () async {
-                    String compare = await _scanQR();
-                    String compare2 = compare.toString();
-                    print('$compare2');
-                    //String compare = "e7465a87ca50f1cc038489f1fc76a0a1deeaa1801a3792ef1ff00eb77c958c18";
-                    result = _compareHash(hash, compare2);
-                    if (result) {
-                      Fluttertoast.showToast(msg: "Same + $hash");
-                      Navigator.pop(context, {'Result': result});
-                    } else {
-                      Fluttertoast.showToast(msg: "Different + $hash");
-                    }
-                  },
+                    ),
+                    SizedBox(height: 30),
+                    Text("Status : ${order.status}",
+                        style: TextStyle(fontSize: 20)),
+                    SizedBox(height: 40),
+                    GestureDetector(
+                      onTap: () async {
+                        String compare = await _scanQR();
+                        String compare2 = compare.toString();
+                        print('$compare2');
+                        //String compare = "e7465a87ca50f1cc038489f1fc76a0a1deeaa1801a3792ef1ff00eb77c958c18";
+                        result = _compareHash(hash, compare2);
+
+                        if (result) {
+                          Fluttertoast.showToast(msg: "Same + $hash");
+                          Navigator.pop(context, {'Result': result});
+                        } else {
+                          Fluttertoast.showToast(msg: "Different + $hash");
+                        }
+                      },
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: 128.1,
+                        decoration: BoxDecoration(
+                          color: heidelbergRed,
+
+                            border: Border(top: BorderSide(width: 2.0, color: Colors.black),)
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(
+                              FontAwesomeIcons.qrcode,
+                              size: 50,
+                              color: alablaster,
+                            ),
+                            SizedBox(width: 20,),
+                            Text(
+                              "Confirm Delivery",
+                              style: TextStyle(color: alablaster,fontSize: 30),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
