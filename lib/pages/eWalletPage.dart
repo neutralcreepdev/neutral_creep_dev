@@ -8,6 +8,7 @@ import '../services/dbService.dart';
 
 import './topUpPage.dart';
 import './transferPage.dart';
+import "./redeemPage.dart";
 
 class EWalletPage extends StatefulWidget {
   final Customer customer;
@@ -27,7 +28,6 @@ class _EWalletPageState extends State<EWalletPage> {
 
   @override
   Widget build(BuildContext context) {
-
     bool typeBool = false;
     return Scaffold(
       appBar: AppBar(
@@ -74,8 +74,9 @@ class _EWalletPageState extends State<EWalletPage> {
                       child: Text(
                         "TOP-UP",
                         style: TextStyle(
-                          color: whiteSmoke,
-                            fontWeight: FontWeight.bold, fontSize: 20),
+                            color: whiteSmoke,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20),
                       ),
                       onPressed: () {
                         if (customer.eWallet.creditCards.length == 0) {
@@ -102,8 +103,9 @@ class _EWalletPageState extends State<EWalletPage> {
                       child: Text(
                         "TRANSFER",
                         style: TextStyle(
-                          color: whiteSmoke,
-                            fontWeight: FontWeight.bold, fontSize: 20),
+                            color: whiteSmoke,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20),
                       ),
                       onPressed: () {
                         Navigator.of(context).push(MaterialPageRoute(
@@ -139,6 +141,7 @@ class _EWalletPageState extends State<EWalletPage> {
                     child: FutureBuilder(
                       future: getData(),
                       builder: (context, snapshot) {
+                        bool redemption = false;
                         if (!snapshot.hasData) return Text('loading');
                         return Container(
                           child: ListView.builder(
@@ -167,21 +170,24 @@ class _EWalletPageState extends State<EWalletPage> {
                                 String bankInfo = snapshot
                                     .data.documents[index]['bankInfo']
                                     .toString();
-                                var bankDetails = bankInfo.split("|");
-                                bankName = bankDetails[0];
-                                cardNum = bankDetails[1].substring(
-                                    bankDetails[1].length - 4,
-                                    bankDetails[1].length);
+                                if(bankInfo == "Top Up through redemption"){
+                                  bankName = "Top Up through redemption";
+                                }
+                                else {
+                                  var bankDetails = bankInfo.split("|");
+                                  bankName = bankDetails[0];
+                                  cardNum = bankDetails[1].substring(
+                                      bankDetails[1].length - 4,
+                                      bankDetails[1].length);
+                                }
                               } else if (type == "transfer") {
                                 type = "Transfer";
                                 bankName = "";
                                 cardNum = "";
 
-                                sender =snapshot
-                                    .data.documents[index]['from']
+                                sender = snapshot.data.documents[index]['from']
                                     .toString();
-                                recepient = snapshot
-                                    .data.documents[index]['to']
+                                recepient = snapshot.data.documents[index]['to']
                                     .toString();
                               }
                               return Card(
@@ -192,15 +198,20 @@ class _EWalletPageState extends State<EWalletPage> {
                                       ? Text("$type: \$$topUpAmount")
                                       : Text("$type: \$$topUpAmount"),
                                   onLongPress: () {
-                                    if(type=="TopUp")
-                                      typeBool=false;
-                                    else if(type=="Transfer")
+                                    if (type == "TopUp")
+                                      typeBool = false;
+                                    else if (type == "Transfer")
                                       typeBool = true;
+
+                                    if(bankName == "Top Up through redemption")
+                                      redemption = true;
+                                    else
+                                      redemption=false;
 
                                     showDialog(
                                         context: context,
                                         builder: (BuildContext context) {
-                                          print("type: $typeBool");
+                                          print("type: $redemption");
                                           return typeBool
                                               ? AlertDialog(
                                                   content: Column(
@@ -223,7 +234,8 @@ class _EWalletPageState extends State<EWalletPage> {
                                                           height: 25,
                                                           color: heidelbergRed,
                                                         ),
-                                                        Text("Transfer Amount: ",
+                                                        Text(
+                                                            "Transfer Amount: ",
                                                             style: TextStyle(
                                                                 fontSize: 13,
                                                                 color:
@@ -237,8 +249,7 @@ class _EWalletPageState extends State<EWalletPage> {
                                                         SizedBox(
                                                           height: 15,
                                                         ),
-                                                        Text(
-                                                            "From: ",
+                                                        Text("From: ",
                                                             style: TextStyle(
                                                                 fontSize: 13,
                                                                 color:
@@ -246,28 +257,23 @@ class _EWalletPageState extends State<EWalletPage> {
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .bold)),
-                                                        Text(
-                                                                "$sender",
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        20)),
+                                                        Text("$sender",
+                                                            style: TextStyle(
+                                                                fontSize: 20)),
                                                         SizedBox(
                                                           height: 15,
                                                         ),
-                                                        Text(
-                                                            "To: ",
+                                                        Text("To: ",
                                                             style: TextStyle(
                                                                 fontSize: 13,
                                                                 color:
-                                                                heidelbergRed,
+                                                                    heidelbergRed,
                                                                 fontWeight:
-                                                                FontWeight
-                                                                    .bold)),
-                                                        Text(
-                                                            "$recepient",
+                                                                    FontWeight
+                                                                        .bold)),
+                                                        Text("$recepient",
                                                             style: TextStyle(
-                                                                fontSize:
-                                                                20)),
+                                                                fontSize: 20)),
                                                         SizedBox(
                                                           height: 15,
                                                         ),
@@ -322,7 +328,15 @@ class _EWalletPageState extends State<EWalletPage> {
                                                         SizedBox(
                                                           height: 15,
                                                         ),
-                                                        Text(
+                                                        redemption?Text(
+                                                            "Updated Through: ",
+                                                            style: TextStyle(
+                                                                fontSize: 13,
+                                                                color:
+                                                                heidelbergRed,
+                                                                fontWeight:
+                                                                FontWeight
+                                                                    .bold)):Text(
                                                             "Credit Card Used: ",
                                                             style: TextStyle(
                                                                 fontSize: 13,
@@ -331,11 +345,13 @@ class _EWalletPageState extends State<EWalletPage> {
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .bold)),
-                                                        Text(
-                                                                "$bankName\nXXXX XXXX XXXX $cardNum",
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        20)),
+                                                        redemption?Text(
+                                                            "$bankName",
+                                                            style: TextStyle(
+                                                                fontSize: 20)):Text(
+                                                            "$bankName\nXXXX XXXX XXXX $cardNum",
+                                                            style: TextStyle(
+                                                                fontSize: 20)),
                                                         SizedBox(
                                                           height: 15,
                                                         ),
@@ -364,8 +380,31 @@ class _EWalletPageState extends State<EWalletPage> {
                         );
                       },
                     ),
-                  )
+                  ),
                 ],
+              ),
+            ),
+            SizedBox(
+              height: 80,
+            ),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: 100,
+              child: FlatButton(
+                color: heidelbergRed,
+                child: Text(
+                  "Rewards",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 30,
+                      letterSpacing: 3),
+                ),
+                onPressed: () {Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => RedeemPage(
+                      customer: customer,
+                      db: db,
+                    )));},
               ),
             )
           ],

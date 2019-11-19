@@ -1,8 +1,9 @@
 class EWallet {
   double eCreadits;
   List<Map<String,dynamic>> creditCards;
+  int points;
 
-  EWallet({this.eCreadits, this.creditCards});
+  EWallet({this.eCreadits, this.creditCards, this.points});
 
   factory EWallet.fromMap(Map data) {
     List<Map<String, dynamic>> creditCards = new List<Map<String, dynamic>>();
@@ -28,12 +29,14 @@ class EWallet {
 
     double val = data["eCredit"].toDouble();
 
-    return EWallet(creditCards: creditCards, eCreadits: val ?? 0);
+    int val2 = data['points'];
+
+    return EWallet(creditCards: creditCards, eCreadits: val ?? 0, points: val2?? 0);
   }
 
   @override
   String toString() {
-    return "eCredits=$eCreadits, creditCards=$creditCards";
+    return "eCredits=$eCreadits, creditCards=$creditCards, points=$points";
   }
 
   void add500(){

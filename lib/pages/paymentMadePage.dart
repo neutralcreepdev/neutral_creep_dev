@@ -2,17 +2,17 @@ import 'dart:ui' as prefix0;
 
 import 'package:flutter/material.dart';
 
-import '../models/eWallet.dart';
-
+import'../models/customer.dart';
 import '../helpers/color_helper.dart';
 
 class PaymentMadePage extends StatelessWidget {
-  final EWallet eWallet;
+  final Customer customer;
   final String paymentType;
   final String cardNo;
+  final int pointsEarned;
   bool show = false;
 
-  PaymentMadePage({this.eWallet, this.paymentType, this.cardNo});
+  PaymentMadePage({this.customer, this.paymentType, this.cardNo, this.pointsEarned});
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +49,7 @@ class PaymentMadePage extends StatelessWidget {
               SizedBox(height: 5),
               show
                   ? Text(
-                      "Credits Remaining: \$${eWallet.eCreadits.toStringAsFixed(2)}",
+                      "Credits Remaining: \$${customer.eWallet.eCreadits.toStringAsFixed(2)}",
                       style: TextStyle(
                           fontWeight: prefix0.FontWeight.bold, fontSize: 28),
                     )
@@ -60,6 +60,10 @@ class PaymentMadePage extends StatelessWidget {
                         style: TextStyle(fontSize: 25),
                       )
                     ]),
+              pointsEarned != 0 ? Text("Points Earned: $pointsEarned",
+                style: TextStyle(
+                    fontWeight: prefix0.FontWeight.bold, fontSize: 28),
+              ):Container(),
               SizedBox(height: 30),
               ButtonTheme(
                 height: 60,

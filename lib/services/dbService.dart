@@ -34,6 +34,13 @@ class DBService {
     return ++counter;
   }
 
+  Future<int> getPointsId() async {
+    var snap = await _db.collection("Points").getDocuments();
+    int counter = snap.documents.length;
+    print(counter);
+    return ++counter;
+  }
+
   Future<EWallet> getEWalletData(String uid) async {
     var snap = await _db.collection("users").document(uid).get();
     EWallet eWallet = EWallet.fromMap(snap.data);
@@ -57,6 +64,44 @@ class DBService {
     return snap;
   }
 
+  void redeem(Customer customer, int pointsDeducted, double amount) {
+    DateTime dt = DateTime.now();
+
+    Firestore.instance
+      ..collection("users").document(customer.id).updateData({
+        "points": customer.eWallet.points,
+      });
+
+    getPointsId().then((pointId) {
+      String finalID = pointId.toString().padLeft(8, "0");
+      hashCash.hash(finalID + (dt.toString())).then((pointHash) {
+        Firestore.instance
+          ..collection("Points").document(finalID).setData({
+            "type": "deduct",
+            "pointsDeducted": pointsDeducted,
+            "dateOfTransaction": dt,
+            "pointsId": finalID,
+            "pointHash": pointHash
+          });
+
+        Firestore.instance
+          ..collection("users")
+              .document(customer.id)
+              .collection("Points")
+              .document(finalID)
+              .setData({
+            "type": "deduct",
+            "pointsDeducted": pointsDeducted,
+            "dateOfTransaction": dt,
+            "pointsId": finalID,
+            "pointHash": pointHash
+          });
+      });
+    });
+
+    updateECredit(customer, amount, "Top Up through redemption");
+  }
+
   void writeNewCustomer(Customer customer) {
     Firestore.instance
       ..collection("users").document(customer.id).updateData({
@@ -68,6 +113,7 @@ class DBService {
         "dob": customer.dob,
         "eCredit": customer.eWallet.eCreadits,
         "creditCards": customer.eWallet.creditCards,
+        "points": customer.eWallet.points,
       });
   }
 
@@ -146,23 +192,25 @@ class DBService {
     List<dynamic> creditCard = new List<dynamic>();
     List<Map<String, dynamic>> test = new List<Map<String, dynamic>>();
     try {
-    var snap =
-        await _db.collection("users").document(customer.id).get().then((snap) {
-      Map<String, dynamic> data = snap.data;
-      creditCard = data['creditCards'];
+      var snap = await _db
+          .collection("users")
+          .document(customer.id)
+          .get()
+          .then((snap) {
+        Map<String, dynamic> data = snap.data;
+        creditCard = data['creditCards'];
 
-
-      for (int i = 0; i < creditCard.length; i++) {
-        Map<String, dynamic> temporary = {
-          "fullName": creditCard[i]["fullName"],
-          "cardNum": creditCard[i]["cardNum"],
-          "expiryMonth": creditCard[i]["expiryMonth"],
-          "expiryYear": creditCard[i]["expiryYear"],
-          "bankName": creditCard[i]["bankName"]
-        };
-        test.add(temporary);
-      }
-    });
+        for (int i = 0; i < creditCard.length; i++) {
+          Map<String, dynamic> temporary = {
+            "fullName": creditCard[i]["fullName"],
+            "cardNum": creditCard[i]["cardNum"],
+            "expiryMonth": creditCard[i]["expiryMonth"],
+            "expiryYear": creditCard[i]["expiryYear"],
+            "bankName": creditCard[i]["bankName"]
+          };
+          test.add(temporary);
+        }
+      });
     } catch (exception) {
       print("goodbye");
       return test;

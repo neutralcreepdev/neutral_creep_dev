@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:neutral_creep_dev/models/cart.dart';
 import 'package:neutral_creep_dev/models/eWallet.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:neutral_creep_dev/services/dbService.dart';
 
 import '../models/customer.dart';
 import '../models/transaction.dart';
@@ -12,6 +14,7 @@ import '../helpers/hash_helper.dart';
 import './paymentMadePage.dart';
 
 class PaymentPage extends StatefulWidget {
+  final DBService db;
   final Customer customer;
   final PurchaseTransaction transaction;
   final String collectionMethod;
@@ -19,13 +22,15 @@ class PaymentPage extends StatefulWidget {
   final Map deliveryTime;
 
   PaymentPage(
-      {this.customer,
+      {this.db,
+      this.customer,
       this.transaction,
       this.collectionMethod,
       this.eWallet,
       this.deliveryTime});
 
   _PaymentPageState createState() => _PaymentPageState(
+      db: db,
       customer: customer,
       transaction: transaction,
       collectionMethod: collectionMethod,
@@ -34,6 +39,7 @@ class PaymentPage extends StatefulWidget {
 }
 
 class _PaymentPageState extends State<PaymentPage> {
+  final DBService db;
   final Customer customer;
   final PurchaseTransaction transaction;
   final String collectionMethod;
@@ -41,13 +47,23 @@ class _PaymentPageState extends State<PaymentPage> {
   final Map deliveryTime;
   int counter = 0;
   String paymentType = "";
+  int points = 0;
+  bool cdCheck = true;
 
   _PaymentPageState(
-      {this.customer,
+      {this.db,
+      this.customer,
       this.transaction,
       this.collectionMethod,
       this.eWallet,
       this.deliveryTime});
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if (customer.eWallet.eCreadits <= 0) cdCheck = false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -134,165 +150,194 @@ class _PaymentPageState extends State<PaymentPage> {
                 ],
               ),
             ),
-            Text(
-              "Creep-Dollars Available: \$${eWallet.eCreadits.toStringAsFixed(2)}",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
-            ),
-            ButtonTheme(
-              height: 60,
-              minWidth: 250,
-              child: RaisedButton(
-                  color: heidelbergRed,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(35)),
-                  child: Text(
-                    "PAY BY CREEP-DOLLARS",
-                    style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
-                  onPressed: () {
-                    List<Map<String, Object>> items =
-                        new List<Map<String, Object>>();
-                    for (Grocery item in transaction.getCart().groceries) {
-                      items.add({
-                        "id": item.id,
-                        "cost": item.cost,
-                        "quantity": item.quantity,
-                        "description": item.description,
-                        "name": item.name
-                      });
-                    }
+            cdCheck
+                ? Text(
+                    "Creep-Dollars Available: \$${customer.eWallet.eCreadits.toStringAsFixed(2)}",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                  )
+                : Container(),
+            cdCheck
+                ? ButtonTheme(
+                    height: 60,
+                    minWidth: 250,
+                    child: RaisedButton(
+                        color: heidelbergRed,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(35)),
+                        child: Text(
+                          "PAY BY CREEP-DOLLARS",
+                          style: TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
+                        ),
+                        onPressed: () {
+                          if (customer.eWallet.eCreadits <
+                              transaction.getCart().getTotalCost())
+                            Fluttertoast.showToast(
+                                msg: "Insufficient Creep-Dollar");
+                          else {
+                            List<Map<String, Object>> items =
+                                new List<Map<String, Object>>();
+                            for (Grocery item
+                                in transaction.getCart().groceries) {
+                              items.add({
+                                "id": item.id,
+                                "cost": item.cost,
+                                "quantity": item.quantity,
+                                "description": item.description,
+                                "name": item.name
+                              });
+                            }
 
-                    eWallet.eCreadits -=
-                        (customer.currentCart.getTotalCost() * 1.07);
-                    DateTime dt = DateTime.now();
+                            customer.eWallet.eCreadits -=
+                                (customer.currentCart.getTotalCost() * 1.07);
+                            DateTime dt = DateTime.now();
 
-                    String toHash = transaction.id + (dt.toString());
-                    hashCash.hash(toHash).then((transactionHash) {
-                      paymentType = "CreepDollars";
-                      Firestore.instance
-                          .collection("users")
-                          .document(customer.id)
-                          .updateData({"eCredit": eWallet.eCreadits});
+                            String toHash = transaction.id + (dt.toString());
+                            hashCash.hash(toHash).then((transactionHash) {
+                              paymentType = "CreepDollars";
+                              points = pointSystem(
+                                  db,
+                                  transaction.getCart().getTotalCost(),
+                                  dt,
+                                  items,
+                                  transactionHash);
+                              Firestore.instance
+                                  .collection("users")
+                                  .document(customer.id)
+                                  .updateData({
+                                "eCredit": customer.eWallet.eCreadits,
+                                "points": customer.eWallet.points
+                              });
 
-                      Firestore.instance
-                        ..collection("Orders")
-                            .document(transaction.id)
-                            .setData({
-                          "dateOfTransaction": dt,
-                          "customerId": customer.id,
-                          "totalAmount": transaction.getCart().getTotalCost(),
-                          "type": "purchase",
-                          "items": items,
-                          "status": "Waiting",
-                          "paymentType": paymentType,
-                          "counter": counter,
-                        });
+                              Firestore.instance
+                                ..collection("Orders")
+                                    .document(transaction.id)
+                                    .setData({
+                                  "dateOfTransaction": dt,
+                                  "customerId": customer.id,
+                                  "totalAmount":
+                                      transaction.getCart().getTotalCost(),
+                                  "type": "purchase",
+                                  "items": items,
+                                  "status": "Waiting",
+                                  "paymentType": paymentType,
+                                  "counter": counter,
+                                });
 
-                      String collectType = "";
+                              String collectType = "";
 
-                      //Self Collect
-                      if (collectionMethod == "1") {
-                        collectType = "Self-Collect";
-                        Firestore.instance
-                          ..collection("users")
-                              .document(customer.id)
-                              .collection("Self-Collect")
-                              .document(transaction.id)
-                              .setData({
-                            "collectType": collectType,
-                            "dateOfTransaction": dt,
-                            "transactionId": transaction.id,
-                            "totalAmount": transaction.getCart().getTotalCost(),
-                            "type": "purchase",
-                            "items": items,
-                            "lockerNum": "",
-                            "transactionHash": transactionHash,
-                            "status": "Waiting",
-                            "paymentType": paymentType,
-                            "counter": counter,
-                            "customerId": customer.id
-                          });
+                              //Self Collect
+                              if (collectionMethod == "1") {
+                                collectType = "Self-Collect";
+                                Firestore.instance
+                                  ..collection("users")
+                                      .document(customer.id)
+                                      .collection("Self-Collect")
+                                      .document(transaction.id)
+                                      .setData({
+                                    "collectType": collectType,
+                                    "dateOfTransaction": dt,
+                                    "transactionId": transaction.id,
+                                    "totalAmount":
+                                        transaction.getCart().getTotalCost(),
+                                    "type": "purchase",
+                                    "items": items,
+                                    "lockerNum": "",
+                                    "transactionHash": transactionHash,
+                                    "status": "Waiting",
+                                    "paymentType": paymentType,
+                                    "counter": counter,
+                                    "customerId": customer.id
+                                  });
 
-                        Firestore.instance
-                          ..collection("Packaging")
-                              .document(transaction.id)
-                              .setData({
-                            "collectType": collectType,
-                            "dateOfTransaction": dt,
-                            "transactionId": transaction.id,
-                            "totalAmount": transaction.getCart().getTotalCost(),
-                            "type": "purchase",
-                            "items": items,
-                            "customerId": customer.id,
-                            "name":
-                                customer.firstName + " " + customer.lastName,
-                            "address": customer.address,
-                            "paymentType": paymentType,
-                            "counter": counter,
-                          });
-                      } else if (collectionMethod == "2") {
-                        collectType = "Delivery";
-                        Firestore.instance
-                          ..collection("users")
-                              .document(customer.id)
-                              .collection("Delivery")
-                              .document(transaction.id)
-                              .setData({
-                            "collectType": collectType,
-                            "dateOfTransaction": dt,
-                            "transactionId": transaction.id,
-                            "totalAmount": transaction.getCart().getTotalCost(),
-                            "type": "purchase",
-                            "items": items,
-                            "customerId": customer.id,
-                            "name":
-                                customer.firstName + " " + customer.lastName,
-                            "address": customer.address,
-                            "transactionHash": transactionHash,
-                            "status": "Waiting",
-                            "paymentType": paymentType,
-                            "timeArrival": deliveryTime,
-                            "counter": counter,
-                            "actualTime": "",
-                          });
+                                Firestore.instance
+                                  ..collection("Packaging")
+                                      .document(transaction.id)
+                                      .setData({
+                                    "collectType": collectType,
+                                    "dateOfTransaction": dt,
+                                    "transactionId": transaction.id,
+                                    "totalAmount":
+                                        transaction.getCart().getTotalCost(),
+                                    "type": "purchase",
+                                    "items": items,
+                                    "customerId": customer.id,
+                                    "name": customer.firstName +
+                                        " " +
+                                        customer.lastName,
+                                    "address": customer.address,
+                                    "paymentType": paymentType,
+                                    "counter": counter,
+                                  });
+                              } else if (collectionMethod == "2") {
+                                collectType = "Delivery";
+                                Firestore.instance
+                                  ..collection("users")
+                                      .document(customer.id)
+                                      .collection("Delivery")
+                                      .document(transaction.id)
+                                      .setData({
+                                    "collectType": collectType,
+                                    "dateOfTransaction": dt,
+                                    "transactionId": transaction.id,
+                                    "totalAmount":
+                                        transaction.getCart().getTotalCost(),
+                                    "type": "purchase",
+                                    "items": items,
+                                    "customerId": customer.id,
+                                    "name": customer.firstName +
+                                        " " +
+                                        customer.lastName,
+                                    "address": customer.address,
+                                    "transactionHash": transactionHash,
+                                    "status": "Waiting",
+                                    "paymentType": paymentType,
+                                    "timeArrival": deliveryTime,
+                                    "counter": counter,
+                                    "actualTime": "",
+                                  });
 
-                        //Print Transaction Delivery
-                        Firestore.instance
-                          ..collection("Packaging")
-                              .document(transaction.id)
-                              .setData({
-                            "collectType": collectType,
-                            "dateOfTransaction": dt,
-                            "transactionId": transaction.id,
-                            "totalAmount": transaction.getCart().getTotalCost(),
-                            "type": "purchase",
-                            "items": items,
-                            "customerId": customer.id,
-                            "name":
-                                customer.firstName + " " + customer.lastName,
-                            "address": customer.address,
-                            "paymentType": paymentType,
-                            "timeArrival": deliveryTime,
-                            "counter": counter,
-                            "actualTime": "",
-                          });
-                      }
-                      customer.clearCart();
-                      Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (context) => PaymentMadePage(
-                                  eWallet: eWallet,
-                                  paymentType: paymentType,
-                                  cardNo: "",
-                                )),
-                        ModalRoute.withName("home"),
-                      );
-                    });
-                  }),
-            ),
+                                //Print Transaction Delivery
+                                Firestore.instance
+                                  ..collection("Packaging")
+                                      .document(transaction.id)
+                                      .setData({
+                                    "collectType": collectType,
+                                    "dateOfTransaction": dt,
+                                    "transactionId": transaction.id,
+                                    "totalAmount":
+                                        transaction.getCart().getTotalCost(),
+                                    "type": "purchase",
+                                    "items": items,
+                                    "customerId": customer.id,
+                                    "name": customer.firstName +
+                                        " " +
+                                        customer.lastName,
+                                    "address": customer.address,
+                                    "paymentType": paymentType,
+                                    "timeArrival": deliveryTime,
+                                    "counter": counter,
+                                    "actualTime": "",
+                                  });
+                              }
+                              customer.clearCart();
+                              Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                    builder: (context) => PaymentMadePage(
+                                          pointsEarned: points,
+                                          customer: customer,
+                                          paymentType: paymentType,
+                                          cardNo: "",
+                                        )),
+                                ModalRoute.withName("home"),
+                              );
+                            });
+                          }
+                        }),
+                  )
+                : Container(),
             eWallet.creditCards.length != 0
                 ? Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -494,7 +539,8 @@ class _PaymentPageState extends State<PaymentPage> {
                       Navigator.of(context).pushAndRemoveUntil(
                           MaterialPageRoute(
                             builder: (context) => PaymentMadePage(
-                              eWallet: eWallet,
+                              pointsEarned: points,
+                              customer: customer,
                               paymentType: paymentType,
                               cardNo: eWallet.creditCards[counter]["cardNum"],
                             ),
@@ -508,5 +554,52 @@ class _PaymentPageState extends State<PaymentPage> {
         ),
       ),
     );
+  }
+
+  int pointSystem(DBService db, double totalAmount, DateTime dt,
+      List<Map<String, Object>> items, String transactionHash) {
+    int val = 0;
+    if (totalAmount < 20) {
+      print("no get points");
+      return val;
+    } else {
+      val = (2 * totalAmount).round();
+      customer.eWallet.points += val;
+      print("gotten $val");
+
+      db.getPointsId().then((pointId) {
+        String finalID = pointId.toString().padLeft(8, "0");
+        hashCash.hash(finalID + dt.toString()).then((pointHash) {
+          print("value check: $finalID, ${dt.toString()} $pointHash");
+          Firestore.instance
+            ..collection("Points").document(finalID).setData({
+              "type": "add",
+              "pointsEarned": val,
+              "dateOfTransaction": dt,
+              "pointsId": finalID,
+              "totalAmount": transaction.getCart().getTotalCost(),
+              "items": items,
+              "pointHash": pointHash
+            });
+
+          Firestore.instance
+            ..collection("users")
+                .document(customer.id)
+                .collection("Points")
+                .document(finalID)
+                .setData({
+              "type": "add",
+              "pointsEarned": val,
+              "dateOfTransaction": dt,
+              "pointsId": finalID,
+              "totalAmount": transaction.getCart().getTotalCost(),
+              "items": items,
+              "pointHash": pointHash
+            });
+        });
+      });
+
+      return val;
+    }
   }
 }

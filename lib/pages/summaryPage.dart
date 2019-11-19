@@ -224,6 +224,7 @@ class _SummaryPageState extends State<SummaryPage> {
                             db.getEWalletData(customer.id).then((eWallet) {
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) => PaymentPage(
+                                        db: db,
                                         transaction: transaction,
                                         customer: customer,
                                         collectionMethod: _dropDownMenuValue,
@@ -335,16 +336,20 @@ class _MyDialogState extends State<MyDialog> {
               child: RaisedButton(
                 child: Text("Submit"),
                 onPressed: () {
-                  db.getEWalletData(customer.id).then((eWallet) {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => PaymentPage(
-                              transaction: transaction,
-                              customer: customer,
-                              collectionMethod: dropDownMenuValue,
-                              eWallet: eWallet,
-                              deliveryTime: deliveryTime,
-                            )));
-                  });
+                  if (deliveryTime == null) {
+                  } else {
+                    db.getEWalletData(customer.id).then((eWallet) {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => PaymentPage(
+                                db: db,
+                                transaction: transaction,
+                                customer: customer,
+                                collectionMethod: dropDownMenuValue,
+                                eWallet: eWallet,
+                                deliveryTime: deliveryTime,
+                              )));
+                    });
+                  }
                 },
               ),
             ),
