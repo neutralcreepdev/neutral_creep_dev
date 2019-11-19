@@ -7,6 +7,7 @@ import '../models/customer.dart';
 import '../models/transaction.dart';
 
 import '../helpers/color_helper.dart';
+import '../helpers/hash_helper.dart' as hash_helper;
 
 import './paymentMadePage.dart';
 
@@ -133,69 +134,84 @@ class _PaymentPageState extends State<PaymentPage> {
                     List<Map<String, Object>> items =
                         new List<Map<String, Object>>();
                     for (Grocery item in transaction.getCart().groceries) {
-                      items.add({"id": item.id, "quantity": item.quantity, "description":item.description, "name":item.name});
+                      items.add({"id": item.id,"cost":item.cost, "quantity": item.quantity, "description":item.description, "name":item.name});
                     }
 
                     eWallet.eCreadits -=
                         (customer.currentCart.getTotalCost() * 1.07);
+                    DateTime dt = DateTime.now();
+
+
+                    String toHash = transaction.id+(dt.toString());
+                    String transactionHash = hash_helper.hashCash.hash(toHash);
+
+
+
                     Firestore.instance
                         .collection("users")
                         .document(customer.id)
                         .updateData({"eCredit": eWallet.eCreadits});
 
-                    String temp = "";
+
                     Firestore.instance
                       ..collection("Orders")
                           .document(transaction.id)
                           .setData({
-                        "dateOfTransaction": DateTime.now(),
-                        "customer": customer.id,
+                        "dateOfTransaction": dt,
+                        "customerId": customer.id,
                         "totalAmount": transaction.getCart().getTotalCost(),
                         "type": "purchase",
                         "items": items,
 
-                        "status": "Packaged",
+                        "status": "Waiting",
                       });
 
+                    String collectType = "";
+
+                    //Self Collect
                     if (collectionMethod == "1") {
+                      collectType = "Self-Collect";
                       Firestore.instance
                         ..collection("users")
                             .document(customer.id)
                             .collection("Self-Collect")
                             .document(transaction.id)
                             .setData({
-                          "dateOfTransaction": DateTime.now(),
+                          "dateOfTransaction": dt,
                           "transactionId": transaction.id,
                           "totalAmount": transaction.getCart().getTotalCost(),
                           "type": "purchase",
                           "items": items,
+                          "lockerNum": "",
+                          "transactionHash":transactionHash,
 
-                          "status": "Packaged",
+                          "status": "Waiting",
                         });
 
+                      // WIll move to another location when qr scanned on the locker. (Status collected)
                       Firestore.instance
                         ..collection("users")
                             .document(customer.id)
                             .collection("History")
                             .document(transaction.id)
                             .setData({
-                          "dateOfTransaction": DateTime.now(),
+                          "dateOfTransaction": dt,
                           "transactionId": transaction.id,
                           "totalAmount": transaction.getCart().getTotalCost(),
                           "type": "purchase",
                           "items": items,
                           "collectionMethod": "Self-Collect",
+                          "transactionHash":transactionHash,
 
-                          "status": "Packaged",
+                          "status": "Waiting",
                         });
-                    } else if (collectionMethod == "2") {
+
                       Firestore.instance
-                        ..collection("users")
-                            .document(customer.id)
-                            .collection("Delivery")
+                        ..collection("Packaging")
                             .document(transaction.id)
                             .setData({
-                          "dateOfTransaction": DateTime.now(),
+                          "collectType": collectType,
+                          "dateOfTransaction": dt,
                           "transactionId": transaction.id,
                           "totalAmount": transaction.getCart().getTotalCost(),
                           "type": "purchase",
@@ -203,16 +219,35 @@ class _PaymentPageState extends State<PaymentPage> {
                           "customerId": customer.id,
                           "name": customer.firstName+" "+customer.lastName,
                           "address": customer.address,
+                        });
+                    } else if (collectionMethod == "2") {
+                      collectType = "Delivery";
+                      Firestore.instance
+                        ..collection("users")
+                            .document(customer.id)
+                            .collection("Delivery")
+                            .document(transaction.id)
+                            .setData({
+                          "dateOfTransaction": dt,
+                          "transactionId": transaction.id,
+                          "totalAmount": transaction.getCart().getTotalCost(),
+                          "type": "purchase",
+                          "items": items,
+                          "customerId": customer.id,
+                          "name": customer.firstName+" "+customer.lastName,
+                          "address": customer.address,
+                          "transactionHash":transactionHash,
 
-                          "status": "Packaged",
+                          "status": "Waiting",
                         });
 
                       //Print Transaction Delivery
                       Firestore.instance
-                        ..collection("Delivery")
+                        ..collection("Packaging")
                             .document(transaction.id)
                             .setData({
-                          "dateOfTransaction": DateTime.now(),
+                          "collectType": collectType,
+                          "dateOfTransaction": dt,
                           "transactionId": transaction.id,
                           "totalAmount": transaction.getCart().getTotalCost(),
                           "type": "purchase",
@@ -302,5 +337,14 @@ class _PaymentPageState extends State<PaymentPage> {
         ),
       ),
     );
+  }
+
+  void hashCash(){
+    bool fake = true;
+    String plaintext = "ABC";
+    while(fake){
+      String ptBinary = plaintext.toString();
+
+    }
   }
 }

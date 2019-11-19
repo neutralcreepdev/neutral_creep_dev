@@ -6,6 +6,7 @@ import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/services.dart';
 
 import '../helpers/color_helper.dart';
+import '../helpers/hash_helper.dart';
 
 import '../models/cart.dart';
 import '../models/customer.dart';
@@ -26,8 +27,7 @@ class HomePage extends StatefulWidget {
 
   HomePage({this.customer, this.db});
 
-  _HomePageState createState() =>
-      _HomePageState(customer: customer, db: db);
+  _HomePageState createState() => _HomePageState(customer: customer, db: db);
 }
 
 class _HomePageState extends State<HomePage> {
@@ -80,8 +80,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    print('eCredits: ${customer.eWallet.eCreadits}');
-
     return Scaffold(
       key: _scaffoldKey,
 
@@ -158,8 +156,10 @@ class _HomePageState extends State<HomePage> {
               ),
               onTap: () {
                 Navigator.of(context).pop();
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => ProfilePage()));
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => ProfilePage(
+                          customer: customer,
+                        )));
               },
             ),
             SizedBox(height: 30),
@@ -198,9 +198,15 @@ class _HomePageState extends State<HomePage> {
                 style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               ),
               onTap: () {
-                customer.eWallet.add500();
-                print('eCredits: ${customer.eWallet.eCreadits}');
-                db.updateECredit(customer);
+                Future<EWallet> eWalletData = db.getEWalletData(customer.id);
+                eWalletData.then((eWallet) {
+                  eWallet.add500();
+                  print('eCredits: ${eWallet.eCreadits}');
+                  customer.eWallet = eWallet;
+                  db.updateECredit(customer, 500);
+                });
+                //
+                //print('eCredits: ${customer.eWallet.eCreadits}');
               },
             ),
           ],

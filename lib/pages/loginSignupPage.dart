@@ -341,6 +341,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                                                 SignUpPage(uid: userValue.uid,db: _db)));
                                       });
                                     } else {
+
                                       Future<FirebaseUser> user = _auth
                                           .handleEmailSignIn(_email, _password);
                                       user.then((userValue) {

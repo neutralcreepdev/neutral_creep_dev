@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_firestore/cloud_firestore.dart' as prefix0;
 
 import '../models/customer.dart';
 import '../models/eWallet.dart';
-import 'package:neutral_creep_dev/models/delivery.dart';
+import '../models/delivery.dart';
+import '../helpers/hash_helper.dart';
 
 class DBService {
   final Firestore _db = Firestore.instance;
@@ -23,6 +23,12 @@ class DBService {
 
     int counter = snap.documents.length + snap2.documents.length;*/
     var snap = await _db.collection("Orders").getDocuments();
+    int counter = snap.documents.length;
+    return ++counter;
+  }
+
+  Future<int> getTopUpId(String uid) async {
+    var snap = await _db.collection("TopUp").getDocuments();
     int counter = snap.documents.length;
     return ++counter;
   }
@@ -64,14 +70,49 @@ class DBService {
       });
   }
 
-  void updateECredit(Customer customer){
-    Firestore.instance
-      ..collection("users").document(customer.id).updateData({
-        "eCredit": customer.eWallet.eCreadits,
-      });
+  void updateECredit(Customer customer, int topUpAmount) {
+
+    //double topUpID = double.parse(getTopUpId(customer.id).toString());
+    getTopUpId(customer.id).then((topUpID) {
+      Firestore.instance
+        ..collection("users").document(customer.id).updateData({
+          "eCredit": customer.eWallet.eCreadits,
+        });
+
+      String finalID = topUpID.toString().padLeft(8, "0");
+      DateTime dt = DateTime.now();
+      String toHash = finalID+(dt.toString());
+      String transactionHash = hashCash.hash(toHash);
+      Firestore.instance
+        ..collection("TopUp").document(finalID).setData({
+          "DateOfTopUp": dt,
+          "customerId": customer.id,
+          "TopUpAmount": topUpAmount,
+          "TopUpId": topUpID,
+          "transactionHash":transactionHash,
+        });
+
+      Firestore.instance
+        ..collection("users")
+            .document(customer.id)
+            .collection("TopUp")
+            .document(finalID)
+            .setData({
+          "DateOfTopUp": dt,
+          "customerId": customer.id,
+          "TopUpAmount": topUpAmount,
+          "TopUpId": topUpID,
+          "transactionHash":transactionHash,
+        });
+    });
+
   }
 
   void setHistory(Order order, String uid, String tid) {
+    //Requires the hash here -> get transactionID + uid
+    String toHash = tid + (order.date.toString());
+    String hashVal = hashCash.hash(toHash);
+
     Firestore.instance
       ..collection("users")
           .document(uid)
@@ -87,6 +128,7 @@ class DBService {
         "customerId": order.customerId,
         "address": order.address,
         "status": "Delivered",
+        "transactionHash": hashVal,
       });
   }
 

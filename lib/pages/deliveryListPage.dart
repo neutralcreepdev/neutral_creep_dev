@@ -8,6 +8,7 @@ import 'package:neutral_creep_dev/models/delivery.dart';
 class deliveryPage extends StatefulWidget {
   Customer customer;
   final DBService db;
+
   deliveryPage({this.customer, this.db});
 
   @override
@@ -18,7 +19,9 @@ class _State extends State<deliveryPage> {
   dynamic result = "";
   Customer customer;
   final DBService db;
+
   _State({this.customer, this.db});
+
   var delivery;
   Map data = {};
 
@@ -61,20 +64,36 @@ class _State extends State<deliveryPage> {
                     child: ListView.builder(
                       itemCount: snapshot.data.documents.length,
                       itemBuilder: (context, index) {
-                        String status = snapshot.data.documents[index]['status'].toString();
+                        String status =
+                            snapshot.data.documents[index]['status'].toString();
 
-                        String tid = snapshot.data.documents[index]["transactionId"].toString();
-                        String name = snapshot.data.documents[index]["name"].toString();
-                        Map address = Map.from(snapshot.data.documents[index]['address']);
+                        String tid = snapshot
+                            .data.documents[index]["transactionId"]
+                            .toString();
+                        String name =
+                            snapshot.data.documents[index]["name"].toString();
+                        Map address =
+                            Map.from(snapshot.data.documents[index]['address']);
 
-                        DateTime date = snapshot.data.documents[index]["dateOfTransaction"].toDate();
+                        DateTime date = snapshot
+                            .data.documents[index]["dateOfTransaction"]
+                            .toDate();
 
                         List<dynamic> items = new List<dynamic>();
                         items = snapshot.data.documents[index]['items'];
 
-                        double totalAmount = double.parse(snapshot.data.documents[index]['totalAmount'].toString());
+                        double totalAmount = double.parse(snapshot
+                            .data.documents[index]['totalAmount']
+                            .toString());
 
-                        Order order =new Order(orderID:tid,name: name, address: address, date: date, customerId: customer.id,items: items, totalAmount: totalAmount);
+                        Order order = new Order(
+                            orderID: tid,
+                            name: name,
+                            address: address,
+                            date: date,
+                            customerId: customer.id,
+                            items: items,
+                            totalAmount: totalAmount);
 
                         return Card(
                           child: ListTile(
@@ -85,12 +104,14 @@ class _State extends State<deliveryPage> {
                               dynamic result = await Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) =>
-                                        DeliveryConfirmaton(order: order, date: d, id: tid)),
+                                    builder: (context) => DeliveryConfirmation(
+                                        order: order, date: d, id: tid)),
                               );
                               if (result['Result'] == true) {
+                              //if (result == true) {
                                 db.setHistory(order, customer.id, tid);
                                 db.setDeliveryStatus(customer.id, tid);
+                                setState(() {});
                               }
                             },
                             title: Text("$tid"),
