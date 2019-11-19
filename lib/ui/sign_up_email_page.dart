@@ -74,17 +74,20 @@ class _SignUpEmailPageState extends State<SignUpEmailPage> {
               SignUpTextField(
                   title: "email",
                   error: emailError,
-                  controller: _emailController),
+                  controller: _emailController,
+                  obscureText: false),
               SizedBox(height: 5),
               SignUpTextField(
                   title: "password",
                   error: passwordError,
-                  controller: _passwordController),
+                  controller: _passwordController,
+                  obscureText: true),
               SizedBox(height: 5),
               SignUpTextField(
                   title: "confirm password",
                   error: confirmPasswordError,
-                  controller: _confirmPasswordController)
+                  controller: _confirmPasswordController,
+                  obscureText: true)
             ]));
   }
 

@@ -113,9 +113,11 @@ class _SignUpProfilePageState extends State<SignUpProfilePage> {
             MaterialPageRoute(builder: (context) => SignUpEmailPage()));
       } else {
         await DBService().updateProfile(Provider.of<Customer>(context));
+        List<Map<String, dynamic>> creditCard = List<Map<String, dynamic>>();
         Provider.of<Customer>(context).eWallet =
-            EWallet(eCreadits: 0, points: 0);
+            EWallet(eCreadits: 0, points: 0, creditCards: creditCard);
         Provider.of<Customer>(context).currentCart = Cart();
+
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => OnBoardingPage()));
       }

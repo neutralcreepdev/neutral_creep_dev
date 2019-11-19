@@ -21,8 +21,11 @@ class SignUpLogic {
           Provider.of<AuthService>(context)
               .handleSignUp(email, password)
               .then((user) {
+            List<Map<String, dynamic>> creditCards =
+                List<Map<String, dynamic>>();
             Provider.of<Customer>(context).id = user.uid;
-            EWallet eWallet = EWallet(eCreadits: 0, points: 0);
+            EWallet eWallet =
+                EWallet(eCreadits: 0, points: 0, creditCards: creditCards);
             Provider.of<Customer>(context).eWallet = eWallet;
             Provider.of<Customer>(context).currentCart = Cart();
             _dbService.writeNewCustomer(Provider.of<Customer>(context));

@@ -37,19 +37,7 @@ class _ViewCreditCardPageState extends State<ViewCreditCardPage> {
             Flexible(
               child: Container(
                   color: Theme.of(context).backgroundColor,
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        SizedBox(width: MediaQuery.of(context).size.width),
-                        Text("swipe to view your other cards",
-                            style: TextStyle(fontSize: 15)),
-                        creditCard(
-                            Provider.of<Customer>(context)
-                                .eWallet
-                                .creditCards
-                                .length,
-                            context),
-                      ])),
+                  child: getCardView(context)),
             ),
             AddNewCreditCardButton(
                 onPressed: () => Navigator.push(
@@ -58,6 +46,28 @@ class _ViewCreditCardPageState extends State<ViewCreditCardPage> {
                         builder: (context) => AddNewCreditCardPage()))),
           ],
         ));
+  }
+
+  Column creditCardView(BuildContext context) {
+    return Column(mainAxisAlignment: MainAxisAlignment.center, children: <
+        Widget>[
+      SizedBox(width: MediaQuery.of(context).size.width),
+      Text("swipe to view your other cards", style: TextStyle(fontSize: 15)),
+      creditCard(
+          Provider.of<Customer>(context).eWallet.creditCards.length, context),
+    ]);
+  }
+
+  Widget getCardView(BuildContext context) {
+    if (Provider.of<Customer>(context).eWallet.creditCards.length < 1) {
+      return noCreditCardView();
+    } else {
+      return creditCardView(context);
+    }
+  }
+
+  Center noCreditCardView() {
+    return Center(child: Text("You have no credit card added"));
   }
 
   CreditCardView creditCard(int cardSize, BuildContext context) {

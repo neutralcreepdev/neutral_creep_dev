@@ -107,9 +107,19 @@ class _AddNewCreditCardPageState extends State<AddNewCreditCardPage> {
       int month = int.parse(monthString);
       int year = int.parse(yearString);
 
+      if (year > (now.year + 5)) {
+        return "Please enter a valid year";
+      }
+
+      if (month > 12 || month < 1) {
+        return "Please enter a month";
+      }
+
       if (year < now.year) {
         return "This card is already expired";
-      } else if (month <= now.month) {
+      }
+
+      if (year == now.year && month <= now.month) {
         return "This card is already expired";
       }
     }

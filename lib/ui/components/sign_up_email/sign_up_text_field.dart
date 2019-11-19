@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 class SignUpTextField extends StatelessWidget {
   final TextEditingController controller;
   final String title, error;
-  const SignUpTextField({Key key, this.controller, this.title, this.error})
+  final bool obscureText;
+  const SignUpTextField(
+      {Key key, this.controller, this.title, this.error, this.obscureText})
       : super(key: key);
 
   @override
@@ -16,6 +18,7 @@ class SignUpTextField extends StatelessWidget {
           Container(
               width: double.infinity,
               child: TextFormField(
+                  obscureText: obscureText,
                   decoration: InputDecoration(
                       contentPadding: const EdgeInsets.all(15.0),
                       border: OutlineInputBorder(

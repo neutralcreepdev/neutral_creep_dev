@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:neutral_creep_dev/models/models.dart';
 import 'package:provider/provider.dart';
+import 'add_credit_card_page.dart';
 import 'top_up_page.dart';
 import 'top_up_transfer_history_page.dart';
 import 'transfer_page.dart';
@@ -63,8 +65,17 @@ class _WalletPageState extends State<WalletPage> {
 
   InkWell topUpButton(BuildContext context) {
     return InkWell(
-        onTap: () => Navigator.push(
-            context, MaterialPageRoute(builder: (context) => TopUpPage())),
+        onTap: () {
+          if (Provider.of<Customer>(context).eWallet.creditCards.length < 1) {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => AddNewCreditCardPage()));
+          } else {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => TopUpPage()));
+          }
+        },
         child: Container(
             decoration: BoxDecoration(
                 border: Border.all(
