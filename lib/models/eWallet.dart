@@ -1,24 +1,24 @@
 class EWallet {
   double eCreadits;
-  List<CreditCard> creditCards;
+  List<Map<String,dynamic>> creditCards;
 
   EWallet({this.eCreadits, this.creditCards});
 
   factory EWallet.fromMap(Map data) {
-    List<CreditCard> creditCards = new List<CreditCard>();
+    List<Map<String,dynamic>> creditCards = new List<Map<String,dynamic>>();
     List<dynamic> cardData = data["creditCards"];
     for (int i = 0; i < cardData.length; i++) {
-      Map expiryDate = {
+      /*Map expiryDate = {
         "month": cardData[i]["expiryDate"]["month"],
         "year": cardData[i]["expiryDate"]["year"]
-      };
+      };*/
 
-      CreditCard temp = CreditCard(
-          fullName: cardData[i]["fullName"],
-          cardNum: cardData[i]["cardNum"],
-          expiryDate: expiryDate,
-          bankName: cardData[i]["bankName"]);
-
+      Map<String,dynamic> temp = {
+          "fullName": cardData[i]["fullName"],
+          "cardNum": cardData[i]["cardNum"],
+          "expiryMonth": cardData[i]["expiryMonth"],
+          "expiryYear": cardData[i]["expiryYear"],
+          "bankName": cardData[i]["bankName"]};
       creditCards.add(temp);
     }
 
@@ -33,17 +33,22 @@ class EWallet {
   void add500(){
     eCreadits+=500.00;
   }
+
+  void add(String x){
+    double addVal = double.parse(x);
+    eCreadits+=addVal;
+  }
 }
 
 
 class CreditCard {
   String fullName, cardNum, bankName;
-  Map expiryDate;
+  String expiryMonth, expiryYear;
 
-  CreditCard({this.fullName, this.cardNum, this.bankName, this.expiryDate});
+  CreditCard({this.fullName, this.cardNum, this.bankName, this.expiryMonth,this.expiryYear});
 
   @override
   String toString() {
-    return "fullName=$fullName, cardNum=$cardNum, bankName=$bankName, expiryDate=$expiryDate";
+    return "fullName=$fullName, cardNum=$cardNum, bankName=$bankName, expiryDate=$expiryMonth/$expiryYear, ";
   }
 }

@@ -1,17 +1,32 @@
 import 'package:flutter/material.dart';
+import '../models/customer.dart';
+import '../services/dbService.dart';
 
 import '../helpers/color_helper.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class TopUpPage extends StatefulWidget {
-  _TopUpPageState createState() => _TopUpPageState();
+  final Customer customer;
+  final DBService db;
+
+  TopUpPage({this.customer,this.db});
+
+  _TopUpPageState createState() => _TopUpPageState(customer: customer,db:db);
 }
 
 class _TopUpPageState extends State<TopUpPage> {
+  final Customer customer;
+  final DBService db;
+
+  _TopUpPageState({this.customer,this.db});
+
   final _textController = TextEditingController();
-  var _value = "1";
 
   @override
   Widget build(BuildContext context) {
+    double currVal = customer.eWallet.eCreadits;
+    String bankInfo = "";
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: alablaster,
@@ -30,9 +45,15 @@ class _TopUpPageState extends State<TopUpPage> {
       backgroundColor: whiteSmoke,
       body: Center(
         child: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
+            SizedBox(height: 70),
+            Text(
+              "CREEP-DOLLARS Balance:\n\$${currVal.toStringAsFixed(2)}",
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 75),
             Text("Enter top-up amount"),
             Container(
               width: MediaQuery.of(context).size.width - 100,
@@ -46,37 +67,28 @@ class _TopUpPageState extends State<TopUpPage> {
             SizedBox(height: 50),
             Text("credit Card:"),
             Container(
-              height: 200,
+              height: 300,
               width: MediaQuery.of(context).size.width - 70,
               decoration: BoxDecoration(
                   color: alablaster,
                   border: Border.all(width: 2),
                   borderRadius: BorderRadius.all(Radius.circular(16))),
-            ),
-            Container(
-              width: MediaQuery.of(context).size.width - 70,
-              child: DropdownButton(
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black),
-                  isExpanded: true,
-                  items: [
-                    DropdownMenuItem(
-                      value: "1",
-                      child: Text("item 1"),
-                    ),
-                    DropdownMenuItem(
-                      value: "2",
-                      child: Text("item 2"),
-                    )
-                  ],
-                  onChanged: (value) {
-                    setState(() {
-                      _value = value;
-                    });
-                  },
-                  value: _value),
+              child: ListView.builder(
+                  itemCount: customer.eWallet.creditCards.length,
+                  itemBuilder: (context, index) {
+                    Color mainColor = alablaster;
+                    return Card(
+                        elevation: 0.2,
+                        color: mainColor,
+                        child: ListTile(
+                          title: Text(
+                            "Bank Card num: ${customer.eWallet.creditCards[index]["cardNum"]}\n${customer.eWallet.creditCards[index]["cardNum"]}",
+                          ),
+                          onTap: () {
+                            bankInfo=customer.eWallet.creditCards[index]["bankName"]+"|"+customer.eWallet.creditCards[index]["cardNum"];
+                          },
+                        ));
+                  }),
             ),
             SizedBox(height: 30),
             ButtonTheme(
@@ -93,7 +105,13 @@ class _TopUpPageState extends State<TopUpPage> {
                       fontWeight: FontWeight.bold,
                       color: Colors.white),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  String addVal = _textController.text;
+                  customer.eWallet.add(addVal);
+                  print('eCredits: ${customer.eWallet.eCreadits}');
+                  Fluttertoast.showToast(msg: bankInfo);
+                  db.updateECredit(customer,double.parse(addVal),bankInfo);
+                },
               ),
             )
           ],

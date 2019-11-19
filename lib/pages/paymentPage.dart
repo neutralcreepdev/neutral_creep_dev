@@ -285,20 +285,20 @@ class _PaymentPageState extends State<PaymentPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              "${eWallet.creditCards[0].cardNum}",
+                              "${eWallet.creditCards[0]["cardNum"]}",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 20),
                             ),
                             SizedBox(height: 20),
                             Row(
                               children: <Widget>[
-                                Text("${eWallet.creditCards[0].fullName}",
+                                Text("${eWallet.creditCards[0]["fullName"]}",
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 15)),
                                 SizedBox(width: 30),
                                 Text(
-                                    "Exp: ${eWallet.creditCards[0].expiryDate["month"]}/${eWallet.creditCards[0].expiryDate["year"]}",
+                                    "Exp: ${eWallet.creditCards[0]["expiryMonth"]}/${eWallet.creditCards[0]["expiryYear"]}",
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 15)),

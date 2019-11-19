@@ -33,6 +33,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final Customer customer;
+
   final AuthService auth;
   final DBService db;
 
@@ -79,7 +80,17 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    Future<EWallet> eWalletData = db.getEWalletData(customer.id);
+    eWalletData.then((eWallet) {
+      customer.eWallet = eWallet;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       key: _scaffoldKey,
 
@@ -139,12 +150,17 @@ class _HomePageState extends State<HomePage> {
                 style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               ),
               onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => EWalletPage(customer: customer,db: db,)));
+                /*
                 Future<EWallet> eWalletData = db.getEWalletData(customer.id);
                 eWalletData.then((eWallet) {
+                  customer.eWallet = eWallet;
                   Navigator.of(context).pop();
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => EWalletPage(eWallet: eWallet)));
-                });
+                      builder: (context) => EWalletPage(customer: customer)));
+                });*/
               },
             ),
             SizedBox(height: 30),
@@ -159,21 +175,8 @@ class _HomePageState extends State<HomePage> {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => ProfilePage(
                           customer: customer,
+                          db:db,
                         )));
-              },
-            ),
-            SizedBox(height: 30),
-            InkWell(
-              child: Text(
-                "Logout",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                FirebaseAuth.instance.signOut();
-                Navigator.of(context).pop();
-                Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => StartPage()));
               },
             ),
             SizedBox(height: 30),
@@ -193,6 +196,20 @@ class _HomePageState extends State<HomePage> {
             SizedBox(height: 30),
             InkWell(
               child: Text(
+                "Logout",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+              ),
+              onTap: () {
+                FirebaseAuth.instance.signOut();
+                Navigator.of(context).pop();
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => StartPage()));
+              },
+            ),
+            SizedBox(height: 30),
+            /*InkWell(
+              child: Text(
                 "ProxyTopUp",
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
@@ -208,7 +225,7 @@ class _HomePageState extends State<HomePage> {
                 //
                 //print('eCredits: ${customer.eWallet.eCreadits}');
               },
-            ),
+            ),*/
           ],
         ),
       ),

@@ -1,23 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../helpers/color_helper.dart';
 
-import '../models/eWallet.dart';
+import '../models/customer.dart';
+import '../services/dbService.dart';
 
 import './topUpPage.dart';
 
 class EWalletPage extends StatefulWidget {
-  final EWallet eWallet;
+  final Customer customer;
+  final DBService db;
 
-  EWalletPage({this.eWallet});
+  EWalletPage({this.customer, this.db});
 
-  _EWalletPageState createState() => _EWalletPageState(eWallet: eWallet);
+  _EWalletPageState createState() =>
+      _EWalletPageState(customer: customer, db: db);
 }
 
 class _EWalletPageState extends State<EWalletPage> {
-  final EWallet eWallet;
+  final Customer customer;
+  final DBService db;
 
-  _EWalletPageState({this.eWallet});
+  _EWalletPageState({this.customer, this.db});
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +50,7 @@ class _EWalletPageState extends State<EWalletPage> {
             // current amount text ==========================================
             SizedBox(height: 30),
             Text(
-              "CREEP-DOLLARS:\n\$${eWallet.eCreadits.toStringAsFixed(2)}",
+              "CREEP-DOLLARS:\n\$${customer.eWallet.eCreadits.toStringAsFixed(2)}",
               style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
@@ -69,8 +74,16 @@ class _EWalletPageState extends State<EWalletPage> {
                             fontWeight: FontWeight.bold, fontSize: 20),
                       ),
                       onPressed: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => new TopUpPage()));
+                        if (customer.eWallet.creditCards.length == 0) {
+                          Fluttertoast.showToast(
+                              msg:
+                                  "Error: Please Add a Credit Card before proceeding!");
+                        } else
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => new TopUpPage(
+                                    customer: customer,
+                                    db: db,
+                                  )));
                       },
                     ),
                   ),

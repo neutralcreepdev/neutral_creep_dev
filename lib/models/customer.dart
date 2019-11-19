@@ -41,7 +41,7 @@ class Customer extends User {
 
   void createNewCustomer(){
     this.currentCart = new Cart();
-    List<CreditCard> creditCards = new List<CreditCard>();
+    List<Map<String,dynamic>> creditCards = new List<Map<String,dynamic>>();
     this.eWallet = new EWallet(eCreadits: 0, creditCards: creditCards);
   }
 

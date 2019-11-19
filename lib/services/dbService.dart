@@ -70,7 +70,16 @@ class DBService {
       });
   }
 
-  void updateECredit(Customer customer, int topUpAmount) {
+  void updateCreditCards(Customer customer){
+
+    Firestore.instance
+      ..collection("users").document(customer.id).updateData({
+        "creditCards": customer.eWallet.creditCards,
+      });
+
+  }
+
+  void updateECredit(Customer customer, double topUpAmount, String bankInfo) {
 
     //double topUpID = double.parse(getTopUpId(customer.id).toString());
     getTopUpId(customer.id).then((topUpID) {
@@ -85,11 +94,12 @@ class DBService {
       String transactionHash = hashCash.hash(toHash);
       Firestore.instance
         ..collection("TopUp").document(finalID).setData({
-          "DateOfTopUp": dt,
+          "dateOfTopUp": dt,
           "customerId": customer.id,
-          "TopUpAmount": topUpAmount,
-          "TopUpId": topUpID,
+          "topUpAmount": topUpAmount,
+          "topUpId": topUpID,
           "transactionHash":transactionHash,
+          "bankInfo": bankInfo,
         });
 
       Firestore.instance
@@ -98,11 +108,12 @@ class DBService {
             .collection("TopUp")
             .document(finalID)
             .setData({
-          "DateOfTopUp": dt,
+          "dateOfTopUp": dt,
           "customerId": customer.id,
-          "TopUpAmount": topUpAmount,
-          "TopUpId": topUpID,
+          "topUpAmount": topUpAmount,
+          "topUpId": topUpID,
           "transactionHash":transactionHash,
+          "bankInfo": bankInfo,
         });
     });
 
