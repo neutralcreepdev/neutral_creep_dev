@@ -25,6 +25,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
   final _auth = AuthService();
   final _db = DBService();
   var isSignUp = true;
+  bool googleStuff = false;
   var isRememberMe = false;
   String _email, _password;
 
@@ -178,7 +179,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                     color: Colors.orangeAccent,
                     child: Row(
                       children: <Widget>[
-                        Icon(FontAwesomeIcons.googlePlusG, color: Colors.white),
+                        Icon(FontAwesomeIcons.google, color: Colors.white),
                         SizedBox(width: 20),
                         Text("Google",
                             style: TextStyle(
@@ -189,8 +190,60 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                     ),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(35)),
-                    onPressed: () {
-                      print("Google Signup");
+                    onPressed: () async {
+                      bool x = true;
+                      await showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            _auth.checkAccount().then((val) {
+                              googleStuff = val;
+                              print(googleStuff);
+                            Future<FirebaseUser> user =
+                                _auth.signInWithGoogle();
+                              user.then((userValue) {
+                                if (googleStuff == false) {
+                                  Firestore.instance
+                                      .collection("users")
+                                      .document("${userValue.uid}")
+                                      .setData({
+                                    "id": userValue.uid,
+                                    "lastLoggedIn": DateTime.now()
+                                  });
+
+                                  Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                          builder: (context) => SignUpPage(
+                                              uid: userValue.uid, db: _db)));
+                                } else {
+                                  _db
+                                      .getCustomerData(userValue.uid)
+                                      .then((customer) {
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            settings:
+                                                RouteSettings(name: "home"),
+                                            builder: (context) => HomePage(
+                                                  customer: customer,
+                                                  db: _db,
+                                                )));
+                                  });
+                                }
+                              });
+                            }).catchError((onError, stacktrace) {
+                              print(stacktrace);
+                              Navigator.pop(context);
+                              x = false;
+                            });
+                            return Dialog(
+                                backgroundColor: Colors.transparent,
+                                child: x
+                                    ? SpinKitRotatingCircle(
+                                        color: Colors.white,
+                                        size: 50.0,
+                                      )
+                                    : Text("lame"));
+                          });
                     },
                   ),
                 ),
