@@ -132,12 +132,42 @@ class DBService {
         creditCard = data['creditCards'];
         String temp = creditCard[0]["bankName"];
         String temp2 = creditCard[0]["cardNum"];
-        bankName = temp+": XXXX XXXX XXXX" +temp2.substring(temp2.length-4,temp2.length);
+        bankName = temp +
+            ": XXXX XXXX XXXX" +
+            temp2.substring(temp2.length - 4, temp2.length);
       });
     } catch (exception) {
       return bankName;
     }
     return bankName;
+  }
+
+  Future<dynamic> addCCIntoCustomer(Customer customer) async {
+    List<dynamic> creditCard = new List<dynamic>();
+    List<Map<String, dynamic>> test = new List<Map<String, dynamic>>();
+    try {
+    var snap =
+        await _db.collection("users").document(customer.id).get().then((snap) {
+      Map<String, dynamic> data = snap.data;
+      creditCard = data['creditCards'];
+
+
+      for (int i = 0; i < creditCard.length; i++) {
+        Map<String, dynamic> temporary = {
+          "fullName": creditCard[i]["fullName"],
+          "cardNum": creditCard[i]["cardNum"],
+          "expiryMonth": creditCard[i]["expiryMonth"],
+          "expiryYear": creditCard[i]["expiryYear"],
+          "bankName": creditCard[i]["bankName"]
+        };
+        test.add(temporary);
+      }
+    });
+    } catch (exception) {
+      print("goodbye");
+      return test;
+    }
+    return test;
   }
 
   Future<void> transferCredit(
@@ -148,9 +178,7 @@ class DBService {
       if (transferVal > customer.eWallet.eCreadits) {
         print("here?");
         Fluttertoast.showToast(msg: "Insufficient CreepDollars to transfer");
-
-      }
-      else {
+      } else {
         DateTime dt = DateTime.now();
 
         String finalID = "";
@@ -228,17 +256,14 @@ class DBService {
                   "to": friendID,
                   "type": "transfer",
                 });
-              Fluttertoast.showToast(
-                  msg: "Transfer to $friendID completed!");
+              Fluttertoast.showToast(msg: "Transfer to $friendID completed!");
             } catch (exception) {
               Fluttertoast.showToast(msg: "Friend not found, top up failed.");
             }
           });
         });
-
       }
-    }catch(x){
-    }
+    } catch (x) {}
   }
 
   void setHistory(Order order, String uid, String tid) {
@@ -266,6 +291,17 @@ class DBService {
           "actualTime": "",
         });
     });
+  }
+
+  void updateProfile(Customer customer) {
+    Firestore.instance
+      ..collection("users").document(customer.id).updateData({
+        "firstName": customer.firstName,
+        "lastName": customer.lastName,
+        "contactNum": customer.contactNum,
+        "address": customer.address,
+        "dob": customer.dob,
+      });
   }
 
   void delete(String uid, String tid, String mode) async {

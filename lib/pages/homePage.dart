@@ -180,14 +180,20 @@ class _HomePageState extends State<HomePage> {
                 ),
                 onTap: () {
                   Navigator.of(context).pop();
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => ProfilePage(
+                        customer: customer,
+                        db: db,
+                        //bankName: bankName,
+                      )));/*
                   db.getCard(customer).then((bankName) {
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => ProfilePage(
                               customer: customer,
                               db: db,
-                              bankName: bankName,
+                              //bankName: bankName,
                             )));
-                  });
+                  });*/
                 },
               ),
               /*SizedBox(height: 30),
@@ -442,7 +448,7 @@ class _HomePageState extends State<HomePage> {
                                           builder: (context) => ProfilePage(
                                             customer: customer,
                                             db: db,
-                                            bankName: bankName,
+                                            //bankName: bankName,
                                           )));
                                     });
                                   }

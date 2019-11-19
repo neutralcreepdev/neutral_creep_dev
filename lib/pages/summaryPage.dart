@@ -318,28 +318,12 @@ class _MyDialogState extends State<MyDialog> {
                 String year = time.substring(0, 4);
                 String month = time.substring(5, 7);
                 String day = time.substring(8, 10);
-                String hrSec = time.substring(11, 16);
+                String hrSec = time.substring(13, 18);
                 date = {"day": day, "month": month, "year": year};
                 deliveryTime = {"date": date, "time": hrSec};
 
                 setState(() {});
               });
-              /*await DatePicker.showDateTimePicker(context,
-                  showTitleActions: true,
-                  minTime: DateTime(test.year,test.month,test.day),
-                  maxTime: DateTime(2019, 12, 31),
-                  currentTime: test, onConfirm: (data) {
-                time = data.toString();
-                String year = time.substring(0, 4);
-                String month = time.substring(5, 7);
-                String day = time.substring(8, 10);
-                String hrSec = time.substring(11, 18);
-                date = {"day": day, "month": month, "year": year};
-                deliveryTime = {"date": date, "time": hrSec};
-                print(deliveryTime);
-
-                setState(() {});
-              });*/
             },
           ),
           SizedBox(
@@ -352,7 +336,6 @@ class _MyDialogState extends State<MyDialog> {
                 child: Text("Submit"),
                 onPressed: () {
                   db.getEWalletData(customer.id).then((eWallet) {
-                    print("hello$deliveryTime");
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => PaymentPage(
                               transaction: transaction,
