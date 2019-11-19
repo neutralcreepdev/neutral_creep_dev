@@ -100,7 +100,7 @@ class SummaryLogic {
           "type": "purchase",
           "items": items,
           "customerId": customer.id,
-          "name": customer.name,
+          "name": customer.firstName + customer.lastName,
           "address": customer.address,
           "transactionHash": transactionHash,
           "status": "Waiting",
@@ -122,7 +122,7 @@ class SummaryLogic {
           "type": "purchase",
           "items": items,
           "customerId": customer.id,
-          "name": customer.name,
+          "name": customer.firstName + customer.lastName,
           "address": customer.address,
           "paymentType": paymentType,
           "creditCard": customer.eWallet.creditCards[cardIndex],
@@ -164,7 +164,7 @@ class SummaryLogic {
           "type": "purchase",
           "items": items,
           "customerId": customer.id,
-          "name": customer.name,
+          "name": customer.firstName + customer.lastName,
           "address": customer.address,
           "paymentType": paymentType,
           "creditCard": customer.eWallet.creditCards[cardIndex],
@@ -238,7 +238,7 @@ class SummaryLogic {
           "type": "purchase",
           "items": items,
           "customerId": customer.id,
-          "name": customer.name,
+          "name": customer.firstName + customer.lastName,
           "address": customer.address,
           "transactionHash": transactionHash,
           "status": "Waiting",
@@ -258,7 +258,7 @@ class SummaryLogic {
           "type": "purchase",
           "items": items,
           "customerId": customer.id,
-          "name": customer.name,
+          "name": customer.firstName + customer.lastName,
           "address": customer.address,
           "paymentType": paymentType,
           "timeArrival": timeArrival,
@@ -295,7 +295,7 @@ class SummaryLogic {
             "type": "purchase",
             "items": items,
             "customerId": customer.id,
-            "name": customer.name,
+            "name": customer.firstName + customer.lastName,
             "address": customer.address,
             "paymentType": paymentType,
           });
@@ -314,9 +314,9 @@ class SummaryLogic {
         "description": item.description,
         "name": item.name
       });
-
-      return items;
     }
+
+    return items;
   }
 
   static int getPointsEarned(double totalCost) {

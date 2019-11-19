@@ -4,7 +4,8 @@ import 'package:neutral_creep_dev/models/models.dart';
 
 class SignUpProfileLogic {
   static void updateCustomer(
-      {String name,
+      {String firstName,
+      String lastName,
       String street,
       String blockNum,
       String unitLevel,
@@ -12,7 +13,8 @@ class SignUpProfileLogic {
       String postalCode,
       String phoneNum,
       BuildContext context}) {
-    Provider.of<Customer>(context).name = name;
+    Provider.of<Customer>(context).firstName = firstName;
+    Provider.of<Customer>(context).lastName = lastName;
     Map address = {
       "street": street,
       "unit": "$unitLevel-$unitNum",

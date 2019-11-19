@@ -28,7 +28,7 @@ class UnitNumTextField extends StatelessWidget {
                   Container(
                       width: (width - 10) / 5 * 2,
                       child: TextFormField(
-                          keyboardType: TextInputType.text,
+                          keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                               contentPadding: const EdgeInsets.all(15.0),
                               border: OutlineInputBorder(
@@ -40,7 +40,7 @@ class UnitNumTextField extends StatelessWidget {
                   Container(
                       width: (width - 10) / 5 * 2,
                       child: TextFormField(
-                          keyboardType: TextInputType.text,
+                          keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                               contentPadding: const EdgeInsets.all(15.0),
                               border: OutlineInputBorder(

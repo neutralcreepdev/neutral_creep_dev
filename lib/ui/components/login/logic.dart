@@ -70,7 +70,7 @@ class LoginPageLogic {
                     .document("${userValue.uid}")
                     .setData(
                         {"id": userValue.uid, "lastLoggedIn": DateTime.now()});
-                customer = null;
+                customer = Customer(id: userValue.uid);
                 Navigator.pop(context);
               } else {
                 _dbService

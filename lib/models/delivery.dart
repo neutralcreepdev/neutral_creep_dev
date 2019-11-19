@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Delivery {
@@ -49,6 +50,25 @@ class Order {
       this.status,
       this.counter});
 
+  factory Order.fromMap(Map data) {
+    Timestamp ts = data["dateOfTransaction"];
+
+    return Order(
+      orderID: data["transactionId"] ?? "",
+      name: data["name"] ?? "",
+      address: data["address"] ?? null,
+      date: ts.toDate() ?? null,
+      customerId: data["customerId"] ?? "",
+      items: data["items"] ?? null,
+      totalAmount: data["totalAmount"] ?? 0,
+      collectType: data["collectType"] ?? "",
+      timeArrival: data["timeArrival"] ?? null,
+      paymentType: data["paymentType"] ?? "",
+      status: data["status"] ?? "",
+      counter: data["counter"] ?? 0,
+    );
+  }
+
   @override
   String toString() {
     return "ORDER#$orderID\n"
@@ -58,14 +78,26 @@ class Order {
         "POSTAL CODE: ${address['postalCode']}\n";
   }
 
-  static Widget showDelivery(Order order){
-
-    Text text = new Text(order.collectType+"\n"+order.orderID+"\n"+order.address['street']+ order.address['unit'] + "\n" + order.address['postalCode']+"\n" + order.date.toString());
+  static Widget showDelivery(Order order) {
+    Text text = new Text(order.collectType +
+        "\n" +
+        order.orderID +
+        "\n" +
+        order.address['street'] +
+        order.address['unit'] +
+        "\n" +
+        order.address['postalCode'] +
+        "\n" +
+        order.date.toString());
     return text;
   }
 
-  static Widget showSelfCollect(Order order){
-    Text text = new Text(order.collectType+"\n"+order.orderID + "\n" + order.date.toString());
+  static Widget showSelfCollect(Order order) {
+    Text text = new Text(order.collectType +
+        "\n" +
+        order.orderID +
+        "\n" +
+        order.date.toString());
     return text;
   }
 }

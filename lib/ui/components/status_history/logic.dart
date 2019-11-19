@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 
-class StatusLogic {
+class StatusHistoryLogic {
   static final firestore = Firestore.instance;
   static final _db = DBService();
 
@@ -72,106 +72,10 @@ class StatusLogic {
               ),
               actions: <Widget>[
                 FlatButton(
-                    child: new Text("Scan", style: TextStyle(fontSize: 20)),
-                    onPressed: () => handleScanQR(context, order, customer)),
-                FlatButton(
                     child: new Text("return", style: TextStyle(fontSize: 20)),
                     onPressed: () => Navigator.of(context).pop())
               ]);
         });
-  }
-
-  static Future<void> handleScanQR(
-      BuildContext context, Map orderMap, Customer customer) async {
-    Navigator.pop(context);
-    String result = await scanQR();
-
-    print("\n\n\n\n$orderMap");
-    if (orderMap["collectType"] == "Delivery") {
-      Order order = Order.fromMap(orderMap);
-      String compare = result;
-      String compare2 = compare.toString();
-      String hash = hashVal(order.orderID + order.date.toString());
-      bool isValid = compareHash(hash, compare2);
-
-      if (isValid) {
-        _db.setHistory(order, order.customerId, order.orderID);
-        _db.delete(order.customerId, order.orderID, "Delivery");
-      } else {
-        Fluttertoast.showToast(msg: "Different + $hash");
-      }
-    } else {
-      String lockerNo = orderMap["lockerNum"];
-      var bytes1 = utf8.encode(lockerNo);
-      String hashedlockerNum = sha256.convert(bytes1).toString();
-
-      if (result == hashedlockerNum) {
-        Timestamp ts = orderMap["dateOfTransaction"];
-        String transactionHash = await HashCash.hash(
-            orderMap["transactionId"] + ts.toDate().toString());
-
-        if (orderMap["paymentType"] == "CreditCard") {
-          firestore
-              .collection("users")
-              .document(customer.id)
-              .collection("History")
-              .document(orderMap["transactionId"])
-              .setData({
-            "collectType": orderMap["collectType"],
-            "dateOfTransaction": ts.toDate(),
-            "transactionId": orderMap["transactionId"],
-            "totalAmount": orderMap["totalAmount"],
-            "type": "purchase",
-            "items": orderMap["items"],
-            "transactionHash": transactionHash,
-            "status": "Collected",
-            "paymentType": orderMap["paymentType"],
-            "creditCard": customer.eWallet.creditCards[orderMap["counter"]],
-            "lockerNum": lockerNo,
-            "customerId": customer.id
-          });
-        } else {
-          firestore
-              .collection("users")
-              .document(customer.id)
-              .collection("History")
-              .document(orderMap["transactionId"])
-              .setData({
-            "collectType": orderMap["collectType"],
-            "dateOfTransaction": ts.toDate(),
-            "transactionId": orderMap["transactionId"],
-            "totalAmount": orderMap["totalAmount"],
-            "type": "purchase",
-            "items": orderMap["items"],
-            "transactionHash": transactionHash,
-            "status": "Collected",
-            "paymentType": orderMap["paymentType"],
-            "lockerNum": lockerNo,
-            "customerId": customer.id
-          });
-        }
-        _db.delete(customer.id, orderMap["transactionId"], "Self-Collect");
-      }
-    }
-  }
-
-  static String hashVal(String val) {
-    var bytes1 = utf8.encode("$val"); // data being hashed
-    var digest1 = sha256.convert(bytes1); // Hashing Process
-    return digest1.toString(); // Print After Hashing
-  }
-
-  static bool compareHash(String val, String compare) {
-    return compare == val ? true : false;
-  }
-
-  static Future<String> scanQR() async {
-    try {
-      String qrResult = await BarcodeScanner.scan();
-      return qrResult.toString();
-    } catch (e) {
-      print("$e");
-    }
   }
 
   static Future<List<Map>> getItems(BuildContext context) async {
@@ -181,20 +85,10 @@ class StatusLogic {
     var deliverySnap = await firestore
         .collection('users')
         .document(id)
-        .collection("Delivery")
+        .collection("History")
         .getDocuments();
 
     for (DocumentSnapshot doc in deliverySnap.documents) {
-      orders.add(doc.data);
-    }
-
-    var selfCollectSnap = await firestore
-        .collection('users')
-        .document(id)
-        .collection("Self-Collect")
-        .getDocuments();
-
-    for (DocumentSnapshot doc in selfCollectSnap.documents) {
       orders.add(doc.data);
     }
 

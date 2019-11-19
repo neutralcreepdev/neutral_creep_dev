@@ -105,7 +105,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void handleGoogleButtonTapped(BuildContext context) {
     LoginPageLogic.googlelogin(context).then((customer) {
-      if (customer.name != null) {
+      if (customer.firstName != null) {
         Provider.of<Customer>(context).updateCustomer(customer);
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => HomePage()));
@@ -121,7 +121,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void handleFacebookButtonTapped(BuildContext context) {
     LoginPageLogic.facebooklogin(context).then((customer) {
-      if (customer != null) {
+      if (customer.firstName != null) {
         Provider.of<Customer>(context).updateCustomer(customer);
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => HomePage()));

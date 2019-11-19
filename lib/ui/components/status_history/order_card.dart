@@ -30,14 +30,6 @@ class OrderItemCard extends StatelessWidget {
                           style: TextStyle(fontSize: 20)),
                       Text("total cost: \$${totalCost.toStringAsFixed(2)}",
                           style: TextStyle(fontSize: 20)),
-                      SizedBox(height: 10),
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: <Widget>[
-                            Text("status: ", style: TextStyle(fontSize: 15)),
-                            Text("${order["status"]}",
-                                style: TextStyle(fontSize: 25))
-                          ])
                     ]))));
   }
 }

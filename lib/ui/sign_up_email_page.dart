@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:neutral_creep_dev/ui/home_page.dart';
 import 'package:neutral_creep_dev/ui/on_boarding_page.dart';
 import 'components/sign_up_email/components.dart';
 
@@ -49,8 +48,10 @@ class _SignUpEmailPageState extends State<SignUpEmailPage> {
             context, _emailController.text, _passwordController.text)
         .then((isSuccessful) {
       if (isSuccessful) {
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => HomePage()));
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => OnBoardingPage()),
+            ModalRoute.withName("login"));
       } else {
         SignUpLogic.errorDialog(context);
       }

@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:neutral_creep_dev/models/models.dart';
 import 'package:provider/provider.dart';
 import 'top_up_page.dart';
+import 'top_up_transfer_history_page.dart';
 import 'transfer_page.dart';
 
 class WalletPage extends StatefulWidget {
@@ -28,7 +29,10 @@ class _WalletPageState extends State<WalletPage> {
               children: <Widget>[
                 IconButton(
                     icon: Icon(Icons.history, size: 40, color: Colors.black),
-                    onPressed: () {}),
+                    onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => TopUpTransferHistoryPage()))),
                 Text("history", style: TextStyle(fontSize: 15))
               ])),
       Container(

@@ -32,32 +32,32 @@ class _ViewCreditCardPageState extends State<ViewCreditCardPage> {
             leading: IconButton(
                 icon: Icon(Icons.arrow_back, size: 35, color: Colors.black),
                 onPressed: () => Navigator.pop(context))),
-        body: Container(
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-              SizedBox(width: MediaQuery.of(context).size.width),
-              Text("swipe to view your other cards",
-                  style: TextStyle(fontSize: 15)),
-              creditCard(
-                  Provider.of<Customer>(context).eWallet.creditCards.length,
-                  context),
-              SizedBox(height: 20),
-              ButtonTheme(
-                  height: 45,
-                  minWidth: MediaQuery.of(context).size.width - 90,
-                  child: FlatButton(
-                      color: Theme.of(context).primaryColor,
-                      child: Text("Add a new credit card",
-                          style: TextStyle(
-                              fontSize: 25, height: 1.7, color: Colors.white)),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => AddNewCreditCardPage()));
-                      })),
-            ])));
+        body: Column(
+          children: <Widget>[
+            Flexible(
+              child: Container(
+                  color: Theme.of(context).backgroundColor,
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        SizedBox(width: MediaQuery.of(context).size.width),
+                        Text("swipe to view your other cards",
+                            style: TextStyle(fontSize: 15)),
+                        creditCard(
+                            Provider.of<Customer>(context)
+                                .eWallet
+                                .creditCards
+                                .length,
+                            context),
+                      ])),
+            ),
+            AddNewCreditCardButton(
+                onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AddNewCreditCardPage()))),
+          ],
+        ));
   }
 
   CreditCardView creditCard(int cardSize, BuildContext context) {

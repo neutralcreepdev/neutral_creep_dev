@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:neutral_creep_dev/ui/status_history_page.dart';
 
 class StatusHeader extends StatelessWidget {
   const StatusHeader({Key key}) : super(key: key);
@@ -16,7 +17,10 @@ class StatusHeader extends StatelessWidget {
             children: <Widget>[
               IconButton(
                   icon: Icon(Icons.history, size: 40, color: Colors.black),
-                  onPressed: () {}),
+                  onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => StatusHistoryPage()))),
               Text("history", style: TextStyle(fontSize: 15))
             ]));
   }

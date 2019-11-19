@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 import 'view_credit_card_page.dart';
+import 'components/profile/components.dart';
 
 class ProfilePage extends StatefulWidget {
   ProfilePage({Key key}) : super(key: key);
@@ -98,27 +99,19 @@ class _ProfilePageState extends State<ProfilePage> {
             Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(Provider.of<Customer>(context).name,
+                  Text(
+                      "${Provider.of<Customer>(context).firstName} ${Provider.of<Customer>(context).lastName}",
                       style: TextStyle(fontSize: 30)),
                   Text("ID: ${Provider.of<Customer>(context).id}",
                       style: TextStyle(fontSize: 15)),
                 ])
           ]),
           SizedBox(height: 10),
-          ButtonTheme(
-              height: 45,
-              minWidth: MediaQuery.of(context).size.width,
-              child: FlatButton(
-                  color: Theme.of(context).primaryColor,
-                  child: Text("view my credit cards",
-                      style: TextStyle(
-                          fontSize: 25, height: 1.7, color: Colors.white)),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ViewCreditCardPage()));
-                  })),
+          ViewMyCreditCardButton(
+              onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ViewCreditCardPage()))),
           SizedBox(height: 30),
           Column(
               crossAxisAlignment: CrossAxisAlignment.start,

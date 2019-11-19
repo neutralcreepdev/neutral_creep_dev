@@ -93,7 +93,8 @@ class DBService {
     Firestore.instance
       ..collection("users").document(customer.id).setData({
         "id": customer.id,
-        "name": customer.name,
+        "firstName": customer.firstName,
+        "lastName": customer.lastName,
         "contactNum": customer.contactNum,
         "address": customer.address,
         "dob": customer.dob,
@@ -111,7 +112,6 @@ class DBService {
   }
 
   void updateECredit(Customer customer, double topUpAmount, String bankInfo) {
-    //double topUpID = double.parse(getTopUpId(customer.id).toString());
     getTopUpId().then((topUpID) {
       Firestore.instance
         ..collection("users").document(customer.id).updateData({
@@ -155,11 +155,7 @@ class DBService {
     String bankName = "";
     try {
       List<dynamic> creditCard = new List<Map<String, dynamic>>();
-      var snap = await _db
-          .collection("users")
-          .document(customer.id)
-          .get()
-          .then((snap) {
+      await _db.collection("users").document(customer.id).get().then((snap) {
         Map<String, dynamic> data = snap.data;
         creditCard = data['creditCards'];
         String temp = creditCard[0]["bankName"];
@@ -178,11 +174,7 @@ class DBService {
     List<dynamic> creditCard = new List<dynamic>();
     List<Map<String, dynamic>> test = new List<Map<String, dynamic>>();
     try {
-      var snap = await _db
-          .collection("users")
-          .document(customer.id)
-          .get()
-          .then((snap) {
+      await _db.collection("users").document(customer.id).get().then((snap) {
         Map<String, dynamic> data = snap.data;
         creditCard = data['creditCards'];
 
@@ -330,7 +322,8 @@ class DBService {
   Future<void> updateProfile(Customer customer) async {
     Firestore.instance
       ..collection("users").document(customer.id).updateData({
-        "name": customer.name,
+        "firstName": customer.firstName,
+        "lastName": customer.lastName,
         "contactNum": customer.contactNum,
         "address": customer.address,
       });

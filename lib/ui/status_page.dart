@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:neutral_creep_dev/models/models.dart';
+import 'package:provider/provider.dart';
 
 import 'components/status/components.dart';
 
@@ -34,20 +36,34 @@ class _StatusPageState extends State<StatusPage> {
                     itemBuilder: (context, index) {
                       if (selectorIndex == 1) {
                         if (orders[index]["collectType"] == "Self-Collect")
-                          return OrderItemCard(order: orders[index]);
+                          return OrderItemCard(
+                              order: orders[index],
+                              onTap: () =>
+                                  handleItemTapped(context, orders[index]));
                       }
 
                       if (selectorIndex == 2) {
                         if (orders[index]["collectType"] == "Delivery")
-                          return OrderItemCard(order: orders[index]);
+                          return OrderItemCard(
+                              order: orders[index],
+                              onTap: () =>
+                                  handleItemTapped(context, orders[index]));
                       }
 
                       if (selectorIndex == 0)
-                        return OrderItemCard(order: orders[index]);
+                        return OrderItemCard(
+                            order: orders[index],
+                            onTap: () =>
+                                handleItemTapped(context, orders[index]));
 
                       return Container();
                     });
               }))
     ]));
+  }
+
+  void handleItemTapped(BuildContext context, Map order) {
+    StatusLogic.itemDialog(context, order, Provider.of<Customer>(context));
+    setState(() {});
   }
 }

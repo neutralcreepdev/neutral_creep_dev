@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:neutral_creep_dev/models/models.dart';
 import 'package:neutral_creep_dev/services/dbService.dart';
+import 'package:neutral_creep_dev/ui/on_boarding_page.dart';
 import 'package:neutral_creep_dev/ui/sign_up_email_page.dart';
 import 'package:provider/provider.dart';
 
 import 'components/sign_up_profile/components.dart';
-import 'home_page.dart';
 
 class SignUpProfilePage extends StatefulWidget {
   final bool isUsingSocial;
@@ -18,7 +18,8 @@ class SignUpProfilePage extends StatefulWidget {
 class _SignUpProfilePageState extends State<SignUpProfilePage> {
   void onBackArrowPressed(BuildContext context) => Navigator.pop(context);
 
-  final _nameController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
   final _unitLevelController = TextEditingController();
   final _streetController = TextEditingController();
   final _unitNumController = TextEditingController();
@@ -26,7 +27,8 @@ class _SignUpProfilePageState extends State<SignUpProfilePage> {
   final _postalCodeController = TextEditingController();
   final _phoneNumController = TextEditingController();
 
-  String nameError,
+  String firstNameError,
+      lastNameError,
       streetError,
       unitLevelError,
       unitNumError,
@@ -65,7 +67,8 @@ class _SignUpProfilePageState extends State<SignUpProfilePage> {
   void validateForm(BuildContext context) async {
     final String empty = "This field is empty";
     setState(() {
-      nameError = _nameController.text.isEmpty ? empty : null;
+      firstNameError = _firstNameController.text.isEmpty ? empty : null;
+      lastNameError = _lastNameController.text.isEmpty ? empty : null;
       streetError = _streetController.text.isEmpty ? empty : null;
       blockNumError = _blkNumController.text.isEmpty ? empty : null;
 
@@ -79,15 +82,15 @@ class _SignUpProfilePageState extends State<SignUpProfilePage> {
       else
         postalCodeError = null;
 
-      if (_phoneNumController.text.isEmpty)
-        phoneNumError = empty;
-      else if (_phoneNumController.text.length != 8)
+      if (_phoneNumController.text.isEmpty) phoneNumError = empty;
+      if (_phoneNumController.text.length != 8)
         phoneNumError = "Invalide phone number";
       else
         phoneNumError = null;
     });
 
-    if (nameError == null &&
+    if (firstNameError == null &&
+        lastNameError == null &&
         streetError == null &&
         blockNumError == null &&
         unitLevelError == null &&
@@ -95,7 +98,8 @@ class _SignUpProfilePageState extends State<SignUpProfilePage> {
         postalCodeError == null &&
         phoneNumError == null) {
       SignUpProfileLogic.updateCustomer(
-          name: _nameController.text,
+          firstName: _firstNameController.text,
+          lastName: _lastNameController.text,
           street: _streetController.text,
           blockNum: _blkNumController.text,
           unitLevel: _unitLevelController.text,
@@ -109,8 +113,11 @@ class _SignUpProfilePageState extends State<SignUpProfilePage> {
             MaterialPageRoute(builder: (context) => SignUpEmailPage()));
       } else {
         await DBService().updateProfile(Provider.of<Customer>(context));
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => HomePage()));
+        Provider.of<Customer>(context).eWallet =
+            EWallet(eCreadits: 0, points: 0);
+        Provider.of<Customer>(context).currentCart = Cart();
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => OnBoardingPage()));
       }
     }
   }
@@ -128,13 +135,24 @@ class _SignUpProfilePageState extends State<SignUpProfilePage> {
                   style: TextStyle(
                       fontSize: 20, decoration: TextDecoration.underline)),
               SizedBox(height: 20),
-              SignUpProfileTextFields(
-                title: "name",
-                error: nameError,
-                keyboardType: TextInputType.text,
-                width: double.infinity,
-                controller: _nameController,
-              ),
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    SignUpProfileTextFields(
+                      title: "first name",
+                      error: firstNameError,
+                      keyboardType: TextInputType.text,
+                      width: (MediaQuery.of(context).size.width / 2) - 50,
+                      controller: _firstNameController,
+                    ),
+                    SignUpProfileTextFields(
+                      title: "last name",
+                      error: lastNameError,
+                      keyboardType: TextInputType.text,
+                      width: (MediaQuery.of(context).size.width / 2) - 50,
+                      controller: _lastNameController,
+                    ),
+                  ]),
               SizedBox(height: 5),
               SignUpProfileTextFields(
                 title: "street",
@@ -149,7 +167,7 @@ class _SignUpProfilePageState extends State<SignUpProfilePage> {
                   children: <Widget>[
                     SignUpProfileTextFields(
                         title: "Block No.",
-                        keyboardType: TextInputType.text,
+                        keyboardType: TextInputType.number,
                         error: blockNumError,
                         width: (MediaQuery.of(context).size.width / 2) - 50,
                         controller: _blkNumController),
@@ -165,7 +183,7 @@ class _SignUpProfilePageState extends State<SignUpProfilePage> {
               SizedBox(height: 5),
               SignUpProfileTextFields(
                 title: "postal code",
-                keyboardType: TextInputType.text,
+                keyboardType: TextInputType.number,
                 error: postalCodeError,
                 width: double.infinity,
                 controller: _postalCodeController,
@@ -173,11 +191,11 @@ class _SignUpProfilePageState extends State<SignUpProfilePage> {
               SizedBox(height: 5),
               SignUpProfileTextFields(
                 title: "phone no.",
-                keyboardType: TextInputType.text,
+                keyboardType: TextInputType.number,
                 error: phoneNumError,
                 width: double.infinity,
                 controller: _phoneNumController,
-              ),
+              )
             ]));
   }
 }

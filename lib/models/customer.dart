@@ -10,18 +10,20 @@ class Customer extends User {
 
   Customer(
       {String id,
-      String name,
+      String firstName,
+      String lastName,
       Map dob,
       String contactNum,
       Map address,
       this.eWallet,
       this.transactions,
       this.currentCart})
-      : super(id, name, dob, contactNum, address);
+      : super(id, firstName, lastName, dob, contactNum, address);
 
   void updateCustomer(Customer customerData) {
     this.id = customerData.id;
-    this.name = customerData.name;
+    this.firstName = customerData.firstName;
+    this.lastName = customerData.lastName;
 
     this.dob = customerData.dob;
     this.contactNum = customerData.contactNum;
@@ -32,7 +34,8 @@ class Customer extends User {
   factory Customer.fromMap(Map data) {
     return Customer(
         id: data["id"] ?? "",
-        name: data["name"] ?? "",
+        firstName: data["firstame"] ?? "",
+        lastName: data["lastName"] ?? "",
         contactNum: data["contactNum"] ?? "",
         address: {
           "street": data["address"]["street"] ?? "",
