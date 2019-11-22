@@ -32,8 +32,11 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
             setState(() {
               index++;
               if (index == 4) {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => HomePage()));
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        settings: RouteSettings(name: "home"),
+                        builder: (context) => HomePage()));
               }
             });
           })
@@ -75,11 +78,9 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                       color: Colors.white),
                   child: navbarButton("status", FontAwesomeIcons.box))),
           Align(
-              alignment: Alignment(0.35, 0.85),
-              child: Text(
-                "View the status of all\nyour purchases here",
-                style: TextStyle(color: Colors.white),
-              ))
+              alignment: Alignment(0.2, 0.85),
+              child: Text("View the status of all\nyour purchases here",
+                  style: TextStyle(color: Colors.white, fontSize: 20)))
         ]));
   }
 
@@ -92,10 +93,8 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
           Align(alignment: Alignment(1, -0.55), child: item()),
           Align(
               alignment: Alignment(0, -0.70),
-              child: Text(
-                "When an item is added it will appear here",
-                style: TextStyle(color: Colors.white),
-              ))
+              child: Text("Items added will appear here",
+                  style: TextStyle(color: Colors.white, fontSize: 20)))
         ]));
   }
 
@@ -120,14 +119,14 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                           Image.asset("assets/images/scan-rd-3.png",
                               fit: BoxFit.none),
                           SizedBox(height: 5),
-                          Text("scan qr", style: TextStyle(fontSize: 10)),
+                          Text("Scan QR", style: TextStyle(fontSize: 10)),
                         ]),
                   ))),
           Align(
-              alignment: Alignment(0.3, -0.80),
+              alignment: Alignment(0.45, -0.7),
               child: Text(
-                "Scan qr code to add\nan item in the cart",
-                style: TextStyle(color: Colors.white),
+                "Scan QR code to add\nan item into the cart",
+                style: TextStyle(color: Colors.white, fontSize: 15),
               ))
         ]));
   }
@@ -148,19 +147,16 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                       color: Colors.white),
                   child: navbarButton("wallet", FontAwesomeIcons.wallet))),
           Align(
-              alignment: Alignment(0.5, 0.8),
+              alignment: Alignment(0.5, 0.85),
               child: Text(
-                "TOP UP AND MANAGE your\nCreep Dollars in the wallet",
-                style: TextStyle(color: Colors.white),
+                "Top up and manage your\nCreep Dollars in the wallet",
+                style: TextStyle(fontSize: 15, color: Colors.white),
               ))
         ]));
   }
 
   Flexible addedCart() {
-    return Flexible(
-        child: Container(
-      child: item(),
-    ));
+    return Flexible(child: Container(child: item()));
   }
 
   Container item() {
@@ -201,21 +197,21 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                Text("banana", style: TextStyle(fontSize: 20)),
+                                Text("Banana", style: TextStyle(fontSize: 20)),
                                 Text("Farm pte ltd",
-                                    style: TextStyle(fontSize: 15)),
+                                    style: TextStyle(fontSize: 10)),
                                 SizedBox(height: 5),
                                 Text("Cost: \$2.40",
                                     style: TextStyle(fontSize: 20)),
                               ])
                         ]),
                         Row(children: <Widget>[
-                          Text("QTY:", style: TextStyle(fontSize: 20)),
+                          Text("Qty:", style: TextStyle(fontSize: 15)),
                           Column(children: <Widget>[
                             IconButton(
                                 icon: Icon(Icons.arrow_drop_up),
                                 onPressed: () {}),
-                            Text("1"),
+                            Text("1", style: TextStyle(fontSize: 20)),
                             IconButton(
                                 icon: Icon(Icons.arrow_drop_down),
                                 onPressed: () {})
@@ -228,8 +224,11 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
   Flexible emptyCart() {
     return Flexible(
       child: Container(
-          child:
-              Center(child: Text("Nothing in cart\nScan to start purchasing"))),
+          child: Center(
+              child: Text(
+        "Nothing in cart\nScan to start purchasing",
+        textAlign: TextAlign.center,
+      ))),
     );
   }
 
@@ -254,17 +253,17 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                               style: TextStyle(fontSize: 12)),
                           Text("\$0.00",
                               style: TextStyle(fontSize: 30, height: 0.5)),
-                          Text("cd", style: TextStyle(fontSize: 12)),
+                          Text("CD", style: TextStyle(fontSize: 12)),
                         ]),
                     SizedBox(height: 25),
                     Row(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: <Widget>[
-                          Text("total cart cost:                    ",
+                          Text("Total cart cost:                      ",
                               style: TextStyle(fontSize: 12)),
                           Text("\$0.00",
                               style: TextStyle(fontSize: 30, height: 0.5)),
-                          Text("cd", style: TextStyle(fontSize: 12)),
+                          Text("CD", style: TextStyle(fontSize: 12)),
                         ])
                   ])),
               Container(
@@ -274,7 +273,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                     Image.asset("assets/images/scan-rd-3.png",
                         fit: BoxFit.none),
                     SizedBox(height: 5),
-                    Text("scan qr", style: TextStyle(fontSize: 10)),
+                    Text("Scan QR", style: TextStyle(fontSize: 10)),
                   ]))
             ]));
   }

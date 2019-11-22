@@ -26,7 +26,7 @@ class AvaliableRewards extends StatelessWidget {
                       decoration: BoxDecoration(
                           color: isAvailable
                               ? Theme.of(context).primaryColor
-                              : Theme.of(context).primaryColor.withOpacity(0.3),
+                              : Colors.transparent,
                           borderRadius: BorderRadius.circular(8)))),
               Align(
                 alignment: Alignment.topLeft,
@@ -43,9 +43,9 @@ class AvaliableRewards extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text("$rewardAmount Creep dollars",
-                            style: TextStyle(fontSize: 40)),
-                        Text("${rewardAmount * 50} points is required",
-                            style: TextStyle(fontSize: 20))
+                            style: TextStyle(fontSize: 30)),
+                        Text("${rewardAmount * 50} points required",
+                            style: TextStyle(fontSize: 15))
                       ],
                     )),
               )

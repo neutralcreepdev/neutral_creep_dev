@@ -21,7 +21,12 @@ class StatusHeader extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                           builder: (context) => StatusHistoryPage()))),
-              Text("history", style: TextStyle(fontSize: 15))
+              Padding(
+                padding: const EdgeInsets.only(right: 3.0),
+                child: Text("History",
+                    style: TextStyle(
+                        fontSize: 10, color: Theme.of(context).primaryColor)),
+              )
             ]));
   }
 }

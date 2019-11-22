@@ -55,7 +55,7 @@ class _AddNewCreditCardPageState extends State<AddNewCreditCardPage> {
                                 error: cardNumError),
                             SizedBox(height: 10),
                             AddCreditCardTextFields(
-                                title: "bank name",
+                                title: "Bank Name",
                                 controller: _bankNameController,
                                 error: bankNameError),
                             SizedBox(height: 10),

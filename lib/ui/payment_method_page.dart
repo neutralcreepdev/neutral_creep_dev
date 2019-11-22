@@ -44,9 +44,9 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
                   Container(
                       height: 150,
                       padding: EdgeInsets.fromLTRB(30, 30, 0, 0),
-                      child: Text("payment\nmethod",
+                      child: Text("Payment\nMethod",
                           style: TextStyle(
-                              fontSize: 60, color: Colors.blue[500]))),
+                              fontSize: 50, color: Colors.blue[500]))),
                   Flexible(child: getPaymentView()),
                   ProceedToSummaryButton(
                       onPressed: () => handleProceedButtonTapped(context))
@@ -69,28 +69,44 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
   }
 
   Widget getPaymentView() {
+    if (Provider.of<Customer>(context).eWallet.eCreadits <= 0 ||
+        Provider.of<Customer>(context).eWallet.eCreadits <
+            Provider.of<PurchaseTransaction>(context).cart.getGrandTotal()) {
+      setState(() {
+        pageIndex = 1;
+      });
+    }
+
     if (pageIndex == 0) {
       return CreepDollarView(
-          availableCD: Provider.of<Customer>(context).eWallet.eCreadits,
-          cartCost:
-              Provider.of<PurchaseTransaction>(context).cart.getGrandTotal(),
-          onPressed:
-              Provider.of<Customer>(context).eWallet.creditCards.length != 0
-                  ? () => setState(() => pageIndex = 1)
-                  : null);
+        availableCD: Provider.of<Customer>(context).eWallet.eCreadits,
+        cartCost:
+            Provider.of<PurchaseTransaction>(context).cart.getGrandTotal(),
+        onPressed: () => setState(() => pageIndex = 1),
+        canNav: Provider.of<Customer>(context).eWallet.creditCards.length > 0,
+      );
     } else {
       int size = Provider.of<Customer>(context).eWallet.creditCards.length;
       return CreditCardView(
-          cardIndex: cardIndex,
-          cardColor: cardColors[cardIndex % 4],
-          nextCardColor: cardColors[getNextCardIndex(size)],
-          creditCards: Provider.of<Customer>(context).eWallet.creditCards,
-          onSwipeLeft: size > 1 ? () => handleSwipLeft(size) : null,
-          onSwipeRight: size > 1 ? () => handleSwipRight(size) : null,
-          onPressed: Provider.of<Customer>(context).eWallet.eCreadits > 0
-              ? () => setState(() => pageIndex = 0)
-              : null);
+        cardIndex: cardIndex,
+        cardColor: cardColors[cardIndex % 4],
+        nextCardColor: cardColors[getNextCardIndex(size)],
+        creditCards: Provider.of<Customer>(context).eWallet.creditCards,
+        onSwipeLeft: size > 1 ? () => handleSwipLeft(size) : null,
+        onSwipeRight: size > 1 ? () => handleSwipRight(size) : null,
+        onPressed: () => setState(() => pageIndex = 0),
+        canNav: getCreditCardCanNav(context),
+      );
     }
+  }
+
+  bool getCreditCardCanNav(BuildContext context) {
+    if (Provider.of<Customer>(context).eWallet.eCreadits <= 0 ||
+        Provider.of<Customer>(context).eWallet.eCreadits <
+            Provider.of<PurchaseTransaction>(context).cart.getGrandTotal()) {
+      return false;
+    } else
+      return true;
   }
 
   int getNextCardIndex(int size) {

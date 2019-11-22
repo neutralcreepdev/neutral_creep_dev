@@ -6,6 +6,7 @@ class CreditCardView extends StatelessWidget {
   final List<Map> creditCards;
   final int cardIndex;
   final Color cardColor, nextCardColor;
+  final bool canNav;
 
   const CreditCardView(
       {Key key,
@@ -15,7 +16,8 @@ class CreditCardView extends StatelessWidget {
       this.onSwipeLeft,
       this.onSwipeRight,
       this.cardColor,
-      this.nextCardColor})
+      this.nextCardColor,
+      this.canNav})
       : super(key: key);
 
   @override
@@ -30,11 +32,15 @@ class CreditCardView extends StatelessWidget {
             getCreditCardView(context),
             SizedBox(height: 10),
             creditCards.length > 1
-                ? Text("swipe left to change card")
+                ? Text("swipe left to change card",
+                    style: TextStyle(fontSize: 15))
                 : Container()
           ]),
           Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-            IconButton(icon: Icon(Icons.arrow_back_ios), onPressed: onPressed),
+            canNav
+                ? IconButton(
+                    icon: Icon(Icons.arrow_back_ios), onPressed: onPressed)
+                : Container(),
             Container(
                 width: 210,
                 height: 70,
@@ -44,14 +50,11 @@ class CreditCardView extends StatelessWidget {
                         color: Theme.of(context).accentColor, width: 1),
                     borderRadius: BorderRadius.all(Radius.circular(8))),
                 child: Center(
-                    child: Text("credit card",
+                    child: Text("Credit card",
                         style: TextStyle(
-                            color: Theme.of(context).accentColor,
-                            fontSize: 30,
-                            letterSpacing: 1.8,
-                            fontFamily: "Air Americana"),
+                            color: Theme.of(context).accentColor, fontSize: 30),
                         textAlign: TextAlign.left))),
-            SizedBox(width: 50)
+            SizedBox(width: canNav ? 50 : 0)
           ]),
         ],
       ),
@@ -96,20 +99,24 @@ class CreditCardView extends StatelessWidget {
                               height: 50,
                               width: 50,
                               child: Image.asset("assets/images/chip.png")),
-                          SizedBox(height: 20),
+                          SizedBox(height: 10),
                           Text(
                               "XXXX XXXX XXXX ${creditCards[cardIndex]["cardNum"].toString().substring(12)}",
-                              style: TextStyle(fontSize: 25)),
+                              style: TextStyle(
+                                  fontSize: 20, fontFamily: "Space Mono")),
                           SizedBox(height: 10),
                           Row(children: <Widget>[
-                            Text("expiry date:   ",
-                                style: TextStyle(fontSize: 15)),
+                            Text("expiry date: ",
+                                style: TextStyle(
+                                    fontSize: 15, fontFamily: "Space Mono")),
                             Text(
                                 "${creditCards[cardIndex]["expiryMonth"]} / ${creditCards[0]["expiryYear"]}",
-                                style: TextStyle(fontSize: 20))
+                                style: TextStyle(
+                                    fontSize: 15, fontFamily: "Space Mono"))
                           ]),
                           Text("${creditCards[cardIndex]["fullName"]}",
-                              style: TextStyle(fontSize: 20))
+                              style: TextStyle(
+                                  fontSize: 20, fontFamily: "Space Mono"))
                         ]),
                   )))
         ]));

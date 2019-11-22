@@ -119,7 +119,10 @@ class _SignUpProfilePageState extends State<SignUpProfilePage> {
         Provider.of<Customer>(context).currentCart = Cart();
 
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => OnBoardingPage()));
+            context,
+            MaterialPageRoute(
+                settings: RouteSettings(name: "home"),
+                builder: (context) => OnBoardingPage()));
       }
     }
   }
@@ -141,40 +144,40 @@ class _SignUpProfilePageState extends State<SignUpProfilePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     SignUpProfileTextFields(
-                      title: "first name",
+                      title: "First Name",
                       error: firstNameError,
                       keyboardType: TextInputType.text,
                       width: (MediaQuery.of(context).size.width / 2) - 50,
                       controller: _firstNameController,
                     ),
                     SignUpProfileTextFields(
-                      title: "last name",
+                      title: "Last Name",
                       error: lastNameError,
                       keyboardType: TextInputType.text,
                       width: (MediaQuery.of(context).size.width / 2) - 50,
                       controller: _lastNameController,
                     ),
                   ]),
-              SizedBox(height: 5),
+              SizedBox(height: 15),
               SignUpProfileTextFields(
-                title: "street",
+                title: "Street",
                 keyboardType: TextInputType.text,
                 error: streetError,
                 width: double.infinity,
                 controller: _streetController,
               ),
-              SizedBox(height: 5),
+              SizedBox(height: 15),
               Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     SignUpProfileTextFields(
                         title: "Block No.",
-                        keyboardType: TextInputType.number,
+                        keyboardType: TextInputType.text,
                         error: blockNumError,
                         width: (MediaQuery.of(context).size.width / 2) - 50,
                         controller: _blkNumController),
                     UnitNumTextField(
-                      title: "unit no.",
+                      title: "Unit no.",
                       width: (MediaQuery.of(context).size.width / 2) - 5,
                       levelController: _unitLevelController,
                       unitController: _unitNumController,
@@ -182,17 +185,17 @@ class _SignUpProfilePageState extends State<SignUpProfilePage> {
                       unitError: unitNumError,
                     )
                   ]),
-              SizedBox(height: 5),
+              SizedBox(height: 15),
               SignUpProfileTextFields(
-                title: "postal code",
+                title: "Postal code",
                 keyboardType: TextInputType.number,
                 error: postalCodeError,
                 width: double.infinity,
                 controller: _postalCodeController,
               ),
-              SizedBox(height: 5),
+              SizedBox(height: 15),
               SignUpProfileTextFields(
-                title: "phone no.",
+                title: "Phone no.",
                 keyboardType: TextInputType.number,
                 error: phoneNumError,
                 width: double.infinity,

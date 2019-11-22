@@ -198,97 +198,96 @@ class DBService {
 
   Future<void> transferCredit(
       String friendID, Customer customer, double transferVal) async {
+    final _fs = Firestore.instance;
+
     //Minus your own
     print("transVal $transferVal ++++++ Ecredit${customer.eWallet.eCreadits}");
     try {
-      if (transferVal > customer.eWallet.eCreadits) {
-        print("here?");
-        Fluttertoast.showToast(msg: "Insufficient CreepDollars to transfer");
-      } else {
-        DateTime dt = DateTime.now();
+      // if (transferVal > customer.eWallet.eCreadits) {
+      //   Fluttertoast.showToast(msg: "Insufficient CreepDollars to transfer");
+      // } else {
+      DateTime dt = DateTime.now();
 
-        String finalID = "";
-        getTopUpId().then((topUpID) {
-          String toHash = finalID + (dt.toString());
-          HashCash.hash(toHash).then((transactionHash) async {
-            try {
-              finalID = topUpID.toString().padLeft(8, "0");
-              Firestore.instance
-                ..collection("TopUp").document(finalID).setData({
-                  "dateOfTopUp": dt,
-                  "customerId": customer.id,
-                  "topUpAmount": transferVal,
-                  "topUpId": finalID,
-                  "transactionHash": transactionHash,
-                  "from": customer.id,
-                  "to": friendID,
-                  "type": "transfer",
-                });
-              //Find Friend and add to his
-              double friendInitECredits = 0;
-              var snap = await _db
-                  .collection("users")
-                  .document(friendID)
-                  .get()
-                  .then((snap) {
-                Map<String, dynamic> data = snap.data;
-                friendInitECredits = data['eCredit'];
-              });
+      String finalID = "";
+      getTopUpId().then((topUpID) async {
+        String toHash = finalID + (dt.toString());
+        await HashCash.hash(toHash).then((transactionHash) async {
+          try {
+            finalID = topUpID.toString().padLeft(8, "0");
+            await _fs.collection("TopUp").document(finalID).setData({
+              "dateOfTopUp": dt,
+              "customerId": customer.id,
+              "topUpAmount": transferVal,
+              "topUpId": finalID,
+              "transactionHash": transactionHash,
+              "from": customer.id,
+              "to": friendID,
+              "type": "transfer",
+            });
+            //Find Friend and add to his
+            double friendInitECredits = 0;
+            await _db.collection("users").document(friendID).get().then((snap) {
+              Map<String, dynamic> data = snap.data;
+              friendInitECredits = data['eCredit'];
+            });
 
-              friendInitECredits += transferVal;
-              print("FriendEcredit: $friendInitECredits");
-              Firestore.instance
-                ..collection("users").document(friendID).updateData({
-                  "eCredit": friendInitECredits,
-                });
+            friendInitECredits += transferVal;
+            print("FriendEcredit: $friendInitECredits");
+            await Firestore.instance
+                .collection("users")
+                .document(friendID)
+                .updateData({
+              "eCredit": friendInitECredits,
+            });
 
-              //For transaction History
-              Firestore.instance
-                ..collection("users")
-                    .document(friendID)
-                    .collection("TopUp")
-                    .document(finalID)
-                    .setData({
-                  "dateOfTopUp": dt,
-                  "customerId": friendID,
-                  "topUpAmount": transferVal,
-                  "topUpId": finalID,
-                  "transactionHash": transactionHash,
-                  "from": customer.id,
-                  "to": friendID,
-                  "type": "transfer",
-                });
+            //For transaction History
+            await Firestore.instance
+                .collection("users")
+                .document(friendID)
+                .collection("TopUp")
+                .document(finalID)
+                .setData({
+              "dateOfTopUp": dt,
+              "customerId": friendID,
+              "topUpAmount": transferVal,
+              "topUpId": finalID,
+              "transactionHash": transactionHash,
+              "from": customer.id,
+              "to": friendID,
+              "type": "transfer",
+            });
 
-              //Update Own
-              customer.eWallet.eCreadits -= transferVal;
-              Firestore.instance
-                ..collection("users").document(customer.id).updateData({
-                  "eCredit": customer.eWallet.eCreadits,
-                });
+            //Update Own
+            await Firestore.instance
+                .collection("users")
+                .document(customer.id)
+                .updateData({
+              "eCredit": customer.eWallet.eCreadits,
+            });
 
-              //For transaction History
-              Firestore.instance
-                ..collection("users")
-                    .document(customer.id)
-                    .collection("TopUp")
-                    .document(finalID)
-                    .setData({
-                  "dateOfTopUp": dt,
-                  "customerId": customer.id,
-                  "topUpAmount": transferVal,
-                  "topUpId": finalID,
-                  "transactionHash": transactionHash,
-                  "from": customer.id,
-                  "to": friendID,
-                  "type": "transfer",
-                });
-              Fluttertoast.showToast(msg: "Transfer to $friendID completed!");
-            } catch (exception) {
-              Fluttertoast.showToast(msg: "Friend not found, top up failed.");
-            }
-          });
+            //For transaction History
+            await Firestore.instance
+                .collection("users")
+                .document(customer.id)
+                .collection("TopUp")
+                .document(finalID)
+                .setData({
+              "dateOfTopUp": dt,
+              "customerId": customer.id,
+              "topUpAmount": transferVal,
+              "topUpId": finalID,
+              "transactionHash": transactionHash,
+              "from": customer.id,
+              "to": friendID,
+              "type": "transfer",
+            });
+            Fluttertoast.showToast(msg: "Transfer to $friendID completed!");
+          } catch (exception) {
+            Fluttertoast.showToast(msg: "Friend not found, top up failed.");
+          }
         });
-      }
+      });
+      //}
     } catch (x) {}
   }
 

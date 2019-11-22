@@ -30,6 +30,9 @@ class _StatusPageState extends State<StatusPage> {
               builder: (context, snapshot) {
                 if (!snapshot.hasData) return Center(child: Text("loading"));
                 List<Map> orders = snapshot.data;
+                if (orders.length < 1)
+                  return Center(
+                      child: Text("Waiting for your first purchase.."));
 
                 return ListView.builder(
                     itemCount: orders.length,

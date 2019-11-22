@@ -23,12 +23,9 @@ class SelfCollectView extends StatelessWidget {
                     Border.all(color: Theme.of(context).accentColor, width: 1),
                 borderRadius: BorderRadius.all(Radius.circular(8))),
             child: Center(
-                child: Text("Self-collect",
+                child: Text("Self-Collect",
                     style: TextStyle(
-                        color: Theme.of(context).accentColor,
-                        fontSize: 30,
-                        letterSpacing: 1.8,
-                        fontFamily: "Air Americana"),
+                        color: Theme.of(context).accentColor, fontSize: 30),
                     textAlign: TextAlign.left))),
         IconButton(icon: Icon(Icons.arrow_forward_ios), onPressed: onPressed)
       ]),
@@ -36,11 +33,8 @@ class SelfCollectView extends StatelessWidget {
           margin: EdgeInsets.only(top: MediaQuery.of(context).size.width * 0.2),
           child: Text(
               "You will be notified when \nyour items are packed \nand ready for collection",
-              style: TextStyle(
-                  color: Theme.of(context).accentColor,
-                  fontSize: 27,
-                  letterSpacing: 1.62,
-                  fontFamily: "Air Americana"),
+              style:
+                  TextStyle(color: Theme.of(context).accentColor, fontSize: 20),
               textAlign: TextAlign.center))
     ]));
   }

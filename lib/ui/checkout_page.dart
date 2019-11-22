@@ -30,7 +30,8 @@ class CheckoutPage extends StatelessWidget {
                       height: 100,
                       padding: EdgeInsets.fromLTRB(30, 30, 0, 0),
                       child: Text("Checkout",
-                          style: Theme.of(context).textTheme.title)),
+                          style: TextStyle(
+                              fontSize: 50, color: Colors.blue[500]))),
                   Flexible(
                       child: ItemList(
                           transaction:

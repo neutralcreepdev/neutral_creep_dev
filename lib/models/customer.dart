@@ -34,7 +34,7 @@ class Customer extends User {
   factory Customer.fromMap(Map data) {
     return Customer(
         id: data["id"] ?? "",
-        firstName: data["firstame"] ?? "",
+        firstName: data["firstName"] ?? "",
         lastName: data["lastName"] ?? "",
         contactNum: data["contactNum"] ?? "",
         address: {

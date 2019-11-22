@@ -45,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
                         Container(
                             child: Center(
                                 child: Text("LOGIN",
-                                    style: TextStyle(fontSize: 50))))
+                                    style: TextStyle(fontSize: 40))))
                       ]),
 
                       // Main body
@@ -67,28 +67,25 @@ class _LoginPageState extends State<LoginPage> {
                                           color:
                                               Theme.of(context).cardColor)))),
                           LoginTextField(
-                              title: "email",
+                              title: "Email",
                               controller: _emailController,
                               obscureText: false,
                               error: emailError),
-                          SizedBox(height: 10),
                           LoginTextField(
-                              title: "password",
+                              title: "Password",
                               controller: _passwordController,
                               obscureText: true,
                               error: passwordError),
-                          SizedBox(height: 10),
                           rememberMeAndForgetPasswordFields(),
                         ],
                       ),
 
-                      // login button and sign up
                       Column(
                         children: <Widget>[
                           LoginButton(
                               onPressed: () =>
                                   handleLoginButtonTapped(context)),
-                          SizedBox(height: 10),
+                          SizedBox(height: 20),
                           SignUpLink(
                               onTap: () => handleSignUpLinkTapped(context))
                         ],
@@ -108,7 +105,10 @@ class _LoginPageState extends State<LoginPage> {
       if (customer.firstName != null) {
         Provider.of<Customer>(context).updateCustomer(customer);
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => HomePage()));
+            context,
+            MaterialPageRoute(
+                settings: RouteSettings(name: "home"),
+                builder: (context) => HomePage()));
       } else {
         Provider.of<Customer>(context).id = customer.id;
         Navigator.pushReplacement(
@@ -124,7 +124,10 @@ class _LoginPageState extends State<LoginPage> {
       if (customer.firstName != null) {
         Provider.of<Customer>(context).updateCustomer(customer);
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => HomePage()));
+            context,
+            MaterialPageRoute(
+                settings: RouteSettings(name: "home"),
+                builder: (context) => HomePage()));
       } else {
         Provider.of<Customer>(context).id = customer.id;
         Navigator.pushReplacement(

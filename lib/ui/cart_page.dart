@@ -41,9 +41,13 @@ class _CartPageState extends State<CartPage> {
     Provider.of<PurchaseTransaction>(context).setCart(customer.currentCart);
 
     if (customer.eWallet.creditCards.length == 0 &&
-        customer.eWallet.eCreadits < 0) {
+        customer.eWallet.eCreadits <= 0) {
       Fluttertoast.showToast(
           msg: "Please add a credit Card or top up CreepDollars");
+    } else if (customer.eWallet.eCreadits <
+            customer.currentCart.getGrandTotal() &&
+        customer.eWallet.creditCards.length == 0) {
+      Fluttertoast.showToast(msg: "You do not have enough creep dollar");
     } else {
       DBService().getTransactionId(customer.id).then((transactionId) {
         Provider.of<PurchaseTransaction>(context)
@@ -138,6 +142,8 @@ class _CartPageState extends State<CartPage> {
             temp.quantity = 1;
             Provider.of<Customer>(context).currentCart.addGrocery(temp);
           }
+        } else {
+          Fluttertoast.showToast(msg: "Invalid QR code");
         }
       });
     } on FormatException {

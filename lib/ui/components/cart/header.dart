@@ -29,17 +29,17 @@ class CartHeader extends StatelessWidget {
                               style: TextStyle(fontSize: 12)),
                           Text("\$${avaliableAmount.toStringAsFixed(2)}",
                               style: TextStyle(fontSize: 30, height: 0.5)),
-                          Text("cd", style: TextStyle(fontSize: 12)),
+                          Text("CD", style: TextStyle(fontSize: 12)),
                         ]),
                     SizedBox(height: 25),
                     Row(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: <Widget>[
-                          Text("total cart cost:                    ",
+                          Text("Total cart cost:                      ",
                               style: TextStyle(fontSize: 12)),
                           Text("\$${cartTotalCost.toStringAsFixed(2)}",
                               style: TextStyle(fontSize: 30, height: 0.5)),
-                          Text("cd", style: TextStyle(fontSize: 12)),
+                          Text("CD", style: TextStyle(fontSize: 12)),
                         ])
                   ])),
               Container(
@@ -51,7 +51,10 @@ class CartHeader extends StatelessWidget {
                       Image.asset("assets/images/scan-rd-3.png",
                           fit: BoxFit.none),
                       SizedBox(height: 5),
-                      Text("scan qr", style: TextStyle(fontSize: 10)),
+                      Text("Scan QR",
+                          style: TextStyle(
+                              fontSize: 10,
+                              color: Theme.of(context).primaryColor)),
                     ]),
               ))
             ]));

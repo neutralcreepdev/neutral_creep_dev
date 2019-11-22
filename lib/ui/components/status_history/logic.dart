@@ -1,17 +1,10 @@
-import 'package:barcode_scan/barcode_scan.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:neutral_creep_dev/helpers/hash_helper.dart';
 import 'package:neutral_creep_dev/models/models.dart';
-import 'package:neutral_creep_dev/services/dbService.dart';
 import 'package:provider/provider.dart';
-import 'package:crypto/crypto.dart';
-import 'dart:convert';
 
 class StatusHistoryLogic {
   static final firestore = Firestore.instance;
-  static final _db = DBService();
 
   static void itemDialog(BuildContext context, Map order, Customer customer) {
     double totalCost = order["totalAmount"];
@@ -23,18 +16,19 @@ class StatusHistoryLogic {
               title: Text("Order ${order["transactionId"]}",
                   style: TextStyle(fontSize: 30)),
               content: Container(
-                height: 300,
+                height: 340,
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text("method: ${order["collectType"]}"),
-                      Text("total cost: \$${totalCost.toStringAsFixed(2)}"),
+                      Text("Method: ${order["collectType"]}"),
+                      Text("Total Cost: \$${totalCost.toStringAsFixed(2)}"),
+                      getLockerNumber(order),
                       SizedBox(height: 20),
                       Row(children: <Widget>[
-                        SizedBox(width: 20, child: Center(child: Text("no."))),
-                        SizedBox(width: 150, child: Text("item")),
-                        SizedBox(width: 40, child: Center(child: Text("cost"))),
-                        SizedBox(width: 40, child: Center(child: Text("qty"))),
+                        SizedBox(width: 35, child: Center(child: Text("No."))),
+                        SizedBox(width: 120, child: Text("Item")),
+                        SizedBox(width: 50, child: Center(child: Text("Cost"))),
+                        SizedBox(width: 40, child: Center(child: Text("Qty"))),
                       ]),
                       Container(height: 1, color: Colors.black),
                       Container(
@@ -49,14 +43,17 @@ class StatusHistoryLogic {
                                   padding: EdgeInsets.only(top: 5),
                                   child: Row(children: <Widget>[
                                     SizedBox(
-                                        width: 20,
+                                        width: 35,
                                         child: Center(
                                             child: Text("${index + 1}."))),
                                     SizedBox(
-                                        width: 150,
-                                        child: Text("${item["name"]}")),
+                                        width: 120,
+                                        child: Text(
+                                          "${item["name"]}",
+                                          style: TextStyle(fontSize: 13),
+                                        )),
                                     SizedBox(
-                                        width: 40,
+                                        width: 50,
                                         child: Center(
                                             child: Text(
                                                 "\$${cost.toStringAsFixed(2)}"))),
@@ -72,10 +69,19 @@ class StatusHistoryLogic {
               ),
               actions: <Widget>[
                 FlatButton(
-                    child: new Text("return", style: TextStyle(fontSize: 20)),
+                    child: new Text("Close", style: TextStyle(fontSize: 20)),
                     onPressed: () => Navigator.of(context).pop())
               ]);
         });
+  }
+
+  static Widget getLockerNumber(Map order) {
+    if (order["collectType"] == "Self-Collect") {
+      if (order["lockerNum"].toString().isNotEmpty)
+        return Text("Locker #${order["lockerNum"]}",
+            style: TextStyle(fontSize: 15));
+    }
+    return Container();
   }
 
   static Future<List<Map>> getItems(BuildContext context) async {

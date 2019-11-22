@@ -96,6 +96,10 @@ flutter:
   # see https://flutter.dev/custom-fonts/#from-packages
 
   fonts:
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/Montserrat-Black.ttf
+        - asset: assets/fonts/Montserrat-Bold.ttf
     - family: Air Americana
       fonts:
         - asset: assets/fonts/AirAmericana.ttf

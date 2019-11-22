@@ -20,8 +20,8 @@ class ScanQRButton extends StatelessWidget {
             textColor: Colors.white,
             padding: EdgeInsets.all(0),
             child: Text(
-              "scan friend's qr code",
-              style: TextStyle(fontSize: 30, height: 1.7),
+              "Scan friend's QR code",
+              style: TextStyle(fontSize: 20),
               textAlign: TextAlign.center,
             )));
   }

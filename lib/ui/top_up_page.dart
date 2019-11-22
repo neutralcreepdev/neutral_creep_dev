@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:neutral_creep_dev/models/models.dart';
 import 'package:provider/provider.dart';
 import 'components/top_up/components.dart';
@@ -45,15 +46,15 @@ class _TopUpPageState extends State<TopUpPage> {
                         child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
-                              Text("top up amount:"),
+                              Text("Top up amount:"),
                               SizedBox(height: 20),
                               TextField(
                                 controller: _controller,
                                 keyboardType: TextInputType.number,
                                 textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 40),
+                                style: TextStyle(fontSize: 30),
                                 decoration:
-                                    InputDecoration(hintText: "enter here"),
+                                    InputDecoration(hintText: "Enter here"),
                               ),
                               SizedBox(height: 50),
                               creditCard(cardSize, context),
@@ -68,23 +69,27 @@ class _TopUpPageState extends State<TopUpPage> {
     String bankInfo = creditCard[cardIndex]["bankName"] +
         "|" +
         creditCard[cardIndex]["cardNum"];
+    try {
+      if (_controller.text.isNotEmpty) {
+        double topUpAmount = double.parse(_controller.text);
 
-    if (_controller.text.isNotEmpty) {
-      double topUpAmount = double.parse(_controller.text);
-
-      TopUpLogic.handleTopUpCreepDollars(
-              context: context,
-              bankInfo: bankInfo,
-              customer: Provider.of<Customer>(context),
-              topUpAmount: topUpAmount)
-          .then((isSuccessful) {
-        if (isSuccessful) {
-          Navigator.pop(context);
-          Provider.of<Customer>(context).eWallet.addCreepDollar(topUpAmount);
-        } else {
-          TopUpLogic.errorDialog(context);
-        }
-      });
+        TopUpLogic.handleTopUpCreepDollars(
+                context: context,
+                bankInfo: bankInfo,
+                customer: Provider.of<Customer>(context),
+                topUpAmount: topUpAmount)
+            .then((isSuccessful) {
+          if (isSuccessful) {
+            Navigator.pop(context);
+            Provider.of<Customer>(context).eWallet.addCreepDollar(topUpAmount);
+          } else {
+            TopUpLogic.errorDialog(context);
+          }
+        });
+      }
+    } catch (e) {
+      Fluttertoast.showToast(msg: "Invalid Input");
+      _controller.text = "";
     }
   }
 

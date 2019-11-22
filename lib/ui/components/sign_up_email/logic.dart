@@ -44,22 +44,22 @@ class SignUpLogic {
 
   static void errorDialog(BuildContext context) {
     showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: new Text("Error"),
-          content: new Text("This email has been used before"),
-          actions: <Widget>[
-            new FlatButton(
-              child: new Text("OK"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+              title: new Text(
+                "Error",
+                style: TextStyle(color: Colors.redAccent),
+              ),
+              content: new Text("This email has been used before"),
+              actions: <Widget>[
+                new FlatButton(
+                    child: new Text("OK"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    })
+              ]);
+        });
   }
 
   static String validateConfirmPassword(

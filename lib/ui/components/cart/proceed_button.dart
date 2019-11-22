@@ -17,11 +17,9 @@ class ProceedToCheckoutButton extends StatelessWidget {
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(8))),
             textColor: Colors.white,
-            padding: EdgeInsets.all(0),
             child: Text(
               "Proceed to checkout",
-              style: TextStyle(
-                  fontSize: 30, fontFamily: "Air Americana", height: 1.7),
+              style: TextStyle(fontSize: 20),
               textAlign: TextAlign.center,
             )));
   }

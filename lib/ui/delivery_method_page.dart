@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:neutral_creep_dev/models/models.dart';
 import 'package:neutral_creep_dev/ui/payment_method_page.dart';
@@ -42,9 +43,9 @@ class _DeliveryMethodPageState extends State<DeliveryMethodPage> {
                   Container(
                       height: 150,
                       padding: EdgeInsets.fromLTRB(30, 30, 0, 0),
-                      child: Text("Delivery\nmethod",
+                      child: Text("Collection\nMethod",
                           style: TextStyle(
-                              fontSize: 60, color: Colors.blue[500]))),
+                              fontSize: 50, color: Colors.blue[500]))),
                   Flexible(child: getDeliveryView(context)),
                   ProceedToPaymentButton(
                       onPressed: () => navToPaymentMethod(context))
@@ -52,18 +53,22 @@ class _DeliveryMethodPageState extends State<DeliveryMethodPage> {
   }
 
   void navToPaymentMethod(BuildContext context) {
-    pageIndex == 0
-        ? deliveryAndPaymentMethod = {"deliveryMethod": "self"}
-        : deliveryAndPaymentMethod = {
-            "deliveryMethod": "deliver",
-            "deliveryTime": deliveryDate
-          };
+    if (pageIndex == 1 && deliveryTimeString == null) {
+      Fluttertoast.showToast(msg: "No time picked");
+    } else {
+      pageIndex == 0
+          ? deliveryAndPaymentMethod = {"deliveryMethod": "self"}
+          : deliveryAndPaymentMethod = {
+              "deliveryMethod": "deliver",
+              "deliveryTime": deliveryDate
+            };
 
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => PaymentMethodPage(
-                deliveryAndPaymentMethod: deliveryAndPaymentMethod)));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => PaymentMethodPage(
+                  deliveryAndPaymentMethod: deliveryAndPaymentMethod)));
+    }
   }
 
   Widget getDeliveryView(BuildContext context) {
@@ -77,14 +82,18 @@ class _DeliveryMethodPageState extends State<DeliveryMethodPage> {
           deliveryTime: deliveryTimeString);
   }
 
-  void handleTimeTapped(BuildContext context) {
-    final DateTime currentTime = DateTime.now().add(Duration(days: 1));
+  Future<void> handleTimeTapped(BuildContext context) async {
+    DateTime now = DateTime.now();
+    var test = now.add(new Duration(days: 1));
+
+    final DateTime currentTime = DateTime.now();
+
     DatePicker.showPicker(context,
         showTitleActions: true,
         pickerModel: CustomDatePicker(
-            currentTime: currentTime,
-            minTime: currentTime,
-            maxTime: DateTime(2019, 12, 31)), onConfirm: (data) {
+            currentTime: test,
+            minTime: DateTime(test.year, test.month, test.day),
+            maxTime: DateTime(2020, 12, 31, 19)), onConfirm: (data) {
       var time = DateFormat('yyyy-MM-dd – kk:mm').format(data);
       String year = time.substring(0, 4);
       String month = time.substring(5, 7);

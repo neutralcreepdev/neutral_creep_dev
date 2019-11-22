@@ -8,6 +8,7 @@ class HistoryList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double topUpAmount = history["topUpAmount"];
+
     return Container(
         padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
         height: 100,
@@ -22,10 +23,15 @@ class HistoryList extends StatelessWidget {
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Text(history["type"], style: TextStyle(fontSize: 30)),
+                    Text(getHistoryType(history["type"]),
+                        style: TextStyle(fontSize: 30)),
                     Text("\$${topUpAmount.toStringAsFixed(2)}",
                         style: TextStyle(fontSize: 30))
                   ])),
         ));
+  }
+
+  String getHistoryType(String type) {
+    return type == "topUp" ? "Top Up" : "Transfer";
   }
 }

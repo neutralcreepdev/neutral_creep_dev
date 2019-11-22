@@ -1,5 +1,6 @@
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:neutral_creep_dev/models/models.dart';
 import 'package:neutral_creep_dev/services/dbService.dart';
 import 'package:provider/provider.dart';
@@ -40,30 +41,44 @@ class _TransferPageState extends State<TransferPage> {
                         child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
-                              Text("top up amount:"),
+                              Text("Transfer amount:"),
                               SizedBox(height: 20),
                               TextField(
                                 controller: _controller,
                                 keyboardType: TextInputType.number,
                                 textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 40),
+                                style: TextStyle(fontSize: 30),
                                 decoration:
-                                    InputDecoration(hintText: "enter here"),
+                                    InputDecoration(hintText: "Enter here"),
                               ),
                               SizedBox(height: 50),
                             ]))),
                 ScanQRButton(onPressed: () async {
-                  if (_controller.text.isNotEmpty) {
-                    try {
-                      var friendID = await _scanQR();
-                      await DBService().transferCredit(
-                          friendID.toString(),
-                          Provider.of<Customer>(context),
-                          double.parse(_controller.text));
-                      Navigator.pop(context);
-                    } catch (e) {
-                      print("ERROR => $e");
+                  try {
+                    if (_controller.text.isNotEmpty) {
+                      int amountNeeded = int.parse(_controller.text);
+                      if (amountNeeded <=
+                          Provider.of<Customer>(context).eWallet.eCreadits) {
+                        try {
+                          var friendID = await _scanQR();
+                          Provider.of<Customer>(context)
+                              .eWallet
+                              .subtractECredit(amountNeeded.toDouble());
+                          await DBService().transferCredit(
+                              friendID.toString(),
+                              Provider.of<Customer>(context),
+                              double.parse(_controller.text));
+                          Navigator.pop(context, true);
+                        } catch (e) {
+                          print("ERROR => $e");
+                        }
+                      } else {
+                        Fluttertoast.showToast(msg: "Insufficient Funds");
+                      }
                     }
+                  } catch (_) {
+                    Fluttertoast.showToast(msg: "Invalid Input");
+                    _controller.text = "";
                   }
                 })
               ])),

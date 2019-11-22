@@ -52,7 +52,7 @@ class _ViewCreditCardPageState extends State<ViewCreditCardPage> {
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: <
         Widget>[
       SizedBox(width: MediaQuery.of(context).size.width),
-      Text("swipe to view your other cards", style: TextStyle(fontSize: 15)),
+      Text("Swipe to view your other cards", style: TextStyle(fontSize: 15)),
       creditCard(
           Provider.of<Customer>(context).eWallet.creditCards.length, context),
     ]);

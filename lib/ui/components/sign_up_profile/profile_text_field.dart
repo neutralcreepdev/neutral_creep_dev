@@ -20,13 +20,13 @@ class SignUpProfileTextFields extends StatelessWidget {
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-          Text("$title:", style: Theme.of(context).textTheme.body1),
+          Text("$title:", style: TextStyle(fontSize: 15)),
           Container(
               width: width,
               child: TextFormField(
                   keyboardType: keyboardType,
                   decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.all(15.0),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 15),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(5.0)),
                       hintText: title,

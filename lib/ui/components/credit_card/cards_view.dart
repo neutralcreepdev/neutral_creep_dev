@@ -54,20 +54,24 @@ class CreditCardView extends StatelessWidget {
                               height: 50,
                               width: 50,
                               child: Image.asset("assets/images/chip.png")),
-                          SizedBox(height: 20),
+                          SizedBox(height: 10),
                           Text(
                               "XXXX XXXX XXXX ${creditCards[cardIndex]["cardNum"].toString().substring(12)}",
-                              style: TextStyle(fontSize: 25)),
+                              style: TextStyle(
+                                  fontSize: 20, fontFamily: "Space Mono")),
                           SizedBox(height: 10),
                           Row(children: <Widget>[
                             Text("expiry date:   ",
-                                style: TextStyle(fontSize: 15)),
+                                style: TextStyle(
+                                    fontSize: 15, fontFamily: "Space Mono")),
                             Text(
                                 "${creditCards[cardIndex]["expiryMonth"]} / ${creditCards[0]["expiryYear"]}",
-                                style: TextStyle(fontSize: 20))
+                                style: TextStyle(
+                                    fontSize: 15, fontFamily: "Space Mono"))
                           ]),
                           Text("${creditCards[cardIndex]["fullName"]}",
-                              style: TextStyle(fontSize: 20))
+                              style: TextStyle(
+                                  fontSize: 20, fontFamily: "Space Mono"))
                         ]),
                   )))
         ]));

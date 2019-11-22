@@ -28,35 +28,43 @@ class _TopUpTransferHistoryPageState extends State<TopUpTransferHistoryPage> {
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             color: Theme.of(context).backgroundColor,
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                      height: 150,
-                      padding: EdgeInsets.fromLTRB(30, 30, 0, 0),
-                      child: Text("History",
-                          style: TextStyle(
-                              fontSize: 70, color: Colors.blue[500]))),
-                  Container(
-                      height: MediaQuery.of(context).size.height - 150 - 98,
-                      child: FutureBuilder(
-                        future: TopUpTransferHistoryLogic.getHistory(
-                            Provider.of<Customer>(context)),
-                        builder: (context, snapshot) {
-                          List<Map> data = snapshot.data;
-                          if (data != null) {
-                            return ListView.builder(
-                                itemCount: data.length,
-                                itemBuilder: (context, index) {
-                                  return HistoryList(
-                                      history: data[index],
-                                      onTap: () => TopUpTransferHistoryLogic
-                                          .historyDialog(context, data[index]));
-                                });
-                          }
-                          return Center(child: Text("Loading"));
-                        },
-                      ))
-                ])));
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: <
+                    Widget>[
+              Container(
+                  height: 150,
+                  padding: EdgeInsets.fromLTRB(30, 30, 0, 0),
+                  child: Text("History",
+                      style: TextStyle(fontSize: 60, color: Colors.blue[500]))),
+              Container(
+                  height: MediaQuery.of(context).size.height - 150 - 98,
+                  child: FutureBuilder(
+                    future: TopUpTransferHistoryLogic.getHistory(
+                        Provider.of<Customer>(context)),
+                    builder: (context, snapshot) {
+                      List<Map> data = snapshot.data;
+
+                      if (data != null) {
+                        if (data.length < 1)
+                          return Center(
+                              child:
+                                  Text("Waiting for first wallet transaction"));
+                        if (data != null) {
+                          return ListView.builder(
+                              itemCount: data.length,
+                              itemBuilder: (context, index) {
+                                return HistoryList(
+                                    history: data[index],
+                                    onTap: () =>
+                                        TopUpTransferHistoryLogic.historyDialog(
+                                            context, data[index]));
+                              });
+                        }
+                      }
+
+                      return Center(child: Text("Loading"));
+                    },
+                  ))
+            ])));
   }
 }

@@ -36,7 +36,7 @@ class _StatusHistoryPageState extends State<StatusHistoryPage> {
                   height: 120,
                   padding: EdgeInsets.fromLTRB(30, 30, 0, 0),
                   child: Text("History",
-                      style: TextStyle(fontSize: 70, color: Colors.blue[500]))),
+                      style: TextStyle(fontSize: 60, color: Colors.blue[500]))),
               SelectorRow(
                   selectorIndex: selectorIndex,
                   allOnPressed: () => setState(() => selectorIndex = 0),
@@ -49,6 +49,12 @@ class _StatusHistoryPageState extends State<StatusHistoryPage> {
                         if (!snapshot.hasData)
                           return Center(child: Text("loading"));
                         List<Map> orders = snapshot.data;
+                        if (orders.length < 1)
+                          return Center(
+                              child: Text(
+                            "Waiting for you to complete your purchase",
+                            textAlign: TextAlign.center,
+                          ));
 
                         return ListView.builder(
                             itemCount: orders.length,

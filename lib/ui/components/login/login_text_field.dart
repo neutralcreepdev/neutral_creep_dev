@@ -15,7 +15,7 @@ class LoginTextField extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-          Text(title, style: Theme.of(context).textTheme.body1),
+          Text(title, style: TextStyle(fontSize: 20)),
           Container(
               width: double.infinity,
               child: TextFormField(
@@ -26,7 +26,6 @@ class LoginTextField extends StatelessWidget {
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(5.0)),
                       hintText: title,
-                      hintStyle: TextStyle(height: 1.7),
                       errorText: error)))
         ]));
   }

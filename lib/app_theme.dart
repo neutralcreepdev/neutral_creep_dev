@@ -7,10 +7,11 @@ class AppTheme {
   static const Color grey = Color(0xFFEFEFEF);
   static const Color pink = Color(0xFFED4856);
 
+  static const String familyFontMontserrat = "Montserrat";
   static const String familyFontAirAmericana = "Air Americana";
   static const String familyFontMenlo = "Menlo";
   static const String familyFontSpaceMono = "Space Mono";
-  static const String familyFontDefault = familyFontAirAmericana;
+  static const String familyFontDefault = familyFontMontserrat;
 
   static const fontWeightThin = FontWeight.w100;
   static const fontWeightExtraLight = FontWeight.w200;
@@ -37,8 +38,7 @@ class AppTheme {
         cardColor: darkerGrey,
         cursorColor: maroon,
         textTheme: TextTheme(
-            title: TextStyle(
-                fontSize: fontSizeExtraLarge, color: Colors.blue[500]),
+            title: TextStyle(fontSize: 50, color: Colors.blue[500]),
             body1: TextStyle(fontSize: fontSizeMid),
             body2: TextStyle(fontSize: fontSizeNormal)));
   }

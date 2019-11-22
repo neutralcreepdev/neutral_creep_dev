@@ -26,12 +26,11 @@ class SummaryDetails extends StatelessWidget {
                       fontSize: 20, decoration: TextDecoration.underline)),
               SizedBox(height: 30),
               subtotalText(),
-              SizedBox(height: 10),
               gstText(),
-              SizedBox(height: 10),
+              divider(),
               grandtotalText(),
-              SizedBox(height: 10),
               getCardOrPoints(),
+              divider(),
               SizedBox(height: 40),
               collectionMethodText(),
               SizedBox(height: 10),
@@ -39,6 +38,16 @@ class SummaryDetails extends StatelessWidget {
                   ? addressAndTimeText()
                   : Container()
             ]));
+  }
+
+  Padding divider() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Container(
+        height: 1,
+        color: Colors.black,
+      ),
+    );
   }
 
   Widget getCardOrPoints() {
@@ -56,12 +65,12 @@ class SummaryDetails extends StatelessWidget {
     return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text("address:", style: TextStyle(fontSize: 15)),
+          Text("Address:", style: TextStyle(fontSize: 15)),
           Text("${address["street"]}", style: TextStyle(fontSize: 30)),
-          Text("unit no.: ${address["unit"]}", style: TextStyle(fontSize: 20)),
-          Text("S${address["postalCode"]}", style: TextStyle(fontSize: 20)),
-          SizedBox(height: 10),
-          Text("delivery timing:", style: TextStyle(fontSize: 15)),
+          Text("Unit No.: ${address["unit"]}", style: TextStyle(fontSize: 15)),
+          Text("S${address["postalCode"]}", style: TextStyle(fontSize: 15)),
+          SizedBox(height: 20),
+          Text("Delivery Timing:", style: TextStyle(fontSize: 15)),
           Text("${date["day"]}-${date["month"]}-${date["year"]}, $time",
               style: TextStyle(fontSize: 30))
         ]);
@@ -71,23 +80,23 @@ class SummaryDetails extends StatelessWidget {
     String method;
 
     if (deliveryAndPaymentMethod["deliveryMethod"] == "deliver")
-      method = "deliver to address";
+      method = "Deliver to address";
     else
-      method = "self-collection";
+      method = "Self-Collection";
 
     return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text("collection method:", style: TextStyle(fontSize: 15)),
+          Text("Collection Method:", style: TextStyle(fontSize: 15)),
           Text("$method", style: TextStyle(fontSize: 30)),
         ]);
   }
 
   Row creditCardText() {
     return Row(crossAxisAlignment: CrossAxisAlignment.end, children: <Widget>[
-      Text("credit card no.:      "),
+      Text("Credit Card No.:    ", style: TextStyle(fontSize: 20)),
       Text("xxxx xxxx xxxx ${creditCard["cardNum"].toString().substring(12)}",
-          style: TextStyle(fontSize: 20)),
+          style: TextStyle(fontSize: 15)),
     ]);
   }
 
@@ -95,34 +104,36 @@ class SummaryDetails extends StatelessWidget {
     int points = SummaryLogic.getPointsEarned(transaction.cart.getGrandTotal());
 
     return Row(crossAxisAlignment: CrossAxisAlignment.end, children: <Widget>[
-      Text("points earned:        "),
+      Text("Points earned:       ", style: TextStyle(fontSize: 20)),
       Text("$points", style: TextStyle(fontSize: 40)),
-      Text("pts", style: TextStyle(fontSize: 15))
+      Text("Pts", style: TextStyle(fontSize: 15))
     ]);
   }
 
   Row grandtotalText() {
     return Row(crossAxisAlignment: CrossAxisAlignment.end, children: <Widget>[
-      Text("grand total:           "),
+      Text("Grand Total:           ", style: TextStyle(fontSize: 20)),
       Text("\$${transaction.cart.getGrandTotal().toStringAsFixed(2)}",
-          style: TextStyle(fontSize: 40)),
-      Text("cd", style: TextStyle(fontSize: 15))
+          style: TextStyle(fontSize: 30)),
+      Text("CD", style: TextStyle(fontSize: 15))
     ]);
   }
 
   Row gstText() {
     return Row(crossAxisAlignment: CrossAxisAlignment.end, children: <Widget>[
-      Text("7% GST:                                      ",
+      Text("7% GST:                              ",
           style: TextStyle(fontSize: 15)),
-      Text("\$${transaction.cart.getGST().toStringAsFixed(2)}")
+      Text("\$${transaction.cart.getGST().toStringAsFixed(2)}",
+          style: TextStyle(fontSize: 20))
     ]);
   }
 
   Row subtotalText() {
     return Row(crossAxisAlignment: CrossAxisAlignment.end, children: <Widget>[
-      Text("subtotal:                                    ",
+      Text("Subtotal:                            ",
           style: TextStyle(fontSize: 15)),
-      Text("\$${transaction.cart.getTotalCost().toStringAsFixed(2)}")
+      Text("\$${transaction.cart.getTotalCost().toStringAsFixed(2)}",
+          style: TextStyle(fontSize: 20))
     ]);
   }
 }

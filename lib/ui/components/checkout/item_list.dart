@@ -37,20 +37,20 @@ class ItemList extends StatelessWidget {
                       Container(
                           width: MediaQuery.of(context).size.width / 8,
                           child: Text("${index + 1}",
-                              style: TextStyle(fontSize: 18))),
+                              style: TextStyle(fontSize: 15))),
                       Container(
-                          width: MediaQuery.of(context).size.width / 8 * 4 - 30,
-                          child: Text(grocery.name,
+                          width: MediaQuery.of(context).size.width / 8 * 4 - 50,
+                          child: Text("${grocery.name}",
                               style: TextStyle(fontSize: 15))),
                       SizedBox(width: 10),
                       Container(
-                          width: MediaQuery.of(context).size.width / 8,
+                          width: MediaQuery.of(context).size.width / 8 - 5,
                           child: Text("${grocery.quantity}",
-                              style: TextStyle(fontSize: 18))),
+                              style: TextStyle(fontSize: 15))),
                       Container(
                           child: Text(
                               "\$${grocery.getTotalCost().toStringAsFixed(2)}",
-                              style: TextStyle(fontSize: 18)))
+                              style: TextStyle(fontSize: 15)))
                     ]))
               ]);
             }));
@@ -64,12 +64,12 @@ class ItemList extends StatelessWidget {
             width: MediaQuery.of(context).size.width / 8,
             child: Text("No.", style: TextStyle(fontSize: 20))),
         Container(
-          width: MediaQuery.of(context).size.width / 8 * 4 - 40,
+          width: MediaQuery.of(context).size.width / 8 * 4 - 60,
           child: Text("Item", style: TextStyle(fontSize: 20)),
         ),
         SizedBox(width: 10),
         Container(
-          width: MediaQuery.of(context).size.width / 8 + 10,
+          width: MediaQuery.of(context).size.width / 8 + 5,
           child: Text("Qty", style: TextStyle(fontSize: 20)),
         ),
         Container(

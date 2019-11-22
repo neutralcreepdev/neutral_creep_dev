@@ -16,7 +16,7 @@ class SignUpProfileLogic {
     Provider.of<Customer>(context).firstName = firstName;
     Provider.of<Customer>(context).lastName = lastName;
     Map address = {
-      "street": street,
+      "street": "$blockNum $street",
       "unit": "$unitLevel-$unitNum",
       "postalCode": postalCode
     };

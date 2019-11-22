@@ -20,8 +20,8 @@ class TopUpButton extends StatelessWidget {
             textColor: Colors.white,
             padding: EdgeInsets.all(0),
             child: Text(
-              "top up",
-              style: TextStyle(fontSize: 30, height: 1.7),
+              "Top Up",
+              style: TextStyle(fontSize: 20),
               textAlign: TextAlign.center,
             )));
   }

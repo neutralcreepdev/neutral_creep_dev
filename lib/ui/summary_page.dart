@@ -36,8 +36,9 @@ class _SummaryPageState extends State<SummaryPage> {
                   Container(
                       height: 100,
                       padding: EdgeInsets.fromLTRB(30, 30, 0, 0),
-                      child: Text("summary",
-                          style: Theme.of(context).textTheme.title)),
+                      child: Text("Summary",
+                          style: TextStyle(
+                              fontSize: 60, color: Colors.blue[500]))),
                   Flexible(
                       child: SummaryDetails(
                     transaction: Provider.of<PurchaseTransaction>(context),
@@ -51,6 +52,7 @@ class _SummaryPageState extends State<SummaryPage> {
   }
 
   Future<void> handleConfirmPurchaseTapped(BuildContext context) async {
+    print("\n\n\n\n\nhere");
     SummaryLogic.handleConfirmPurchase(context, widget.deliveryAndPaymentMethod)
         .then((isSuccessful) {
       if (isSuccessful) {

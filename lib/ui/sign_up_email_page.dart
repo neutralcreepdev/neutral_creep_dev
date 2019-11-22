@@ -44,18 +44,22 @@ class _SignUpEmailPageState extends State<SignUpEmailPage> {
           _passwordController.text, _confirmPasswordController.text);
     });
 
-    await SignUpLogic.handleSignUpNewUser(
-            context, _emailController.text, _passwordController.text)
-        .then((isSuccessful) {
-      if (isSuccessful) {
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => OnBoardingPage()),
-            ModalRoute.withName("login"));
-      } else {
-        SignUpLogic.errorDialog(context);
-      }
-    });
+    if (emailError == null &&
+        passwordError == null &&
+        confirmPasswordError == null) {
+      await SignUpLogic.handleSignUpNewUser(
+              context, _emailController.text, _passwordController.text)
+          .then((isSuccessful) {
+        if (isSuccessful) {
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => OnBoardingPage()),
+              ModalRoute.withName("login"));
+        } else {
+          SignUpLogic.errorDialog(context);
+        }
+      });
+    }
   }
 
   Container form(BuildContext context) {
@@ -72,19 +76,19 @@ class _SignUpEmailPageState extends State<SignUpEmailPage> {
                       fontSize: 20, decoration: TextDecoration.underline)),
               SizedBox(height: 20),
               SignUpTextField(
-                  title: "email",
+                  title: "Email",
                   error: emailError,
                   controller: _emailController,
                   obscureText: false),
-              SizedBox(height: 5),
+              SizedBox(height: 15),
               SignUpTextField(
-                  title: "password",
+                  title: "Password",
                   error: passwordError,
                   controller: _passwordController,
                   obscureText: true),
-              SizedBox(height: 5),
+              SizedBox(height: 15),
               SignUpTextField(
-                  title: "confirm password",
+                  title: "Confirm Password",
                   error: confirmPasswordError,
                   controller: _confirmPasswordController,
                   obscureText: true)

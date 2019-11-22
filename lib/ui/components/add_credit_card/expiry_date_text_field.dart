@@ -12,7 +12,7 @@ class ExpiryDateTextField extends StatelessWidget {
     return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text("expiry date:", style: Theme.of(context).textTheme.body1),
+          Text("Expiry Date:", style: Theme.of(context).textTheme.body1),
           Row(children: <Widget>[
             Container(
                 width: MediaQuery.of(context).size.width / 3,

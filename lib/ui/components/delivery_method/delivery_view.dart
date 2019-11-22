@@ -35,8 +35,9 @@ class DeliveryView extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            text(context, "delivery to", 12),
-            text(context, "${address["street"]}", 25),
+            text(context, "Delivery to:", 12),
+            SizedBox(
+                width: 280, child: text(context, "${address["street"]}", 25)),
             text(context, "Unit No: ${address["unit"]}", 15),
             text(context, "Postal Code: ${address["postalCode"]}", 15),
           ],
@@ -47,14 +48,11 @@ class DeliveryView extends StatelessWidget {
 
   Text text(BuildContext context, String title, double size) {
     return Text(title,
-        style: TextStyle(
-            color: Theme.of(context).accentColor,
-            fontSize: size,
-            letterSpacing: 1.62,
-            fontFamily: "Air Americana"));
+        style: TextStyle(color: Theme.of(context).accentColor, fontSize: size));
   }
 
   String getDeliveryTime() {
+    print("helllooooooooooo");
     if (deliveryTime == null) {
       return "No Delivery Time";
     } else {
@@ -74,10 +72,7 @@ class DeliveryView extends StatelessWidget {
                 text(context, getDeliveryTime(), 30),
                 Text("Tap To Change",
                     style: TextStyle(
-                        color: Theme.of(context).primaryColor,
-                        fontSize: 15,
-                        letterSpacing: 1.62,
-                        fontFamily: "Air Americana"))
+                        color: Theme.of(context).primaryColor, fontSize: 15))
               ]))
     ]);
   }
@@ -96,10 +91,7 @@ class DeliveryView extends StatelessWidget {
           child: Center(
               child: Text("Delivery",
                   style: TextStyle(
-                      color: Theme.of(context).accentColor,
-                      fontSize: 30,
-                      letterSpacing: 1.8,
-                      fontFamily: "Air Americana"),
+                      color: Theme.of(context).accentColor, fontSize: 30),
                   textAlign: TextAlign.left))),
       SizedBox(width: 50)
     ]);

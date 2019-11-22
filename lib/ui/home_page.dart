@@ -65,27 +65,27 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               NavbarButton(
-                  title: "home",
+                  title: "Home",
                   icon: FontAwesomeIcons.shoppingCart,
                   isSelected: index == 0 ? true : false,
                   onTap: () => setState(() => index = 0)),
               NavbarButton(
-                  title: "wallet",
+                  title: "Wallet",
                   icon: FontAwesomeIcons.wallet,
                   isSelected: index == 1 ? true : false,
                   onTap: () => setState(() => index = 1)),
               NavbarButton(
-                  title: "rewards",
+                  title: "Rewards",
                   icon: FontAwesomeIcons.gift,
                   isSelected: index == 2 ? true : false,
                   onTap: () => setState(() => index = 2)),
               NavbarButton(
-                  title: "profile",
+                  title: "Profile",
                   icon: Icons.person,
                   isSelected: index == 3 ? true : false,
                   onTap: () => setState(() => index = 3)),
               NavbarButton(
-                  title: "status",
+                  title: "Status",
                   icon: FontAwesomeIcons.box,
                   isSelected: index == 4 ? true : false,
                   onTap: () => setState(() => index = 4)),

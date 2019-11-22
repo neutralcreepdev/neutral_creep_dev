@@ -16,7 +16,8 @@ class TopUpTransferHistoryLogic {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-              title: Text("${data["type"]}", style: TextStyle(fontSize: 40)),
+              title: Text(getTransactionType(data["type"]),
+                  style: TextStyle(fontSize: 40)),
               content: Container(
                 height: 150,
                 child: Column(
@@ -25,34 +26,43 @@ class TopUpTransferHistoryLogic {
                       Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            Text("amount:"),
+                            Text("Amount:", style: TextStyle(fontSize: 13)),
                             Text("\$${amount.toStringAsFixed(2)}")
                           ]),
                       Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[Text("date & time:"), Text(date)]),
+                          children: <Widget>[
+                            Text("Date & Time:",
+                                style: TextStyle(fontSize: 13)),
+                            Text(date)
+                          ]),
                       data["type"] == "topUp"
                           ? Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                  Text("card:"),
+                                  Text("Card:", style: TextStyle(fontSize: 13)),
                                   Text(data["cardNum"])
                                 ])
                           : Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                  Text("to whom:"),
-                                  Text(data["toWhom"],
-                                      style: TextStyle(fontSize: 12))
+                                  Text("To whom:",
+                                      style: TextStyle(fontSize: 13)),
+                                  Text(
+                                      "...${data["toWhom"].toString().substring(20)}")
                                 ]),
                     ]),
               ),
               actions: <Widget>[
                 FlatButton(
-                    child: new Text("return", style: TextStyle(fontSize: 20)),
+                    child: new Text("Close", style: TextStyle(fontSize: 20)),
                     onPressed: () => Navigator.of(context).pop())
               ]);
         });
+  }
+
+  static String getTransactionType(String type) {
+    return type == "topUp" ? "Top Up" : "Transfer";
   }
 
   static Future<List<Map>> getHistory(Customer customer) async {

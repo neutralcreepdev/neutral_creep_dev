@@ -19,9 +19,8 @@ class SignUpButton extends StatelessWidget {
             textColor: Colors.white,
             padding: EdgeInsets.all(0),
             child: Text(
-              "sign up",
-              style: TextStyle(
-                  fontSize: 30, fontFamily: "Air Americana", height: 1.7),
+              "Sign up",
+              style: TextStyle(fontSize: 20),
               textAlign: TextAlign.center,
             )));
   }

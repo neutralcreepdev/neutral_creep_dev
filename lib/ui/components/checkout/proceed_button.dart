@@ -20,9 +20,8 @@ class ProceedToDelieveryButton extends StatelessWidget {
             textColor: Colors.white,
             padding: EdgeInsets.all(0),
             child: Text(
-              "Proceed to delivery method",
-              style: TextStyle(
-                  fontSize: 30, fontFamily: "Air Americana", height: 1.7),
+              "Proceed to collection method",
+              style: TextStyle(fontSize: 20),
               textAlign: TextAlign.center,
             )));
   }

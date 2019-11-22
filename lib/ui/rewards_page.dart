@@ -25,19 +25,18 @@ class _RewardsPageState extends State<RewardsPage> {
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text("Avaliable creep dollars:",
-                          style: TextStyle(fontSize: 15)),
-                      SizedBox(height: 10),
+                      Text("Current Points:", style: TextStyle(fontSize: 15)),
                       Text("${Provider.of<Customer>(context).eWallet.points}",
                           style: TextStyle(
-                              fontSize: 70,
+                              fontSize: 60,
                               color: Theme.of(context).primaryColor))
                     ])),
             SizedBox(height: 20),
             Padding(
-                padding: const EdgeInsets.only(left: 10),
-                child: Text("rewards available:",
+                padding: const EdgeInsets.only(left: 20),
+                child: Text("Rewards Available:",
                     style: TextStyle(color: Colors.grey))),
+            SizedBox(height: 10),
             Flexible(
               child: Container(
                 child: Column(children: <Widget>[

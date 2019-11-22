@@ -34,7 +34,12 @@ class _ProfilePageState extends State<ProfilePage> {
                       qrDialog(context);
                     }),
                 SizedBox(height: 5),
-                Text("my code", style: TextStyle(fontSize: 15))
+                Padding(
+                  padding: const EdgeInsets.only(right: 3.0),
+                  child: Text("My Code",
+                      style: TextStyle(
+                          fontSize: 10, color: Theme.of(context).primaryColor)),
+                )
               ])),
       Flexible(child: profileData(context)),
       termsAndCondition(context),
@@ -59,7 +64,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ])),
               actions: <Widget>[
                 new FlatButton(
-                    child: new Text("done", style: TextStyle(fontSize: 20)),
+                    child: new Text("Close", style: TextStyle(fontSize: 20)),
                     onPressed: () {
                       Navigator.of(context).pop();
                     })
@@ -73,9 +78,10 @@ class _ProfilePageState extends State<ProfilePage> {
         width: double.infinity,
         child:
             Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-          Text("view our "),
-          Text("terms & condition",
-              style: TextStyle(color: Theme.of(context).primaryColor))
+          Text("View our ", style: TextStyle(fontSize: 20)),
+          Text("Terms & Condition",
+              style: TextStyle(
+                  fontSize: 20, color: Theme.of(context).primaryColor))
         ]));
   }
 
@@ -87,14 +93,13 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Column(children: <Widget>[
           Row(children: <Widget>[
             Container(
-                height: 100,
-                width: 100,
+                height: 80,
+                width: 80,
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(50),
+                    borderRadius: BorderRadius.circular(40),
                     color: Colors.yellow),
-                child: Center(
-                  child: Text("G", style: TextStyle(fontSize: 50, height: 1.5)),
-                )),
+                child:
+                    Center(child: Text("G", style: TextStyle(fontSize: 50)))),
             SizedBox(width: 20),
             Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,7 +108,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       "${Provider.of<Customer>(context).firstName} ${Provider.of<Customer>(context).lastName}",
                       style: TextStyle(fontSize: 30)),
                   Text("ID: ${Provider.of<Customer>(context).id}",
-                      style: TextStyle(fontSize: 15)),
+                      style: TextStyle(fontSize: 10)),
                 ])
           ]),
           SizedBox(height: 10),
@@ -117,21 +122,21 @@ class _ProfilePageState extends State<ProfilePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 SizedBox(width: MediaQuery.of(context).size.width),
-                Text("address:", style: TextStyle(fontSize: 15)),
+                Text("Address:", style: TextStyle(fontSize: 15)),
                 Text("${Provider.of<Customer>(context).address["street"]}",
                     style: TextStyle(fontSize: 35)),
                 Text(
-                    "unit no.: ${Provider.of<Customer>(context).address["unit"]}",
-                    style: TextStyle(fontSize: 20)),
+                    "Unit No.: ${Provider.of<Customer>(context).address["unit"]}",
+                    style: TextStyle(fontSize: 15)),
                 Text("S${Provider.of<Customer>(context).address["postalCode"]}",
-                    style: TextStyle(fontSize: 20)),
+                    style: TextStyle(fontSize: 15)),
               ]),
           SizedBox(height: 30),
           Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 SizedBox(width: MediaQuery.of(context).size.width),
-                Text("phone no.:", style: TextStyle(fontSize: 15)),
+                Text("Phone No.:", style: TextStyle(fontSize: 15)),
                 Text("${Provider.of<Customer>(context).contactNum}",
                     style: TextStyle(fontSize: 35)),
               ])

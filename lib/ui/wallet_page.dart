@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:neutral_creep_dev/models/models.dart';
@@ -35,7 +34,12 @@ class _WalletPageState extends State<WalletPage> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => TopUpTransferHistoryPage()))),
-                Text("history", style: TextStyle(fontSize: 15))
+                Padding(
+                  padding: const EdgeInsets.only(right: 3.0),
+                  child: Text("History",
+                      style: TextStyle(
+                          fontSize: 10, color: Theme.of(context).primaryColor)),
+                )
               ])),
       Container(
           height: 150,
@@ -44,22 +48,22 @@ class _WalletPageState extends State<WalletPage> {
           child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text("Avaliable creep dollars:",
+                Text("Avaliable Creep Dollars:",
                     style: TextStyle(fontSize: 15)),
-                SizedBox(height: 10),
                 Text(
                     "\$${Provider.of<Customer>(context).eWallet.eCreadits.toStringAsFixed(2)}",
                     style: TextStyle(
-                        fontSize: 70, color: Theme.of(context).primaryColor))
+                        fontSize: 60, color: Theme.of(context).primaryColor))
               ])),
       SizedBox(height: 30),
       Container(
           height: 150,
           width: double.infinity,
           color: Theme.of(context).backgroundColor,
-          child: Row(
-            children: <Widget>[transferButton(context), topUpButton(context)],
-          ))
+          child: Row(children: <Widget>[
+            transferButton(context),
+            topUpButton(context)
+          ]))
     ]));
   }
 
@@ -87,14 +91,16 @@ class _WalletPageState extends State<WalletPage> {
                   Icon(FontAwesomeIcons.dollarSign,
                       size: 30, color: Theme.of(context).primaryColor),
                   SizedBox(height: 20),
-                  Text("top up")
+                  Text("Top Up")
                 ])));
   }
 
   InkWell transferButton(BuildContext context) {
     return InkWell(
-        onTap: () => Navigator.push(
-            context, MaterialPageRoute(builder: (context) => TransferPage())),
+        onTap: () async {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => TransferPage()));
+        },
         child: Container(
             decoration: BoxDecoration(
                 border: Border.all(

@@ -21,8 +21,7 @@ class ProceedToPaymentButton extends StatelessWidget {
             padding: EdgeInsets.all(0),
             child: Text(
               "Proceed to payment method",
-              style: TextStyle(
-                  fontSize: 30, fontFamily: "Air Americana", height: 1.7),
+              style: TextStyle(fontSize: 20),
               textAlign: TextAlign.center,
             )));
   }

@@ -18,9 +18,9 @@ class SelectorRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
-          selectorButton(context, "all", 0, allOnPressed, 25),
-          selectorButton(context, "self-collect", 1, selfOnPressed, 100),
-          selectorButton(context, "delivery", 2, deliveryOnPressed, 65),
+          selectorButton(context, "All", 0, allOnPressed, 25),
+          selectorButton(context, "Self-Collect", 1, selfOnPressed, 100),
+          selectorButton(context, "Delivery", 2, deliveryOnPressed, 65),
         ],
       ),
     );

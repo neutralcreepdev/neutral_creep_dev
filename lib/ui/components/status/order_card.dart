@@ -24,12 +24,12 @@ class OrderItemCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text("order ${order["transactionId"]}",
-                          style: TextStyle(fontSize: 30)),
+                      Text("Order ${order["transactionId"]}",
+                          style: TextStyle(fontSize: 25)),
                       Text("Method: ${order["collectType"]}",
-                          style: TextStyle(fontSize: 20)),
+                          style: TextStyle(fontSize: 15)),
                       Text("total cost: \$${totalCost.toStringAsFixed(2)}",
-                          style: TextStyle(fontSize: 20)),
+                          style: TextStyle(fontSize: 15)),
                       SizedBox(height: 10),
                       Row(
                           mainAxisAlignment: MainAxisAlignment.end,

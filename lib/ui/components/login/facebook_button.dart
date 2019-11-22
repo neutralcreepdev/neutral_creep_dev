@@ -23,9 +23,8 @@ class FacebookLoginButton extends StatelessWidget {
                     size: 35, color: Theme.of(context).backgroundColor),
                 Text("Log In With Facebook",
                     style: TextStyle(
-                        fontSize: 27,
-                        color: Theme.of(context).backgroundColor,
-                        height: 1.7)),
+                        fontSize: 20,
+                        color: Theme.of(context).backgroundColor)),
                 Container()
               ])),
     );

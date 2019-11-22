@@ -20,8 +20,7 @@ class ViewMyCreditCardButton extends StatelessWidget {
             padding: EdgeInsets.all(0),
             child: Text(
               "View my credit cards",
-              style: TextStyle(
-                  fontSize: 30, fontFamily: "Air Americana", height: 1.7),
+              style: TextStyle(fontSize: 20),
               textAlign: TextAlign.center,
             )));
   }
